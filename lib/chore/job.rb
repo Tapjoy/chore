@@ -3,11 +3,12 @@ module Chore
     attr_reader :params
 
     class << self
-      DEFAULT_OPTIONS = { :encoder => JsonEncoder }
+      DEFAULT_OPTIONS = { :encoder => JsonEncoder, :publisher => Chore::Publisher }
 
       def configure(opts = {})
         @options = DEFAULT_OPTIONS.merge(opts)
         raise ArgumentError.new(':queue is required') unless @options[:queue]
+        raise ArgumentError.new(':publisher is required') unless @options[:publisher]
       end
 
       def options

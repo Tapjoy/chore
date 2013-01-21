@@ -3,7 +3,7 @@ module Chore
 
   autoload :JsonEncoder,    "chore/json_encoder"
   autoload :Job,            "chore/job"
-#  autoload :Worker,         "chore/worker"
+  autoload :Publisher,      "chore/publisher"
  
   class Worker
     DEFAULTS = {}

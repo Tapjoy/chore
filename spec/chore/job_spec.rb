@@ -23,6 +23,10 @@ describe Chore::Job do
     expect { TestJob.configure(:queue => nil) }.to raise_error(ArgumentError)
   end
 
+  it 'should require a publisher when configuring' do
+    expect { TestJob.configure(:publisher => nil) }.to raise_error(ArgumentError)
+  end
+
   it 'should take params via perform' do
     job = TestJob.new
     TestJob.should_receive(:new).with(*args).and_return(job)
