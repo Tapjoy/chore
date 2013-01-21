@@ -1,11 +1,18 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
-class TestJob < Chore::Job
-  configure :queue => 'test_queue'
-end
+class TestJob < Chore::Job; end;
 
 describe Chore::Job do
   let(:args) { [1,2, { :a => :hash }] }
+  let(:config) { { :queue => 'test_queue', :publisher => Chore::Publisher } }
+
+  before(:each) do
+    TestJob.configure config
+  end
+
+  after(:each) do
+    TestJob.configure config
+  end
 
   it 'should have an publish method' do
     subject.class.should respond_to :publish

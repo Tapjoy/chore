@@ -3,16 +3,18 @@ module Chore
     attr_reader :params
 
     class << self
-      DEFAULT_OPTIONS = { :encoder => JsonEncoder, :publisher => Chore::Publisher }
+      DEFAULT_OPTIONS = { :encoder => JsonEncoder }
+      REQUIRED_OPTIONS = [:queue,:publisher]
 
       def configure(opts = {})
-        @options = DEFAULT_OPTIONS.merge(opts)
-        raise ArgumentError.new(':queue is required') unless @options[:queue]
-        raise ArgumentError.new(':publisher is required') unless @options[:publisher]
+        @options = (@options || DEFAULT_OPTIONS).merge(opts)
+        REQUIRED_OPTIONS.each do |k|
+          raise ArgumentError.new(":#{k} is required") unless @options[k]
+        end
       end
 
       def options
-        @options ||= configure(DEFAULT_OPTIONS)
+        @options ||= configure
       end
 
       def perform(*args)
@@ -40,9 +42,9 @@ module Chore
     end
 
     def publish
-      raise NotImplementedError
+      @publisher ||= self.options[:publisher].new
+      @publisher.publish(self)
     end
-
 
   end #Job
 end #Chore
