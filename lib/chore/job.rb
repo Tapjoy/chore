@@ -1,49 +1,54 @@
 module Chore
-  class Job
-    attr_reader :params
+  module Job
 
-    class << self
+    def self.included(base)
+      @classes ||= []
+      @classes << base.name
+      base.extend(ClassMethods)
+    end
+
+    module ClassMethods
       DEFAULT_OPTIONS = { :encoder => JsonEncoder }
-      REQUIRED_OPTIONS = [:queue,:publisher]
 
       def configure(opts = {})
-        @options = (@options || DEFAULT_OPTIONS).merge(opts)
-        REQUIRED_OPTIONS.each do |k|
-          raise ArgumentError.new(":#{k} is required") unless @options[k]
+        @chore_options = (@chore_options || DEFAULT_OPTIONS).merge(opts)
+        required_options.each do |k|
+          raise ArgumentError.new(":#{k} is required") unless @chore_options[k]
         end
       end
 
+      def required_options
+        [:queue,:publisher]
+      end
+
       def options
-        @options ||= configure
+        @chore_options ||= configure
       end
 
       def perform(*args)
-        self.new(*args).perform
+        self.new.perform(*args)
       end
 
       def publish(*args)
-        self.new(*args).publish
+        self.new.publish(*args)
       end
-    end
 
-    def initialize(*args)
-      @params = args
-    end
+      def job_hash(job_params)
+        {:job => self.to_s, :params => job_params}
+      end
+    end #ClassMethods
 
-    def to_hash(opts = {})
-      {:job => self.class.to_s, :params => params}.merge(opts)
-    end
 
     def setup
     end
 
-    def perform
+    def perform(*args)
       raise NotImplementedError
     end
 
-    def publish
-      @publisher ||= self.options[:publisher].new
-      @publisher.publish(self)
+    def publish(*args)
+      @chore_publisher ||= self.class.options[:publisher].new
+      @chore_publisher.publish(self.class.job_hash(args))
     end
 
   end #Job

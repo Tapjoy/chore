@@ -1,12 +1,14 @@
+require 'json'
+
 module Chore
   module JsonEncoder
     class << self
       def encode(job)
-        JSON.encode(job.to_hash)
+        JSON.generate(job.to_hash)
       end
 
       def decode(job)
-        JSON.decode(job)
+        JSON.parse(job)
       end
     end
   end

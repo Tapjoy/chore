@@ -1,6 +1,8 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
-class TestJob < Chore::Job; end;
+class TestJob 
+  include Chore::Job
+end
 
 describe Chore::Job do
   let(:args) { [1,2, { :a => :hash }] }
@@ -15,11 +17,11 @@ describe Chore::Job do
   end
 
   it 'should have an publish method' do
-    subject.class.should respond_to :publish
+    TestJob.should respond_to :publish
   end
 
   it 'should have a perform method' do
-    subject.class.should respond_to :perform
+    TestJob.should respond_to :perform
   end
 
   it 'should use a default encoder' do
@@ -35,9 +37,7 @@ describe Chore::Job do
   end
 
   it 'should take params via perform' do
-    job = TestJob.new
-    TestJob.should_receive(:new).with(*args).and_return(job)
-    TestJob.any_instance.should_receive(:perform)
+    TestJob.any_instance.should_receive(:perform).with(*args)
     TestJob.perform(*args)
   end
 
@@ -46,10 +46,12 @@ describe Chore::Job do
     TestJob.options[:queue].should == 'test_queue'
   end
 
-  describe 'instances' do
-    it 'should set params via initialize' do
-      TestJob.new(*args).params.should == args
+  describe(:publish) do 
+    it 'should call an instance of the configured publisher' do
+      args = [1,2,{:h => 'ash'}]
+      TestJob.configure(:publisher => Chore::Publisher)
+      Chore::Publisher.any_instance.should_receive(:publish).with({:job => 'TestJob',:params => args}).and_return(true)
+      TestJob.publish(*args)
     end
-
   end
 end
