@@ -26,11 +26,13 @@ module Chore
       end
 
       def perform(*args)
-        self.new.perform(*args)
+        job = self.new(args)
+        job.perform(*args)
       end
 
       def publish(*args)
-        self.new.publish(*args)
+        job = self.new(args)
+        job.publish(*args)
       end
 
       def job_hash(job_params)
@@ -38,6 +40,10 @@ module Chore
       end
     end #ClassMethods
 
+    ## This is handy to override in an included job to be able to do job setup that requires
+    ## access to a job's arguments to be able to perform
+    def initialize(args=nil)
+    end
 
     def setup
     end

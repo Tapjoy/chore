@@ -35,7 +35,6 @@ class FakeWorker < Chore::Worker
     message = FakePublisher.queue.pop
     begin
       message = decode_job(message)
-      puts message.inspect
       klass = constantize(message['job'])
       break unless run_hooks_for(:before_perform,*message['params'])
       klass.perform(*message['params'])

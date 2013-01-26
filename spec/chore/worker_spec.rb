@@ -20,9 +20,11 @@ describe Chore::Worker do
 
   describe('FakeWorker') do
     it 'should process jobs in the queue' do
-      args = [1,2,{'h' => 'ash'}]
-      SimpleJob.publish(*args)
-      SimpleJob.any_instance.should_receive(:perform).with(*args)
+      10.times do |i|
+        args = [i,i+1,{'h' => 'ash'}]
+        SimpleJob.publish(*args)
+      end
+      SimpleJob.should_receive(:perform).exactly(10).times
       FakeWorker.start
     end
   end
