@@ -24,10 +24,6 @@ describe Chore::Job do
     TestJob.should respond_to :perform
   end
 
-  it 'should use a default encoder' do
-    TestJob.options[:encoder].should == Chore::JsonEncoder
-  end
-
   it 'should require a queue when configuring' do
     expect { TestJob.configure(:queue => nil) }.to raise_error(ArgumentError)
   end
@@ -50,7 +46,7 @@ describe Chore::Job do
     it 'should call an instance of the configured publisher' do
       args = [1,2,{:h => 'ash'}]
       TestJob.configure(:publisher => Chore::Publisher)
-      Chore::Publisher.any_instance.should_receive(:publish).with({:job => 'TestJob',:params => args}).and_return(true)
+      Chore::Publisher.any_instance.should_receive(:publish).with({:class => 'TestJob',:args => args}).and_return(true)
       TestJob.publish(*args)
     end
   end

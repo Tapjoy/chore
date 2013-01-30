@@ -1,4 +1,4 @@
-#source "http://rubygems.org"
+source "http://rubygems.org"
 # Add dependencies required to use your gem here.
 # Example:
 #   gem "activesupport", ">= 2.3.5"
@@ -10,7 +10,8 @@ group :development do
   gem "rdoc", "~> 3.12"
   gem "bundler"
   gem "jeweler", "~> 1.8.4"
-#  gem "rcov", ">= 0"
+  gem 'guard-rspec'
+  gem 'rb-fsevent', '~> 0.9.1'
 end
 
 gem 'json'

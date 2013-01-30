@@ -1,6 +1,13 @@
 module Chore
   class Publisher
     include Hooks
+    DEFAULT_OPTIONS = { :encoder => JsonEncoder }
+
+    attr_accessor :options
+
+    def initialize(opts={})
+      self.options = DEFAULT_OPTIONS.merge(opts)
+    end
 
     def publish(job)
       raise NotImplementedError
@@ -8,8 +15,7 @@ module Chore
   protected
 
     def encode_job(job)
-      #job.options[:encoder].encode(job)
-      JsonEncoder.encode(job)
+      options[:encoder].encode(job)
     end
 
     def call_publish_hooks(job)

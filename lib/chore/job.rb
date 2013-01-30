@@ -1,15 +1,18 @@
 module Chore
   module Job
 
-    def self.included(base)
+    def self.included(base) #:nodoc:
       @classes ||= []
       @classes << base.name
       base.extend(ClassMethods)
     end
 
     module ClassMethods
-      DEFAULT_OPTIONS = { :encoder => JsonEncoder }
-
+      DEFAULT_OPTIONS = { }
+      
+      #
+      # Pass a hash of options to configure the included class's use of Chore::Job
+      #
       def configure(opts = {})
         @chore_options = (@chore_options || DEFAULT_OPTIONS).merge(opts)
         required_options.each do |k|
@@ -17,6 +20,10 @@ module Chore
         end
       end
 
+      #
+      # This is a method so it can be overriden to create additional required
+      # configure params.
+      #
       def required_options
         [:queue,:publisher]
       end
@@ -25,33 +32,49 @@ module Chore
         @chore_options ||= configure
       end
 
+      #
+      # Execute the current job. We create an instance of the job to do the publish
+      # as this allows the jobs themselves to do initialization that might require access
+      # to the parameters of the job.
+      #
       def perform(*args)
         job = self.new(args)
         job.perform(*args)
       end
-
+      
+      #
+      # Publish a job using an instance of job. Similar to perform we do this so that a job
+      # can perform initialization logic before the publish is begun. This, in addition, to
+      # hooks allows for rather complex jobs to be written simply.
+      #
       def publish(*args)
         job = self.new(args)
         job.publish(*args)
       end
 
+      #
+      # Resque/Sidekiq compatible serialization. No reason to change what works
+      #
       def job_hash(job_params)
-        {:job => self.to_s, :params => job_params}
+        {:class => self.to_s, :args => job_params}
       end
     end #ClassMethods
 
-    ## This is handy to override in an included job to be able to do job setup that requires
-    ## access to a job's arguments to be able to perform
+    # This is handy to override in an included job to be able to do job setup that requires
+    # access to a job's arguments to be able to perform
     def initialize(args=nil)
     end
 
-    def setup
-    end
-
+    #
+    # This needs to be overriden by the object that is including this module.
+    #
     def perform(*args)
       raise NotImplementedError
     end
 
+    #
+    # Use the current configured publisher to send this job into a queue.
+    #
     def publish(*args)
       @chore_publisher ||= self.class.options[:publisher].new
       @chore_publisher.publish(self.class.job_hash(args))
