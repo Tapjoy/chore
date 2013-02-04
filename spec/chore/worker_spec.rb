@@ -10,6 +10,9 @@ class SimpleJob
 end
 
 describe Chore::Worker do
+  let(:consumer) { double('consumer') }
+  let(:manager) { double('manager') }
+
   it 'should start an instance with passed in args' do
     args = { :some => 'val' }
     worker = Chore::Worker.new(args)
@@ -23,14 +26,13 @@ describe Chore::Worker do
     worker.options[:encoder].should == Chore::JsonEncoder
   end
 
-  describe('FakeWorker') do
-    it 'should process jobs in the queue' do
-      10.times do |i|
-        args = [i,i+1,{'h' => 'ash'}]
-        SimpleJob.publish(*args)
-      end
-      SimpleJob.should_receive(:perform).exactly(10).times
-      FakeWorker.start(FakePublisher.queue)
+  it 'should process jobs in the queue' do
+    10.times do |i|
+      args = [i,i+1,{'h' => 'ash'}]
+      SimpleJob.publish(*args)
     end
+    SimpleJob.should_receive(:perform).exactly(10).times
+    consumer.should_receive(:complete).exactly(10).times
+    Chore::Worker.start(FakePublisher.queue,manager,consumer)
   end
 end

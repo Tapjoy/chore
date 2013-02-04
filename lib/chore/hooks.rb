@@ -7,7 +7,8 @@ module Chore
     # hook_name_identifier. ex: before_perform_log
     #
     def run_hooks_for(event,*args)
-      results = hooks_for(event).map { |method| send(method,*args) } || true
+      results = global_hooks_for(event).map(&:call) || [true]
+      results << hooks_for(event).map { |method| send(method,*args) }
       results = false if results.any? {|r| false == r }
       results
     end
@@ -15,6 +16,10 @@ module Chore
   private
     def hooks_for(event)
       (self.methods - Object.methods).grep(/^#{event}/).sort
+    end
+
+    def global_hooks_for(event)
+      Chore.hooks_for(event)
     end
   end
 end

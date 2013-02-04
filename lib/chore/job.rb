@@ -1,11 +1,12 @@
 module Chore
   module Job
-    include Hooks
+    class RejectMessageException < Exception; end;
 
     def self.included(base) #:nodoc:
       @classes ||= []
       @classes << base.name
       base.extend(ClassMethods)
+      base.extend(Hooks)
     end
 
     module ClassMethods
@@ -77,9 +78,10 @@ module Chore
     # Use the current configured publisher to send this job into a queue.
     #
     def publish(*args)
-      self.run_hooks_for(:before_publish,*args)
+      self.class.run_hooks_for(:before_publish,*args)
       @chore_publisher ||= self.class.options[:publisher].new
       @chore_publisher.publish(self.class.job_hash(args))
+      self.class.run_hooks_for(:after_publish,*args)
     end
 
   end #Job

@@ -15,19 +15,21 @@ module Chore
  
   def self.add_hook(name,&blk)
     @@hooks ||= {}
-    @@hooks[name.to_sym] = blk
+    (@@hooks[name.to_sym] ||= []) << blk
   end
 
-  def self.hook_for(name)
-    @@hooks[name.to_sym]
+  def self.hooks_for(name)
+    @@hooks ||= {}
+    @@hooks[name.to_sym] || []
   end
 
   def self.clear_hooks!
     @@hooks = {}
   end
 
-  def self.run_hook_for(name)
-    self.hook_for(name).call if self.hook_for(name)
+  def self.run_hooks_for(name)
+    hooks = self.hooks_for(name)
+    hooks.each(&:call) unless hooks.nil? || hooks.empty?
   end
 
 end

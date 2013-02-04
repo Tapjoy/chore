@@ -26,4 +26,19 @@ describe Chore::Hooks do
     test_instance.should_receive(:"before_perform_raise").and_raise(RuntimeError)
     expect { test_instance.run_hooks_for(:before_perform) }.to raise_error(RuntimeError)
   end
+
+  describe 'global hooks' do
+    before(:each) do
+      Chore.clear_hooks!
+      Chore.add_hook(:test_hook,&callback)
+    end
+
+    let(:callback) { proc { true } }
+
+    it 'should call a global hook' do
+      callback.should_receive(:call).once
+      test_instance.run_hooks_for(:test_hook)
+    end
+
+  end
 end
