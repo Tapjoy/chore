@@ -1,5 +1,6 @@
 module Chore
   module Job
+    include Hooks
 
     def self.included(base) #:nodoc:
       @classes ||= []
@@ -76,6 +77,7 @@ module Chore
     # Use the current configured publisher to send this job into a queue.
     #
     def publish(*args)
+      self.run_hooks_for(:before_publish,*args)
       @chore_publisher ||= self.class.options[:publisher].new
       @chore_publisher.publish(self.class.job_hash(args))
     end

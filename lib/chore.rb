@@ -6,9 +6,28 @@ module Chore
 
   autoload :JsonEncoder,    'chore/json_encoder'
   autoload :Publisher,      'chore/publisher'
+  autoload :Manager,        'chore/manager'
+  autoload :Consumer,       'chore/consumer'
 
   # Helpers and convenience modules
   autoload :Hooks,          'chore/hooks'
   autoload :Util,           'chore/util'
  
+  def self.add_hook(name,&blk)
+    @@hooks ||= {}
+    @@hooks[name.to_sym] = blk
+  end
+
+  def self.hook_for(name)
+    @@hooks[name.to_sym]
+  end
+
+  def self.clear_hooks!
+    @@hooks = {}
+  end
+
+  def self.run_hook_for(name)
+    self.hook_for(name).call if self.hook_for(name)
+  end
+
 end

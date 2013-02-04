@@ -1,29 +1,29 @@
 module Chore
   class Worker
-    include Hooks
     include Util
 
-    DEFAULTS = {}
+    DEFAULT_OPTIONS = { :encoder => JsonEncoder }
+    attr_accessor :options
 
-    def self.start(args={})
-      self.new(args).start
+    def self.start(messages,manager=nil,consumer=nil,args={})
+      self.new(args).start(messages,manager,consumer)
     end
 
     def initialize(opts={})
-      @options = DEFAULTS.merge(opts)
+      self.options = DEFAULT_OPTIONS.merge(opts)
     end
 
     def setup
       raise NotImplementedError
     end
 
-    def start
+    def start(messages,manager,consumer)
       raise NotImplementedError
     end
   private
     
     def decode_job(data)
-      JsonEncoder.decode(data)
+      options[:encoder].decode(data)
     end
   end
 end

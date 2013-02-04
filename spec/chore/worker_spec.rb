@@ -15,7 +15,12 @@ describe Chore::Worker do
     worker = Chore::Worker.new(args)
     Chore::Worker.should_receive(:new).with(args).and_return(worker)
     Chore::Worker.any_instance.should_receive(:start)
-    Chore::Worker.start(args)
+    Chore::Worker.start([],nil,nil,args)
+  end
+
+  it 'should use a default encoder' do
+    worker = Chore::Worker.new
+    worker.options[:encoder].should == Chore::JsonEncoder
   end
 
   describe('FakeWorker') do
@@ -25,7 +30,7 @@ describe Chore::Worker do
         SimpleJob.publish(*args)
       end
       SimpleJob.should_receive(:perform).exactly(10).times
-      FakeWorker.start
+      FakeWorker.start(FakePublisher.queue)
     end
   end
 end

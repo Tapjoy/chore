@@ -1,6 +1,5 @@
 module Chore
   class Publisher
-    include Hooks
     DEFAULT_OPTIONS = { :encoder => JsonEncoder }
 
     attr_accessor :options
@@ -18,8 +17,5 @@ module Chore
       options[:encoder].encode(job)
     end
 
-    def call_publish_hooks(job)
-      run_hooks_for(:before_publish,job[:params])
-    end
   end
 end

@@ -9,7 +9,6 @@ Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 class FakePublisher < Chore::Publisher
   def publish(job)
-    call_publish_hooks(job)
     self.class.queue.push(encode_job(job))
   end
 
@@ -30,17 +29,19 @@ class FakeWorker < Chore::Worker
   # noop
  end
 
- def start
-  until FakePublisher.queue.empty?
-    message = FakePublisher.queue.pop
+ def start(messages,manager,consumer)
+  messages.each do |message|
     begin
       message = decode_job(message)
-      klass = constantize(message['job'])
-      break unless run_hooks_for(:before_perform,*message['params'])
-      klass.perform(*message['params'])
-      run_hooks_for(:after_perform,*message['params'])
-    rescue
-      run_hooks_for(:on_failure,*message['params'])
+      puts message.inspect
+      klass = constantize(message['class'])
+      begin
+        #break unless klass.run_hooks_for(:before_perform,*message['args'])
+        klass.perform(*message['args'])
+        #klass.run_hooks_for(:after_perform,*message['args'])
+      rescue
+        #klass.run_hooks_for(:on_failure,*message['args'])
+      end
     end
   end
  end
