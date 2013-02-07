@@ -7,6 +7,7 @@ module Chore
   autoload :JsonEncoder,    'chore/json_encoder'
   autoload :Publisher,      'chore/publisher'
   autoload :Manager,        'chore/manager'
+  autoload :Fetcher,        'chore/fetcher'
   autoload :Consumer,       'chore/consumer'
 
   # Helpers and convenience modules

@@ -13,9 +13,9 @@ module Chore
       DEFAULT_OPTIONS = { }
       
       #
-      # Pass a hash of options to configure the included class's use of Chore::Job
+      # Pass a hash of options to queue_options the included class's use of Chore::Job
       #
-      def configure(opts = {})
+      def queue_options(opts = {})
         @chore_options = (@chore_options || DEFAULT_OPTIONS).merge(opts)
         required_options.each do |k|
           raise ArgumentError.new(":#{k} is required") unless @chore_options[k]
@@ -24,14 +24,14 @@ module Chore
 
       #
       # This is a method so it can be overriden to create additional required
-      # configure params.
+      # queue_options params.
       #
       def required_options
-        [:queue,:publisher]
+        [:name,:publisher]
       end
 
       def options
-        @chore_options ||= configure
+        @chore_options ||= queue_options
       end
 
       #

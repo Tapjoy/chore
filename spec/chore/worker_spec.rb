@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 class SimpleJob
   include Chore::Job
-  configure :queue => 'test', :publisher => FakePublisher
+  queue_options :name => 'test', :publisher => FakePublisher
 
   def perform(*args)
     return args
