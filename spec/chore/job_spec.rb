@@ -16,8 +16,8 @@ describe Chore::Job do
     TestJob.queue_options config
   end
 
-  it 'should have an publish method' do
-    TestJob.should respond_to :publish
+  it 'should have an perform_async method' do
+    TestJob.should respond_to :perform_async
   end
 
   it 'should have a perform method' do
@@ -42,12 +42,12 @@ describe Chore::Job do
     TestJob.options[:name].should == 'test_queue'
   end
 
-  describe(:publish) do 
+  describe(:perform_async) do 
     it 'should call an instance of the queue_optionsd publisher' do
       args = [1,2,{:h => 'ash'}]
       TestJob.queue_options(:publisher => Chore::Publisher)
       Chore::Publisher.any_instance.should_receive(:publish).with({:class => 'TestJob',:args => args}).and_return(true)
-      TestJob.publish(*args)
+      TestJob.perform_async(*args)
     end
   end
 end

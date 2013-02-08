@@ -35,7 +35,7 @@ module Chore
       end
 
       #
-      # Execute the current job. We create an instance of the job to do the publish
+      # Execute the current job. We create an instance of the job to do the perform 
       # as this allows the jobs themselves to do initialization that might require access
       # to the parameters of the job.
       #
@@ -46,12 +46,12 @@ module Chore
       
       #
       # Publish a job using an instance of job. Similar to perform we do this so that a job
-      # can perform initialization logic before the publish is begun. This, in addition, to
+      # can perform initialization logic before the perform_async is begun. This, in addition, to
       # hooks allows for rather complex jobs to be written simply.
       #
-      def publish(*args)
+      def perform_async(*args)
         job = self.new(args)
-        job.publish(*args)
+        job.perform_async(*args)
       end
 
       #
@@ -77,7 +77,7 @@ module Chore
     #
     # Use the current configured publisher to send this job into a queue.
     #
-    def publish(*args)
+    def perform_async(*args)
       self.class.run_hooks_for(:before_publish,*args)
       @chore_publisher ||= self.class.options[:publisher].new
       @chore_publisher.publish(self.class.job_hash(args))

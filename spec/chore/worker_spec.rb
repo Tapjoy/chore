@@ -29,7 +29,7 @@ describe Chore::Worker do
   it 'should process jobs in the queue' do
     10.times do |i|
       args = [i,i+1,{'h' => 'ash'}]
-      SimpleJob.publish(*args)
+      SimpleJob.perform_async(*args)
     end
     SimpleJob.should_receive(:perform).exactly(10).times
     consumer.should_receive(:complete).exactly(10).times
