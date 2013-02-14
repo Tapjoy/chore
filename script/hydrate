@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'json'
+require 'aws-sdk'
+
+AWS.config(
+  :access_key_id => ENV['AWS_ACCESS_KEY'],
+  :secret_access_key => ENV['AWS_SECRET_KEY'])
+
+SQS = AWS::SQS.new
+
+queue_name = "tanner_test_queue"
+test_queue = SQS.queues.create(queue_name)
+
+until test_queue.exists? do
+  sleep 0.3
+end
+threads = []
+10.times do |x|
+  threads << Thread.new(x) do |n|
+    1000.times {|i| test_queue.send_message({:some_key => n * i, :some_other => 'HERRROOO'}.to_json); puts "Wrote #{n * i} message" }
+  end
+end
+
+threads.each(&:join)
