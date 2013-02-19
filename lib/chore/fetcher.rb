@@ -1,24 +1,25 @@
 module Chore
-  class BasicFetchingStrategy
+  class SingleConsumerStrategy
     def initialize(fetcher, opts={})
       @fetcher = fetcher
     end
 
     def fetch
-      @fetcher.consumer.consume do |msg|
-        @fetcher.manager.assign(msg)
+      @fetcher.consumers.first.consume do |msg|
+        work = UnitOfWork.new(msg.id, msg.body, @fetcher.consumers.first)
+        @fetcher.manager.assign(work)
       end
     end
   end
 
   class Fetcher
-    attr_reader :config, :manager, :consumer
-    DEFAULT_OPTIONS = {:num_consumers => 1, :strategy => BasicFetchingStrategy, :consumer => SQSConsumer }
+    attr_reader :config, :manager, :consumers
+    DEFAULT_OPTIONS = {:strategy => SingleConsumerStrategy, :consumers => [{ :class => SQSConsumer, :queue => "tanner_test_queue"}] }
     
     def initialize(manager, opts={})
       @manager = manager
       @config = DEFAULT_OPTIONS.merge(opts)
-      @consumer = self.config[:consumer].new(self.config[:queue_name])
+      @consumers = self.config[:consumers].map {|c| c[:class].new(c[:queue]) }
       @strategy = self.config[:strategy].new(self)
     end
 

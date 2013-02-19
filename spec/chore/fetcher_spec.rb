@@ -5,7 +5,8 @@ class TestConsumer < Chore::Consumer
   end
 
   def consume
-    yield "test" if block_given?
+    msg = OpenStruct.new( :id => 1, :body => "test" )
+    yield msg if block_given?
   end
 end
 
@@ -13,7 +14,7 @@ describe Chore::Fetcher do
 
   let(:manager) { double("manager") }
   let(:consumer) { TestConsumer }
-  let(:fetcher) { Chore::Fetcher.new(manager, :consumer => consumer, :queue_name => "test") }
+  let(:fetcher) { Chore::Fetcher.new(manager, :consumers => [{:class => consumer, :queue => "test"}]) }
 
   it "should have a start function" do
     fetcher.should respond_to :start
