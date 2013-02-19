@@ -33,4 +33,14 @@ describe Chore::Worker do
     consumer.should_receive(:complete).with('1')
     Chore::Worker.start(work)
   end
+
+  it 'should process multiple jobs' do
+    work = []
+    10.times do |i|
+      work << Chore::UnitOfWork.new(i, Chore::JsonEncoder.encode(job),consumer)
+    end
+    SimpleJob.should_receive(:perform).exactly(10).times
+    consumer.should_receive(:complete).exactly(10).times
+    Chore::Worker.start(work)
+  end
 end
