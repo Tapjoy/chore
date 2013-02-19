@@ -1,3 +1,4 @@
+require 'chore/worker'
 require 'chore/fetcher'
 
 module Chore

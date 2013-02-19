@@ -1,0 +1,57 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+require 'optparse'
+require 'chore'
+
+class SimpleJob
+  include Chore::Job
+  
+  def perform(*args)
+    puts "Received: " + args.inspect
+  end
+end
+
+opts = {}
+@parser = OptionParser.new do |o|
+   o.on "-q", "--queue QUEUE1,QUEUE2", "Names of queues to process (default: all known)" do |arg|
+    opts[:queues] = arg.split(",")
+  end
+
+  o.on "-v", "--verbose", "Print more verbose output" do
+    ## TODO(add a logger)
+  end
+
+  o.on '-e', '--environment ENV', "Application environment" do |arg|
+    opts[:environment] = arg
+  end
+
+  o.on '-r', '--require [PATH|DIR]', "Location of Rails application with workers or file to require" do |arg|
+    opts[:require] = arg
+  end
+
+end
+@parser.banner = "worqer [options]"
+
+@parser.on_tail "-h", "--help", "Show help" do
+  logger.info @parser
+  die 1
+end
+
+@parser.parse!(ARGV)
+
+if opts[:require]
+  if File.directory?(opts[:require])
+    require 'rails'
+    require File.expand_path("#{options[:require]}/config/environment.rb")
+    ::Rails.application.eager_load!
+  elsif File.exists?(opts[:require])
+    require File.expand_path(opts[:require])
+  else
+    raise "File not found: #{opts[:require]}"
+  end
+end
+
+Chore.configure(opts)
+
+Chore::Manager.new.start

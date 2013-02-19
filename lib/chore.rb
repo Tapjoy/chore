@@ -8,6 +8,7 @@ require 'chore/strategies/single_consumer_strategy'
 require 'chore/consumers/sqs_consumer'
 require 'chore/fetcher'
 require 'chore/manager'
+require 'chore/job'
 
 module Chore
   VERSION = '0.0.1'
