@@ -1,7 +1,7 @@
 require 'ostruct'
 
-[ 'util','hooks','json_encoder','publisher','consumer','consumers/sqs_consumer','fetcher','manager',
-  'job','worker' ].each{ |f| require "chore/#{f}" }
+Dir[File.join(File.dirname(__FILE__), "chore", "*.rb")].each {|f| require f }
+Dir[File.join(File.dirname(__FILE__), "chore", "*", "*.rb")].each {|f| require f }
 
 module Chore
   VERSION = '0.0.1'

@@ -5,6 +5,7 @@ class TestConsumer < Chore::Consumer
   end
 
   def consume
+    # just something that looks like an SQS message
     msg = OpenStruct.new( :id => 1, :body => "test" )
     yield msg if block_given?
   end
