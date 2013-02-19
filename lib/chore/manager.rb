@@ -30,7 +30,7 @@ module Chore
       @config = DEFAULT_OPTIONS.merge(opts)
 
       @worker_strategy = self.config[:worker_strategy].new(self)
-      #@fetcher = self.config[:fetcher].new(self)
+      @fetcher = self.config[:fetcher].new(self)
     end
 
     def start

@@ -11,23 +11,18 @@ end
 
 describe Chore::Fetcher do
 
-  let(:manager) { Chore::Manager.new }
+  let(:manager) { double("manager") }
   let(:consumer) { TestConsumer }
   let(:fetcher) { Chore::Fetcher.new(manager, :consumer => consumer, :queue_name => "test") }
 
-  it "should have a fetch function" do
-    fetcher.should respond_to :fetch
+  it "should have a start function" do
+    fetcher.should respond_to :start
   end
 
   describe "fetching messages" do
-    it "should receive a message from the queue" do
-      consumer.any_instance.should_receive(:consume)
-      fetcher.fetch
-    end
-
     it "should assign its message" do
       manager.should_receive(:assign)
-      fetcher.fetch
+      fetcher.start
     end
   end
 end
