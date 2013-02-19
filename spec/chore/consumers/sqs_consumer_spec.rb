@@ -17,7 +17,7 @@ describe Chore::SQSConsumer do
   describe "consuming messages" do
     it "should receive a message from the queue" do
       consumer.stub(:loop_forever?).and_return(true, false)
-      queue.should_receive(:receive_message)
+      queue.should_receive(:receive_messages)
       consumer.consume 
     end
   end
