@@ -11,14 +11,15 @@ end
 
 describe Chore::Worker do
   let(:consumer) { double('consumer') }
-  let(:manager) { double('manager') }
+  let(:job_args) { [1,2,'3'] }
+  let(:job) { SimpleJob.job_hash(job_args) }
 
   it 'should start an instance with passed in args' do
     args = { :some => 'val' }
     worker = Chore::Worker.new(args)
     Chore::Worker.should_receive(:new).with(args).and_return(worker)
     Chore::Worker.any_instance.should_receive(:start)
-    Chore::Worker.start([],nil,nil,args)
+    Chore::Worker.start([],args)
   end
 
   it 'should use a default encoder' do
@@ -26,13 +27,10 @@ describe Chore::Worker do
     worker.options[:encoder].should == Chore::JsonEncoder
   end
 
-  it 'should process jobs in the queue' do
-    10.times do |i|
-      args = [i,i+1,{'h' => 'ash'}]
-      SimpleJob.perform_async(*args)
-    end
-    SimpleJob.should_receive(:perform).exactly(10).times
-    consumer.should_receive(:complete).exactly(10).times
-    Chore::Worker.start(FakePublisher.queue,manager,consumer)
+  it 'should process a single job' do
+    work = Chore::UnitOfWork.new('1',Chore::JsonEncoder.encode(job), consumer)
+    SimpleJob.should_receive(:perform).with(*job_args)
+    consumer.should_receive(:complete).with('1')
+    Chore::Worker.start(work)
   end
 end

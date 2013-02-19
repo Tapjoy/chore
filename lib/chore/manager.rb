@@ -1,26 +1,53 @@
 module Chore
-  class ForkingWorkerStrategy
+
+  class SingleWorkerStrategy 
     def initialize(manager)
+      @manager = manager
+      @worker = nil
+    end
+
+    def assign(work)
+      if workers_available?
+        @worker = Worker.new
+        @worker.start(work)
+      end
+    end
+
+    private
+    def workers_available?
+      @worker.nil?
+    end
+  end
+
+  class DumbFetcher
+    def initialize(manager)
+    end
+
+    def start
     end
   end
 
   class Manager
     attr_reader :config
     WORKERS = {}
-    DEFAULT_OPTIONS = {:num_workers => 8, :worker_strategy => ForkingWorkerStrategy }
+    DEFAULT_OPTIONS = {:num_workers => 1, :worker_strategy => SingleWorkerStrategy, :fetcher => DumbFetcher }
 
     def initialize(opts={})
-      self.config = DEFAULT_OPTIONS.merge(opts)
+      @config = DEFAULT_OPTIONS.merge(opts)
+
       @worker_strategy = self.config[:worker_strategy].new(self)
       @fetcher = self.config[:fetcher].new(self)
     end
 
     def start
-      # Start up fetcher
-      # Begin doing whatever the worker strategy wants to do?
+      @fetcher.start
     end
 
-    def assign
+    def assign(work)
+      until @assigned 
+        @assigned = @worker_strategy.assign(work)
+        sleep(0.2)
+      end
     end
 
     def spawn_worker

@@ -13,6 +13,8 @@ module Chore
   # Helpers and convenience modules
   autoload :Hooks,          'chore/hooks'
   autoload :Util,           'chore/util'
+
+  class UnitOfWork < Struct.new(:id,:message,:consumer); end;
  
   def self.add_hook(name,&blk)
     @@hooks ||= {}
