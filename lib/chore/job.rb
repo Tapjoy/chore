@@ -1,3 +1,5 @@
+require 'chore/hooks'
+
 module Chore
   module Job
     class RejectMessageException < Exception; end;

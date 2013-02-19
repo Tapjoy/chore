@@ -1,3 +1,5 @@
+require 'chore/fetcher'
+
 module Chore
 
   class SingleWorkerStrategy 

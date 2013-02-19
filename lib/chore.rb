@@ -1,7 +1,13 @@
 require 'ostruct'
+$:<< File.dirname(__FILE__)
+require 'chore/util'
+require 'chore/hooks'
 
-Dir[File.join(File.dirname(__FILE__), "chore", "*.rb")].each {|f| require f }
-Dir[File.join(File.dirname(__FILE__), "chore", "*", "*.rb")].each {|f| require f }
+require 'chore/consumer'
+require 'chore/strategies/single_consumer_strategy'
+require 'chore/consumers/sqs_consumer'
+require 'chore/fetcher'
+require 'chore/manager'
 
 module Chore
   VERSION = '0.0.1'

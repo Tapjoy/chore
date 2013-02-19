@@ -1,3 +1,6 @@
+require 'chore/util'
+require 'chore/json_encoder'
+
 module Chore
   class Worker
     include Util
