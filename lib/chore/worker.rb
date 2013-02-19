@@ -16,6 +16,7 @@ module Chore
     def start(work)
       work = [work] unless work.kind_of?(Array)
       work.each do |item|
+        puts "Doing: #{item.inspect}"
         begin
           message = decode_job(item.message)
           klass = constantize(message['class'])

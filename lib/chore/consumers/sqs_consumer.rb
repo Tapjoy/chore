@@ -15,8 +15,13 @@ module Chore
     def consume
       # this is for spec purposes, so we can test this w/out looping forever
       while loop_forever?
-        msg = @queue.receive_message
-        yield msg if block_given?
+        msg = @queue.receive_messages(:limit => 10, :wait_time_in_seconds => 20)
+        next if msg.nil? || msg.empty?
+        if msg.kind_of? Array
+          msg.each { |m| yield m.handle, m.body }
+        else
+          yield msg.handle, msg.body
+        end
       end
     end
 
@@ -24,8 +29,9 @@ module Chore
 
     end
 
-    def complete(msg)
-
+    def complete(id)
+      puts "Completing (deleting): #{id}"
+      @queue.batch_delete([id])
     end
 
     private

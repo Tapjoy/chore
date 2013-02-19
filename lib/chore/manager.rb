@@ -8,9 +8,11 @@ module Chore
 
     def assign(work)
       if workers_available?
+        puts "Work is available, do it"
         @worker = Worker.new
         @worker.start(work)
         @worker = nil
+        puts "Work was done, do it"
         true
       end
     end
@@ -34,8 +36,10 @@ module Chore
     end
 
     def assign(work)
-      until @assigned 
-        @assigned = @worker_strategy.assign(work)
+      puts "Manager Assign: "
+      assigned = false
+      until assigned 
+        assigned = @worker_strategy.assign(work)
         sleep(0.2)
       end
     end

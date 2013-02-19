@@ -5,8 +5,8 @@ module Chore
     end
 
     def fetch
-      @fetcher.consumers.first.consume do |msg|
-        work = UnitOfWork.new(msg.id, msg.body, @fetcher.consumers.first)
+      @fetcher.consumers.first.consume do |id,body|
+        work = UnitOfWork.new(id, body, @fetcher.consumers.first)
         @fetcher.manager.assign(work)
       end
     end

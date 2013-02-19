@@ -11,6 +11,7 @@ module Chore
   class UnitOfWork < Struct.new(:id,:message,:consumer); end;
 
   # Wrapper around an OpenStruct to define configuration data
+  # (TODO): Add required opts, and validate that they're set
   Configuration = OpenStruct
 
   DEFAULT_OPTIONS = {
@@ -40,13 +41,13 @@ module Chore
     hooks.each(&:call) unless hooks.nil? || hooks.empty?
   end
 
-  def self.configure
-    @config = Chore::Configuration.new(DEFAULT_OPTIONS)
-    yield @config
+  def self.configure(opts={})
+    @config = Chore::Configuration.new(DEFAULT_OPTIONS.merge(opts))
+    yield @config if block_given?
   end
 
   def self.config
-    @config ||= Chore::Configuration.new(DEFAULT_OPTIONS)
+    @config ||= self.configure
   end
 
 end
