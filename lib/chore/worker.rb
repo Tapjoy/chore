@@ -5,26 +5,27 @@ module Chore
     DEFAULT_OPTIONS = { :encoder => JsonEncoder }
     attr_accessor :options
 
-    def self.start(messages,manager=nil,consumer=nil,args={})
-      self.new(args).start(messages,manager,consumer)
+    def self.start(work,args={})
+      self.new(args).start(work)
     end
 
     def initialize(opts={})
       self.options = DEFAULT_OPTIONS.merge(opts)
     end
 
-    def start(messages,manager,consumer)
-      messages.each do |message|
+    def start(work)
+      work = [work] unless work.kind_of?(Array)
+      work.each do |item|
         begin
-          message = decode_job(message)
+          message = decode_job(item.message)
           klass = constantize(message['class'])
           begin
             break unless klass.run_hooks_for(:before_perform,*message['args'])
             klass.perform(*message['args'])
-            consumer.complete
+            item.consumer.complete(item.id)
             klass.run_hooks_for(:after_perform,*message['args'])
           rescue Job::RejectMessageException => e
-            consumer.reject
+            item.consumer.reject(item.id)
           rescue
             klass.run_hooks_for(:on_failure,*message['args'])
           end
