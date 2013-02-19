@@ -10,6 +10,8 @@ module Chore
       if workers_available?
         @worker = Worker.new
         @worker.start(work)
+        @worker = nil
+        true
       end
     end
 
