@@ -3,11 +3,11 @@ require 'timeout'
 
 describe Chore::Manager do
 
-  let(:opts) { { :num_workers => 4, :other_opt => 'hi' } }
+  let(:fetcher) { mock() }
+  let(:opts) { { :num_workers => 4, :other_opt => 'hi', :fetcher => fetcher } }
 
-  it 'should provide defaults' do
-    manager = Chore::Manager.new
-    Chore::Manager::DEFAULT_OPTIONS.should == manager.config
+  before(:each) do
+    fetcher.should_receive(:new).and_return(fetcher)
   end
 
   it 'should merge in options' do
@@ -18,19 +18,13 @@ describe Chore::Manager do
   end
 
   it 'should call create an instance of the defined fetcher' do
-    fetcher = mock()
-    fetcher.should_receive(:new)
-    
-    manager = Chore::Manager.new(:fetcher => fetcher)
+    manager = Chore::Manager.new(opts)
   end
 
   describe 'running the manager' do
-    let(:fetcher) { mock() }
+
     let(:manager) { Chore::Manager.new(:fetcher => fetcher)}
     let(:work) { Chore::UnitOfWork.new(Chore::JsonEncoder.encode({:class => 'MyClass',:args => []}),mock()) }
-    before(:each) do
-      fetcher.should_receive(:new).and_return(fetcher)
-    end
 
     it 'should start the fetcher when starting the manager' do
       fetcher.should_receive(:start)
