@@ -1,22 +1,26 @@
+require 'ostruct'
+
+[ 'util','hooks','json_encoder','publisher','consumer','consumers/sqs_consumer','fetcher','manager',
+  'job','worker' ].each{ |f| require "chore/#{f}" }
+
 module Chore
   VERSION = '0.0.1'
 
-  autoload :Job,            'chore/job'
-  autoload :Worker,         'chore/worker'
-
-  autoload :JsonEncoder,    'chore/json_encoder'
-  autoload :Publisher,      'chore/publisher'
-  autoload :Manager,        'chore/manager'
-  autoload :Fetcher,        'chore/fetcher'
-  autoload :Consumer,       'chore/consumer'
-  autoload :SQSConsumer,    'chore/consumers/sqs_consumer'
-
-  # Helpers and convenience modules
-  autoload :Hooks,          'chore/hooks'
-  autoload :Util,           'chore/util'
-
+  # Simple class to hold job processing information. Stubbed as a Struct right now
+  # but left as a class in case we need more methods soon.
   class UnitOfWork < Struct.new(:id,:message,:consumer); end;
- 
+
+  # Wrapper around an OpenStruct to define configuration data
+  Configuration = OpenStruct
+
+  DEFAULT_OPTIONS = {
+    :num_workers => 1, 
+    :worker_strategy => SingleWorkerStrategy, 
+    :consumer => SQSConsumer,
+    :fetcher => Fetcher,
+    :fetcher_strategy => SingleConsumerStrategy
+  }
+
   def self.add_hook(name,&blk)
     @@hooks ||= {}
     (@@hooks[name.to_sym] ||= []) << blk
@@ -34,6 +38,15 @@ module Chore
   def self.run_hooks_for(name)
     hooks = self.hooks_for(name)
     hooks.each(&:call) unless hooks.nil? || hooks.empty?
+  end
+
+  def self.configure
+    @config = Chore::Configuration.new(DEFAULT_OPTIONS)
+    yield @config
+  end
+
+  def self.config
+    @config ||= Chore::Configuration.new(DEFAULT_OPTIONS)
   end
 
 end

@@ -7,23 +7,17 @@ describe Chore::Manager do
   let(:opts) { { :num_workers => 4, :other_opt => 'hi', :fetcher => fetcher } }
 
   before(:each) do
+    Chore.configure {|c| c.fetcher = fetcher }
     fetcher.should_receive(:new).and_return(fetcher)
   end
 
-  it 'should merge in options' do
-    manager = Chore::Manager.new(opts)
-    opts.each do |k,v|
-      manager.config[k].should == v
-    end
-  end
-
   it 'should call create an instance of the defined fetcher' do
-    manager = Chore::Manager.new(opts)
+    manager = Chore::Manager.new
   end
 
   describe 'running the manager' do
 
-    let(:manager) { Chore::Manager.new(:fetcher => fetcher)}
+    let(:manager) { Chore::Manager.new}
     let(:work) { Chore::UnitOfWork.new(Chore::JsonEncoder.encode({:class => 'MyClass',:args => []}),mock()) }
 
     it 'should start the fetcher when starting the manager' do

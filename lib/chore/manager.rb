@@ -22,15 +22,11 @@ module Chore
   end
 
   class Manager
-    attr_reader :config
     WORKERS = {}
-    DEFAULT_OPTIONS = {:num_workers => 1, :worker_strategy => SingleWorkerStrategy, :fetcher => Fetcher }
 
-    def initialize(opts={})
-      @config = DEFAULT_OPTIONS.merge(opts)
-
-      @worker_strategy = self.config[:worker_strategy].new(self)
-      @fetcher = self.config[:fetcher].new(self)
+    def initialize()
+      @worker_strategy = Chore.config.worker_strategy.new(self)
+      @fetcher = Chore.config.fetcher.new(self)
     end
 
     def start

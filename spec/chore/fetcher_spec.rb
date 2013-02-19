@@ -11,10 +11,14 @@ class TestConsumer < Chore::Consumer
 end
 
 describe Chore::Fetcher do
-
   let(:manager) { double("manager") }
   let(:consumer) { TestConsumer }
-  let(:fetcher) { Chore::Fetcher.new(manager, :consumers => [{:class => consumer, :queue => "test"}]) }
+  let(:fetcher) { Chore::Fetcher.new(manager) }
+
+  before(:each) do
+    Chore.configure {|c| c.queues = ['test']; c.consumer = consumer }
+  end
+
 
   it "should have a start function" do
     fetcher.should respond_to :start

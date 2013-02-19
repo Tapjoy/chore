@@ -13,14 +13,12 @@ module Chore
   end
 
   class Fetcher
-    attr_reader :config, :manager, :consumers
-    DEFAULT_OPTIONS = {:strategy => SingleConsumerStrategy, :consumers => [{ :class => SQSConsumer, :queue => "tanner_test_queue"}] }
+    attr_reader :manager, :consumers
     
-    def initialize(manager, opts={})
+    def initialize(manager)
       @manager = manager
-      @config = DEFAULT_OPTIONS.merge(opts)
-      @consumers = self.config[:consumers].map {|c| c[:class].new(c[:queue]) }
-      @strategy = self.config[:strategy].new(self)
+      @consumers = Chore.config.queues.map {|q| Chore.config.consumer.new(q) }
+      @strategy = Chore.config.fetcher_strategy.new(self)
     end
 
     def start
