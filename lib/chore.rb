@@ -9,6 +9,7 @@ module Chore
   autoload :Manager,        'chore/manager'
   autoload :Fetcher,        'chore/fetcher'
   autoload :Consumer,       'chore/consumer'
+  autoload :SQSConsumer,    'chore/consumers/sqs_consumer'
 
   # Helpers and convenience modules
   autoload :Hooks,          'chore/hooks'
