@@ -17,7 +17,11 @@ describe Chore::Fetcher do
   let(:fetcher) { Chore::Fetcher.new(manager) }
 
   before(:each) do
-    Chore.configure {|c| c.queues = ['test']; c.consumer = consumer }
+    Chore.configure do |c| 
+      c.queues = ['test'] 
+      c.consumer = consumer
+      c.batch_size = 0
+    end
   end
 
 

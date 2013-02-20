@@ -1,5 +1,7 @@
 module Chore
   class ThreadPerConsumerStrategy
+    attr_reader :batch
+
     def initialize(fetcher)
       @fetcher = fetcher
       @batch = []
