@@ -18,7 +18,7 @@ end
 threads = []
 10.times do |x|
   threads << Thread.new(x) do |n|
-    1000.times {|i| test_queue.send_message({:some_key => n * i, :some_other => 'HERRROOO'}.to_json); puts "Wrote #{n * i} message" }
+    10.times {|i| test_queue.send_message({:class => 'TestJob', :args => [1,2,"3"]}.to_json); puts "Wrote #{n * i} message" }
   end
 end
 
