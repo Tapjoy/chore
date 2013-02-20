@@ -4,14 +4,6 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'optparse'
 require 'chore'
 
-class SimpleJob
-  include Chore::Job
-  
-  def perform(*args)
-    puts "Received: " + args.inspect
-  end
-end
-
 opts = {}
 @parser = OptionParser.new do |o|
    o.on "-q", "--queue QUEUE1,QUEUE2", "Names of queues to process (default: all known)" do |arg|
@@ -64,4 +56,10 @@ end
 
 Chore.configure(opts)
 
-Chore::Manager.new.start
+manager = Chore::Manager.new
+
+trap 'USR1' do
+  puts "\n\n\n\n" + manager.report
+end
+
+manager.start
