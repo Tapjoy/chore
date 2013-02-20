@@ -1,9 +1,5 @@
 require 'spec_helper'
 
-class TestJob 
-  include Chore::Job
-end
-
 describe Chore::Job do
   let(:args) { [1,2, { :a => :hash }] }
   let(:config) { { :name => 'test_queue', :publisher => Chore::Publisher } }

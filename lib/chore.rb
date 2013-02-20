@@ -2,9 +2,12 @@ require 'ostruct'
 $:<< File.dirname(__FILE__)
 require 'chore/util'
 require 'chore/hooks'
+require 'chore/json_encoder'
 
 require 'chore/consumer'
+require 'chore/publisher'
 require 'chore/strategies/single_consumer_strategy'
+require 'chore/strategies/thread_per_consumer_strategy'
 require 'chore/consumers/sqs_consumer'
 require 'chore/fetcher'
 require 'chore/manager'
@@ -26,7 +29,8 @@ module Chore
     :worker_strategy => SingleWorkerStrategy, 
     :consumer => SQSConsumer,
     :fetcher => Fetcher,
-    :fetcher_strategy => SingleConsumerStrategy
+    :fetcher_strategy => ThreadPerConsumerStrategy,
+    :batch_size => 50
   }
 
   def self.add_hook(name,&blk)

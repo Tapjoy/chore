@@ -9,7 +9,7 @@ describe Chore::SQSConsumer do
   let(:message) { "message" }
 
   before do
-    Chore::SQSConsumer::SQS.should_receive(:queues).and_return { queues }
+    AWS::SQS.any_instance.should_receive(:queues).and_return { queues }
     queues.stub(:named) { queue }
     queue.stub(:receive_message) { message }
   end

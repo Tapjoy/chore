@@ -2,6 +2,7 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'rspec'
 require 'chore'
+require 'test_job'
 
 # Requires supporting files with custom matchers and macros, etc,
 # in ./support/ and its subdirectories.
@@ -25,6 +26,13 @@ class FakePublisher < Chore::Publisher
 end
 
 RSpec.configure do |config|
+  config.before do
+    Chore.configure do |config|
+      config.aws_access_key = ""
+      config.aws_secret_key = ""
+    end
+  end
+
   config.after(:each) do
     FakePublisher.reset!
   end
