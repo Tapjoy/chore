@@ -30,15 +30,25 @@ opts = {}
     opts[:require] = arg
   end
 
+  o.on '--aws-access-key', 'Valid AWS Access Key' do |arg|
+    opts[:aws_access_key] = arg
+  end
+
+  o.on '--aws-secret-key', 'Valid AWS Secret Key' do |arg|
+    opts[:aws_secret_key] = arg
+  end
 end
-@parser.banner = "worqer [options]"
+@parser.banner = "chore [options]"
 
 @parser.on_tail "-h", "--help", "Show help" do
-  logger.info @parser
-  die 1
+  puts @parser
+  exit 1
 end
 
 @parser.parse!(ARGV)
+
+opts[:aws_access_key] ||= ENV['AWS_ACCESS_KEY']
+opts[:aws_secret_key] ||= ENV['AWS_SECRET_KEY']
 
 if opts[:require]
   if File.directory?(opts[:require])

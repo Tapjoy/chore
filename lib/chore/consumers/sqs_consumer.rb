@@ -1,17 +1,15 @@
 require 'aws/sqs'
 require 'chore/consumer'
 
-AWS.config(
-  :access_key_id => ENV['AWS_ACCESS_KEY'],
-  :secret_access_key => ENV['AWS_SECRET_KEY'])
-
 module Chore
   class SQSConsumer < Consumer
-    SQS = AWS::SQS.new
   
     def initialize(queue_name, opts={})
       super(queue_name, opts)
-      @queue = SQS.queues.named(@queue_name)
+      @sqs = AWS::SQS.new(
+        :access_key_id => Chore.config.aws_access_key,
+        :secret_access_key => Chore.config.aws_secret_key)
+      @queue = @sqs.queues.named(@queue_name)
     end
 
     def consume
