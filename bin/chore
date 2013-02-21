@@ -22,11 +22,11 @@ opts = {}
     opts[:require] = arg
   end
 
-  o.on '--aws-access-key', 'Valid AWS Access Key' do |arg|
+  o.on '--aws-access-key KEY', 'Valid AWS Access Key' do |arg|
     opts[:aws_access_key] = arg
   end
 
-  o.on '--aws-secret-key', 'Valid AWS Secret Key' do |arg|
+  o.on '--aws-secret-key KEY', 'Valid AWS Secret Key' do |arg|
     opts[:aws_secret_key] = arg
   end
 end
