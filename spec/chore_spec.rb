@@ -30,4 +30,9 @@ describe Chore do
     Chore.run_hooks_for(:before_perform)
   end
 
+  it 'should set configuration' do
+    Chore.configure {|c| c.test_config_option = 'howdy' }
+    Chore.config.test_config_option.should == 'howdy'
+  end
+
 end
