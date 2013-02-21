@@ -6,9 +6,10 @@ require 'chore/json_encoder'
 
 require 'chore/consumer'
 require 'chore/publisher'
-require 'chore/strategies/single_consumer_strategy'
-require 'chore/strategies/thread_per_consumer_strategy'
-require 'chore/consumers/sqs_consumer'
+
+Dir[File.join(File.dirname(__FILE__), 'chore', 'strategies', '*.rb')].each {|f| require f } 
+Dir[File.join(File.dirname(__FILE__), 'chore', 'consumers', '*.rb')].each {|f| require f }
+
 require 'chore/fetcher'
 require 'chore/manager'
 require 'chore/job'
@@ -25,8 +26,8 @@ module Chore
   Configuration = OpenStruct
 
   DEFAULT_OPTIONS = {
-    :num_workers => 1, 
-    :worker_strategy => SingleWorkerStrategy, 
+    :num_workers => 4, 
+    :worker_strategy => ForkedWorkerStrategy, 
     :consumer => SQSConsumer,
     :fetcher => Fetcher,
     :fetcher_strategy => ThreadPerConsumerStrategy,

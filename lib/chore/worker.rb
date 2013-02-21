@@ -28,7 +28,7 @@ module Chore
             klass.perform(*message['args'])
             item.consumer.complete(item.id)
             klass.run_hooks_for(:after_perform,*message['args'])
-          rescue Job::RejectMessageException => e
+          rescue Job::RejectMessageException
             item.consumer.reject(item.id)
           rescue
             klass.run_hooks_for(:on_failure,*message['args'])

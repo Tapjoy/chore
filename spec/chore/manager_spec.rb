@@ -7,7 +7,7 @@ describe Chore::Manager do
   let(:opts) { { :num_workers => 4, :other_opt => 'hi', :fetcher => fetcher } }
 
   before(:each) do
-    Chore.configure {|c| c.fetcher = fetcher }
+    Chore.configure {|c| c.fetcher = fetcher; c.worker_strategy = Chore::SingleWorkerStrategy }
     fetcher.should_receive(:new).and_return(fetcher)
   end
 

@@ -29,4 +29,5 @@ describe Chore do
 
     Chore.run_hooks_for(:before_perform)
   end
+
 end
