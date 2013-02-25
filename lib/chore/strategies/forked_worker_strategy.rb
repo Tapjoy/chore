@@ -7,14 +7,37 @@ module Chore
       @workers = {}
     end
 
+    def stop!
+      @workers.keys.each do |pid|
+        begin
+          Chore.logger.info { "Sending TERM to: #{pid}" }
+          Process.kill("SIGTERM", pid)
+        rescue Errno::ESRCH
+        end
+      end
+    end
+
     def assign(work)
       if workers_available?
         w = Worker.new
+        Chore.logger.debug { "Assigning work to #{w.inspect}"}
         pid = fork do
+          # We blow away the INT handler from the parent process
+          trap "INT" do;end;
+          # Register a new TERM handler to make the current worker
+          # finish this job, and not complete another one. 
+          # TODO: Figure out an overall flow of signals such that we
+          # can use QUIT here instead of TERM.
+          trap "TERM" do
+            Chore.logger.info { "Worker #{Process.pid} stopping" }
+            w.stop!
+          end
+
           Chore.run_hooks_for(:after_fork)
           procline("Started:#{Time.now.to_i}")
           w.start(work)
         end
+        Chore.logger.debug { "Forked worker #{pid}"}
         workers[pid] = w
         watch_proc(pid)
       end
@@ -25,6 +48,7 @@ module Chore
     def watch_proc(pid)
       thread do
         Process.wait2(pid)
+        Chore.logger.debug { "Removed finished worker #{pid}"}
         workers.delete(pid)
       end
     end
@@ -39,6 +63,7 @@ module Chore
       Kernel.fork(&block)
     end
 
+    # Wrapper around Thread.new for specs
     def thread(&block)
       Thread.new(&block)
     end
@@ -47,5 +72,6 @@ module Chore
       Chore.logger.info str
       $0 = "chore-#{Chore::VERSION}:#{str}"
     end
+
   end
 end

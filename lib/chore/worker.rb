@@ -13,12 +13,14 @@ module Chore
     end
 
     def initialize(opts={})
+      @stopping = false
       self.options = DEFAULT_OPTIONS.merge(opts)
     end
 
     def start(work)
       work = [work] unless work.kind_of?(Array)
       work.each do |item|
+        return if @stopping
         Chore.logger.debug { "Doing: #{item.inspect}" }
         begin
           message = decode_job(item.message)
@@ -36,6 +38,11 @@ module Chore
         end
       end
     end
+
+    def stop!
+      @stopping = true
+    end
+
   private
     
     def decode_job(data)

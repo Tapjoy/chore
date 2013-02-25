@@ -36,7 +36,7 @@ module Chore
     :batch_size => 50
   }
 
-  def logger
+  def self.logger
     @logger ||= Logger.new(STDOUT)
   end
 

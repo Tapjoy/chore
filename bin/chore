@@ -1,75 +1,22 @@
 #!/usr/bin/env ruby
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
-require 'optparse'
 require 'chore'
-require 'rack'
+require 'chore/cli'
 
-opts = {}
-@parser = OptionParser.new do |o|
-   o.on "-q", "--queue QUEUE1,QUEUE2", "Names of queues to process (default: all known)" do |arg|
-    opts[:queues] = arg.split(",")
-  end
-
-  o.on "-v", "--verbose", "Print more verbose output" do
-    Chore.logger.level = Logger::INFO
-  end
-
-  o.on "-vv", "--very-verbose", "Print the most verbose output" do
-    Chore.logger.level = Logger::DEBUG
-  end
-
-  o.on '-e', '--environment ENV', "Application environment" do |arg|
-    opts[:environment] = arg
-  end
-
-  o.on '-r', '--require [PATH|DIR]', "Location of Rails application with workers or file to require" do |arg|
-    opts[:require] = arg
-  end
-
-  o.on '--aws-access-key KEY', 'Valid AWS Access Key' do |arg|
-    opts[:aws_access_key] = arg
-  end
-
-  o.on '--aws-secret-key KEY', 'Valid AWS Secret Key' do |arg|
-    opts[:aws_secret_key] = arg
-  end
+trap "INT" do
+  Chore::CLI.instance.shutdown
 end
-@parser.banner = "chore [options]"
 
-@parser.on_tail "-h", "--help", "Show help" do
-  puts @parser
+begin
+  cli = Chore::CLI.instance
+  cli.parse(ARGV)
+  cli.run!
+rescue => e
+  raise e if $DEBUG
+  STDERR.puts e.message
+  STDERR.puts e.backtrace.join("\n")
   exit 1
 end
+ 
 
-Chore.logger.level = Logger::WARN
-@parser.parse!(ARGV)
-
-opts[:aws_access_key] ||= ENV['AWS_ACCESS_KEY']
-opts[:aws_secret_key] ||= ENV['AWS_SECRET_KEY']
-
-if opts[:require]
-  if File.directory?(opts[:require])
-    require 'rails'
-    require File.expand_path("#{options[:require]}/config/environment.rb")
-    ::Rails.application.eager_load!
-  elsif File.exists?(opts[:require])
-    require File.expand_path(opts[:require])
-  else
-    raise "File not found: #{opts[:require]}"
-  end
-end
-
-Chore.configure(opts)
-
-manager = Chore::Manager.new
-
-trap 'USR1' do
-  puts "\n\n\n\n" + manager.report
-end
-
-Thread.new do
-  Rack::Handler::WEBrick.run(lambda { |env| [200, {"Content-Type" => "application/json"}, [manager.report]] }, :Port => 9090)
-end
-
-manager.start

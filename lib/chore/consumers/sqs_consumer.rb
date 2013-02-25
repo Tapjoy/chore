@@ -36,7 +36,8 @@ module Chore
 
     private
     def loop_forever?
-      true
+      # Quit looping if the fetcher is telling us that it's trying to shutdown
+      true && !Chore::Fetcher.stopping?
     end
   end
 end

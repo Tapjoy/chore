@@ -3,6 +3,7 @@ module Chore
     attr_reader :manager, :consumers
     
     def initialize(manager)
+      @stopping = false
       @manager = manager
       @consumers = Chore.config.queues.map {|q| Chore.config.consumer.new(q) }
       @strategy = Chore.config.fetcher_strategy.new(self)
@@ -10,6 +11,15 @@ module Chore
 
     def start
       @strategy.fetch
+    end
+
+    def self.stop!
+      Chore.logger.info "Fetcher shutting down"
+      @stopping = true
+    end
+
+    def self.stopping?
+      @stopping
     end
   end
 end
