@@ -16,3 +16,4 @@ end
 
 gem 'json'
 gem 'aws-sdk'
+gem 'rack'

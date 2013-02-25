@@ -3,6 +3,7 @@
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'optparse'
 require 'chore'
+require 'rack'
 
 opts = {}
 @parser = OptionParser.new do |o|
@@ -65,6 +66,10 @@ manager = Chore::Manager.new
 
 trap 'USR1' do
   puts "\n\n\n\n" + manager.report
+end
+
+Thread.new do
+  Rack::Handler::WEBrick.run(lambda { |env| [200, {"Content-Type" => "application/json"}, [manager.report]] }, :Port => 9090)
 end
 
 manager.start

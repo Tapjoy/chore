@@ -37,6 +37,7 @@ GEM
       coderay (~> 1.0.5)
       method_source (~> 0.8)
       slop (~> 3.4)
+    rack (1.4.3)
     rake (10.0.3)
     rb-fsevent (0.9.3)
     rdoc (3.12)
@@ -63,6 +64,7 @@ DEPENDENCIES
   guard-rspec
   jeweler (~> 1.8.4)
   json
+  rack
   rb-fsevent (~> 0.9.1)
   rdoc (~> 3.12)
   rspec (~> 2.12.0)
