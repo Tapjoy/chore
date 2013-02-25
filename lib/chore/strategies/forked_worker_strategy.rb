@@ -11,6 +11,7 @@ module Chore
       if workers_available?
         w = Worker.new
         pid = fork do
+          Chore.run_hooks_for(:after_fork)
           procline("Started:#{Time.now.to_i}")
           w.start(work)
         end
@@ -34,6 +35,7 @@ module Chore
 
     # Wrapper around fork for specs.
     def fork(&block)
+      Chore.run_hooks_for(:before_fork)
       Kernel.fork(&block)
     end
 
