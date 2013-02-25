@@ -17,7 +17,7 @@ module Chore
     end
 
     def assign(work)
-      puts "Manager Assign: "
+      Chore.logger.debug "Manager Assign: "
       assigned = false
       until assigned 
         assigned = @worker_strategy.assign(work)

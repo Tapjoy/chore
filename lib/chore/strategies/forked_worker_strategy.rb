@@ -42,7 +42,7 @@ module Chore
     end
 
     def procline(str)
-      puts str
+      Chore.logger.info str
       $0 = "chore-#{Chore::VERSION}:#{str}"
     end
   end

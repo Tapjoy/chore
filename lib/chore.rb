@@ -1,4 +1,6 @@
 require 'ostruct'
+require 'logger'
+
 $:<< File.dirname(__FILE__)
 require 'chore/util'
 require 'chore/hooks'
@@ -33,6 +35,10 @@ module Chore
     :fetcher_strategy => ThreadPerConsumerStrategy,
     :batch_size => 50
   }
+
+  def logger
+    @logger ||= Logger.new(STDOUT)
+  end
 
   def self.add_hook(name,&blk)
     @@hooks ||= {}

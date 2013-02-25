@@ -30,7 +30,7 @@ module Chore
     end
 
     def complete(id)
-      puts "Completing (deleting): #{id}"
+      Chore.logger.debug "Completing (deleting): #{id}"
       @queue.batch_delete([id])
     end
 

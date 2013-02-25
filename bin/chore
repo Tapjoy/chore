@@ -11,7 +11,11 @@ opts = {}
   end
 
   o.on "-v", "--verbose", "Print more verbose output" do
-    ## TODO(add a logger)
+    Chore.logger.level = Logger::INFO
+  end
+
+  o.on "-vv", "--very-verbose", "Print the most verbose output" do
+    Chore.logger.level = Logger::DEBUG
   end
 
   o.on '-e', '--environment ENV', "Application environment" do |arg|
@@ -37,6 +41,7 @@ end
   exit 1
 end
 
+Chore.logger.level = Logger::WARN
 @parser.parse!(ARGV)
 
 opts[:aws_access_key] ||= ENV['AWS_ACCESS_KEY']

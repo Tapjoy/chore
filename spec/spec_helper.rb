@@ -27,10 +27,11 @@ end
 
 RSpec.configure do |config|
   config.before do
-    Chore.configure do |config|
-      config.aws_access_key = ""
-      config.aws_secret_key = ""
+    Chore.configure do |c|
+      c.aws_access_key = ""
+      c.aws_secret_key = ""
     end
+    Chore.stub(:logger).and_return(double('logger').as_null_object)
   end
 
   config.after(:each) do
