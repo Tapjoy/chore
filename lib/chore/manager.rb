@@ -4,7 +4,6 @@ require 'chore/fetcher'
 
 module Chore
   class Manager
-    WORKERS = {}
 
     def initialize()
       Chore.logger.info "Booting Chore #{Chore::VERSION}"

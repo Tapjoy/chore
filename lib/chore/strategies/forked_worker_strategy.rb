@@ -36,6 +36,7 @@ module Chore
           Chore.run_hooks_for(:after_fork)
           procline("Started:#{Time.now.to_i}")
           w.start(work)
+          Chore.logger.info("Finished:#{Time.now.to_i}")
         end
         Chore.logger.debug { "Forked worker #{pid}"}
         workers[pid] = w
