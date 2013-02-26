@@ -13,6 +13,10 @@ opts = {}
     opts[:queue] = arg
   end
 
+  o.on '-c COUNT', OptionParser::DecimalInteger, 'Number of entries to add' do |arg|
+    opts[:count] = arg
+  end
+
   o.on "-v", "--verbose", "Print more verbose output" do
     ## TODO(add a logger)
   end
@@ -24,6 +28,7 @@ opts = {}
   o.on '--aws-secret-key KEY', 'Valid AWS Secret Key' do |arg|
     opts[:aws_secret_key] = arg
   end
+
 end
 @parser.banner = "hydrate [options]"
 
@@ -34,7 +39,7 @@ end
 
 @parser.parse!(ARGV)
 
-REQUIRED_OPTS=[:aws_secret_key,:aws_access_key,:queue]
+REQUIRED_OPTS=[:aws_secret_key,:aws_access_key,:queue,:count]
 
 REQUIRED_OPTS.each{ |o| raise OptionParser::MissingArgument.new(o) if opts[o].nil? }
 
@@ -52,7 +57,7 @@ end
 threads = []
 10.times do |x|
   threads << Thread.new(x) do |n|
-    10.times {|i| test_queue.send_message({:class => 'TestJob', :args => [1,2,"3"]}.to_json); puts "Wrote #{n * i} message" }
+    (opts[:count] / 10).times {|i| test_queue.send_message({:class => 'TestJob', :args => [1,2,"3"]}.to_json); puts "Wrote #{n * i} message" }
   end
 end
 
