@@ -15,6 +15,7 @@ module Chore
       Chore.logger.level = Logger::WARN
       @options = parse_opts(args)
       Chore.configure(@options)
+      validate!
       boot_system
     end
 
@@ -111,7 +112,7 @@ module Chore
       if !File.exist?(options[:require]) ||
          (File.directory?(options[:require]) && !File.exist?("#{options[:require]}/config/application.rb"))
         puts "=================================================================="
-        puts "  Please point worqer to a Rails 3 application or a Ruby file    "
+        puts "  Please point chore to a Rails 3 application or a Ruby file    "
         puts "  to load your worker classes with -r [DIR|FILE]."
         puts "=================================================================="
         puts @parser
