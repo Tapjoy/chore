@@ -2,7 +2,7 @@ module Chore
   class Semaphore
     # for demo purposes, max_leases is specified in code instead
     # of held independently in ZK
-    DEFAULT_OPTIONS = {path: "/_leases", max_leases: 10}
+    DEFAULT_OPTIONS = {:path => "/_leases", :max_leases => 10}
 
     attr_reader :max_leases
     attr_reader :path
@@ -71,7 +71,7 @@ module Chore
     end
 
     def create_lock!
-      @zk.create("#{@resource_path}/", mode: :ephemeral_sequential)
+      @zk.create("#{@resource_path}/", :mode => :ephemeral_sequential)
     end
 
     def build_path!
