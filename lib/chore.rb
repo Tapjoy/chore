@@ -1,5 +1,6 @@
 require 'ostruct'
 require 'logger'
+require 'zk'
 
 $:<< File.dirname(__FILE__)
 require 'chore/util'
