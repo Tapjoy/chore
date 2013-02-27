@@ -15,6 +15,8 @@ Dir[File.join(File.dirname(__FILE__), 'chore', 'consumers', '*.rb')].each {|f| r
 require 'chore/fetcher'
 require 'chore/manager'
 require 'chore/job'
+require 'chore/semaphore'
+require 'chore/lease'
 
 module Chore
   VERSION = '0.0.1'

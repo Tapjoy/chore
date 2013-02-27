@@ -1,6 +1,3 @@
-require 'zk'
-require 'lease'
-
 module Chore
   class Semaphore
     # for demo purposes, max_leases is specified in code instead
@@ -19,17 +16,16 @@ module Chore
       @path = opts[:path]
       @resource_path = "#{@path}/#{@resource_name}"
       @max_leases = opts[:max_leases]
+      @queue = Queue.new
 
       build_path!
     end
 
     def acquire(&block)
       if block
-        t = Thread.new do
+        Thread.new do
           wait_for_lock(&block)
         end
-
-        t.join
       else
         if count < @max_leases
           Lease.new(create_lock!, @zk)
@@ -44,19 +40,20 @@ module Chore
     def wait_for_lock(&block)
       # set up the handler if we can't immediately get a lock
       sub = @zk.register(@resource_path) do |event|
-        if count < @max_leases
-          lease_path = nil
-          begin
-            lease_path = create_lock!
-            yield block
-          ensure
-            @queue.enq(:acquired)
-            @zk.delete(lease_path)
-          end
-        end
+        actually_acquire_lock(&block)
       end
 
-      # if we can acquire a lock immediately, do so
+      # attempt to acquire a lock right now if we can
+      actually_acquire_lock(&block)
+
+      # block until we acquire a lock
+      @queue.pop
+
+    ensure
+      sub.unsubscribe
+    end
+
+    def actually_acquire_lock(&block)
       if count < @max_leases
         lease_path = nil
         begin
@@ -67,11 +64,6 @@ module Chore
           @zk.delete(lease_path)
         end
       end
-      # block until we acquire a lock
-      @queue.pop
-
-    ensure
-      sub.unsubscribe
     end
 
     def count
