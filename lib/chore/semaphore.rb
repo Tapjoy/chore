@@ -61,10 +61,10 @@ module Chore
         begin
           lease_path = create_lease!
           yield block
+          true
         ensure
           @queue.enq(:acquired)
           @zk.delete(lease_path)
-          true
         end
       else
         false

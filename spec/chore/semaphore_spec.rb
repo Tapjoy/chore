@@ -11,7 +11,9 @@ describe Chore::Semaphore do
   before(:each) do
     ZK.stub(:new) { zk }
     zk.stub(:mkdir_p)
+    zk.stub(:delete)
     semaphore.stub(:count) { count }
+    semaphore.stub(:create_lease!) { "0" }
   end
 
   it "should have an acquire method" do
@@ -19,10 +21,21 @@ describe Chore::Semaphore do
   end
 
   describe "we must block until a lock is acquired" do
-    it "should run the block if a lease is available" do
+    let(:receiver) { double("something") }
+
+    it "should not register a watch if a lease is available" do
       semaphore.should_receive(:actually_acquire_lease) { true }
+      zk.should_not_receive(:register) # <-- this is actually what we're testing
       semaphore.acquire do
         sleep(0.1)
+      end
+    end
+
+    it "should run the block when a lease is available" do
+      zk.should_not_receive(:register)
+      receiver.should_receive(:a_method)
+      semaphore.acquire do
+        receiver.a_method
       end
     end
 
@@ -51,10 +64,10 @@ describe Chore::Semaphore do
       lease.should_not be_nil
     end
 
-    describe "but there are no locks available" do
+    describe "and there are no locks available" do
       let(:count) { 1 }
 
-      it "returns nil" do
+      it "should return nil" do
         lease = semaphore.acquire
         lease.should be_nil
       end
