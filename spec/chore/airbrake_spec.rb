@@ -41,7 +41,7 @@ describe Chore do
 
     it "should send an airbrake exception if chore/airbrake as been required" do
       expected_options = get_default_airbrake_options
-      Airbrake.should_receive(:notify).with(kind_of(RuntimeError), expected_options)
+      Airbrake.should_receive(:notify).with(kind_of(RuntimeError), hash_including(expected_options))
       Chore.run_hooks_for(:on_failure, $test_msg, RuntimeError.new("exception"))
     end
     
@@ -53,7 +53,7 @@ describe Chore do
       expected_options = get_default_airbrake_options
       expected_options = expected_options.merge(additional_airbrake_options)
       
-      Airbrake.should_receive(:notify).with(kind_of(RuntimeError), expected_options)
+      Airbrake.should_receive(:notify).with(kind_of(RuntimeError), hash_including(expected_options))
       Chore.run_hooks_for(:on_failure, $test_msg, RuntimeError.new("exception"))
     end
 

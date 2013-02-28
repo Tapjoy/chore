@@ -19,6 +19,7 @@ Chore.add_hook(:on_failure) do |msg,error|
   airbrake_opts[:action] = msg_class
   airbrake_opts[:parameters] = {:message => msg}
   airbrake_opts[:environment_name] = "Chore"
+  airbrake_opts[:cgi_data] = ENV
   airbrake_opts.merge!(Chore::Airbrake.options) if Chore::Airbrake.options
 
   Chore.logger.debug {"Sending exception to airbrake. error: #{error}, opts: #{airbrake_opts}"}
