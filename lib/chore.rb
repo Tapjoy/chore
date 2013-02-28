@@ -57,9 +57,9 @@ module Chore
     @@hooks = {}
   end
 
-  def self.run_hooks_for(name)
+  def self.run_hooks_for(name,*args)
     hooks = self.hooks_for(name)
-    hooks.each(&:call) unless hooks.nil? || hooks.empty?
+    hooks.each {|h| h.call(*args)} unless hooks.nil? || hooks.empty?
   end
 
   def self.configure(opts={})

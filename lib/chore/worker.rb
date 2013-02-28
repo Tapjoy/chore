@@ -32,8 +32,9 @@ module Chore
             klass.run_hooks_for(:after_perform,*message['args'])
           rescue Job::RejectMessageException
             item.consumer.reject(item.id)
-          rescue
+          rescue => e
             klass.run_hooks_for(:on_failure,*message['args'])
+            Chore.run_hooks_for(:on_failure,message,e)
           end
         end
       end
