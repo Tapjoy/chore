@@ -13,6 +13,7 @@ group :development do
   gem 'guard-rspec'
   gem 'rb-fsevent', '~> 0.9.1'
   gem 'airbrake'
+  gem 'memcached'
 end
 
 gem 'json'
