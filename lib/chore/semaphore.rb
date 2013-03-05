@@ -31,6 +31,10 @@ module Chore
         end
       end
     end
+    
+    def available?
+      count < @max_leases
+    end
 
     private
 
@@ -43,6 +47,8 @@ module Chore
             actually_acquire_lease(&block)
           end
 
+          set_watch
+
           # block until we acquire a lock
           # see the rdoc for Queue (it blocks)
           @queue.pop
@@ -53,10 +59,11 @@ module Chore
     end
 
     def actually_acquire_lease(&block)
-      if count < @max_leases
+      if available?
         # we need to unsubscribe before we create the lease
         # otherwise we would fire the handler when we create it
         @subscription.unsubscribe if @subscription
+        unset_watch
         lease_path = nil
         begin
           lease_path = create_lease!
@@ -72,18 +79,34 @@ module Chore
     end
 
     def count
-      # gotta set that watch every time or our handler
-      # might not fire which would be such a bummer man
-      # yeah whoa
-      @zk.children(@resource_path, watch: true).length
+      ensure_connection!
+      @zk.stat(@resource_path).num_children
+    end
+
+    def set_watch
+      ensure_connection!
+      @zk.children(@resource_path, :watch => true)
+    end
+
+    def unset_watch
+      ensure_connection!
+      @zk.children(@resource_path, :watch => false)
     end
 
     def create_lease!
+      ensure_connection!
       @zk.create("#{@resource_path}/", :mode => :ephemeral_sequential)
     end
 
     def build_path!
+      ensure_connection!
       @zk.mkdir_p(@resource_path)
+    end
+
+    def ensure_connection!
+      unless @zk.connected?
+        raise ZK::Exceptions::ConnectionLoss unless @zk.reopen == :connected
+      end
     end
   end
 end

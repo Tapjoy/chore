@@ -12,8 +12,11 @@ describe Chore::Semaphore do
     ZK.stub(:new) { zk }
     zk.stub(:mkdir_p)
     zk.stub(:delete)
+    zk.stub(:connected?) { true }
     semaphore.stub(:count) { count }
     semaphore.stub(:create_lease!) { "0" }
+    semaphore.stub(:set_watch)
+    semaphore.stub(:unset_watch)
   end
 
   it "should have an acquire method" do
