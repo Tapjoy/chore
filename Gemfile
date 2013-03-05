@@ -12,6 +12,8 @@ group :development do
   gem "jeweler", "~> 1.8.4"
   gem 'guard-rspec'
   gem 'rb-fsevent', '~> 0.9.1'
+  gem 'airbrake'
+  gem 'memcached'
 end
 
 gem 'json'

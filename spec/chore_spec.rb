@@ -21,6 +21,13 @@ describe Chore do
     expect { Chore.run_hooks_for(:before_perform) }.to_not raise_error
   end
 
+  it 'should pass args to the block if present' do
+    blk = proc {|*args| true }
+    blk.should_receive(:call).with('1','2',3)
+    Chore.add_hook(:an_event,&blk)
+    Chore.run_hooks_for(:an_event, '1','2',3)
+  end
+
   it 'should support multiple hooks for an event' do
     blk = proc { true }
     blk.should_receive(:call).twice
@@ -34,5 +41,6 @@ describe Chore do
     Chore.configure {|c| c.test_config_option = 'howdy' }
     Chore.config.test_config_option.should == 'howdy'
   end
+
 
 end

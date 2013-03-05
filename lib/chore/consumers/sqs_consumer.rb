@@ -1,5 +1,6 @@
 require 'aws/sqs'
 require 'chore/consumer'
+require 'chore/dedupe'
 
 module Chore
   class SQSConsumer < Consumer
@@ -10,6 +11,7 @@ module Chore
         :access_key_id => Chore.config.aws_access_key,
         :secret_access_key => Chore.config.aws_secret_key)
       @queue = @sqs.queues.named(@queue_name)
+      @dupes = DuplicateDetector.new(Chore.config.dedupe_servers || nil)
     end
 
     def consume
@@ -18,9 +20,9 @@ module Chore
         msg = @queue.receive_messages(:limit => 10, :wait_time_in_seconds => 20)
         next if msg.nil? || msg.empty?
         if msg.kind_of? Array
-          msg.each { |m| yield m.handle, m.body }
+          msg.each { |m| yield m.handle, m.body unless @dupes.found_duplicate?(msg)}
         else
-          yield msg.handle, msg.body
+          yield msg.handle, msg.body unless @dupes.found_duplicate?(msg)
         end
       end
     end
