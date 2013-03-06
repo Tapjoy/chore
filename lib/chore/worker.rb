@@ -24,9 +24,9 @@ module Chore
         Chore.logger.debug { "Doing: #{item.inspect}" }
         begin
           message = decode_job(item.message)
-          klass = constantize(message['class'])
+          klass = payload_class(message)
           begin
-            break unless klass.run_hooks_for(:before_perform,*message['args'])
+            next unless klass.run_hooks_for(:before_perform,*message['args'])
             klass.perform(*message['args'])
             item.consumer.complete(item.id)
             klass.run_hooks_for(:after_perform,*message['args'])
@@ -42,6 +42,10 @@ module Chore
 
     def stop!
       @stopping = true
+    end
+  protected
+    def payload_class(message)
+      constantize(message['class'])
     end
 
   private
