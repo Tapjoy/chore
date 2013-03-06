@@ -21,6 +21,7 @@ module Chore
 
     context '#assign' do
       before(:each) do
+        forker.stub(:after_fork)
         Process.stub(:wait2)
       end
 

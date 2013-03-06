@@ -21,6 +21,7 @@ module Chore
 
     def run!
       @manager = Chore::Manager.new
+      start_stat_server(@manager)
       @manager.start
     end
 
@@ -120,7 +121,7 @@ module Chore
       end
     end
 
-    def start_stat_server
+    def start_stat_server(manager)
       Thread.new do
         Rack::Handler::WEBrick.run(lambda { |env| [200, {"Content-Type" => "application/json"}, [manager.report]] }, :Port => options[:stats_port] || 9090)
       end

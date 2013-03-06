@@ -1,10 +1,43 @@
+require 'pipe_listener'
+
 module Chore
+  class StatListener < PipeListener
+    def handle_payload(payload)
+      Chore.logger.debug { "StatListener#handle_payload : #{Base64.encode64(payload)}" }
+      data = Marshal.load(payload)
+      Chore.stats.add(data[0],data[1])
+      data = nil
+    rescue => e
+      Chore.logger.error { "Failed to unmarshal data from pipe: #{e.inspect} : #{Base64.encode64(payload)}" }
+    end
+  end
+
+  class PipedStats < Stats
+    def initialize(pipe_id,listener,bucket_size=nil)
+      super(bucket_size)
+      @pipe_id, @listener = pipe_id, listener
+    end
+
+    def add(stat,type=:global,data=nil)
+      @listener.pipes[@pipe_id].write [stat,StatEntry.new(type,data)]
+    end
+  end
+
   class ForkedWorkerStrategy
     attr_accessor :workers
 
     def initialize(manager)
       @manager = manager
       @workers = {}
+      @listener = StatListener.new(60)
+      Chore.run_hooks_for(:before_first_fork)
+    end
+
+    def start
+      # run the stat listener in it's own thread, it's blocking
+      thread do
+        @listener.start
+      end
     end
 
     def stop!
@@ -12,30 +45,24 @@ module Chore
         begin
           Chore.logger.info { "Sending TERM to: #{pid}" }
           Process.kill("SIGTERM", pid)
-        rescue Errno::ESRCH
+        rescue Errno::SRCH
         end
       end
+      @listener.close_all
     end
 
     def assign(work)
       if workers_available?
         w = Worker.new
-        Chore.logger.debug { "Assigning work to #{w.inspect}"}
+        Chore.run_hooks_for(:before_fork,w)
+        @listener.add_pipe(w.object_id)
         pid = fork do
-          # We blow away the INT handler from the parent process
-          trap "INT" do;end;
-          # Register a new TERM handler to make the current worker
-          # finish this job, and not complete another one. 
-          # TODO: Figure out an overall flow of signals such that we
-          # can use QUIT here instead of TERM.
-          trap "TERM" do
-            Chore.logger.info { "Worker #{Process.pid} stopping" }
-            w.stop!
-          end
+          after_fork(w)
 
           Chore.run_hooks_for(:after_fork)
           procline("Started:#{Time.now.to_i}")
           w.start(work)
+          @listener.end_pipe(w.object_id)
           Chore.logger.info("Finished:#{Time.now.to_i}")
         end
         Chore.logger.debug { "Forked worker #{pid}"}
@@ -54,13 +81,31 @@ module Chore
       end
     end
 
+    # Only call this in the forked child. It resets some things that need fixing up
+    # in the child.
+    def after_fork(worker)
+      # We blow away the INT handler from the parent process
+      trap "INT" do;end;
+      # Register a new TERM handler to make the current worker
+      # finish this job, and not complete another one. 
+      # TODO: Figure out an overall flow of signals such that we
+      # can use QUIT here instead of TERM.
+      trap "TERM" do
+        Chore.logger.info { "Worker #{Process.pid} stopping" }
+        worker.stop!
+      end
+      
+      # Replace the stats instance in the child with one that can handle talking over
+      # the pipe
+      Chore.stats = PipedStats.new(worker.object_id,@listener)
+    end
+
     def workers_available?
       workers.length < Chore.config.num_workers
     end
 
     # Wrapper around fork for specs.
     def fork(&block)
-      Chore.run_hooks_for(:before_fork)
       Kernel.fork(&block)
     end
 

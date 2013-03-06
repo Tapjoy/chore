@@ -5,6 +5,8 @@ module Chore
       @worker = nil
     end
 
+    def start;end
+
     def assign(work)
       if workers_available?
         @worker = Worker.new

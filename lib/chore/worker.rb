@@ -30,11 +30,14 @@ module Chore
             klass.perform(*message['args'])
             item.consumer.complete(item.id)
             klass.run_hooks_for(:after_perform,*message['args'])
+            Chore.stats.add(:completed,message['class'])
           rescue Job::RejectMessageException
             item.consumer.reject(item.id)
+            Chore.stats.add(:rejected,message['class'])
           rescue => e
             klass.run_hooks_for(:on_failure,*message['args'])
             Chore.run_hooks_for(:on_failure,message,e)
+            Chore.stats.add(:failed,message['class'])
           end
         end
       end

@@ -2,22 +2,23 @@ require 'ostruct'
 require 'logger'
 require 'zk'
 
-$:<< File.dirname(__FILE__)
-require 'chore/util'
-require 'chore/hooks'
-require 'chore/json_encoder'
+$:<< File.join(File.dirname(__FILE__), 'chore')
+require 'util'
+require 'hooks'
+require 'json_encoder'
+require 'stats'
 
-require 'chore/consumer'
-require 'chore/publisher'
+require 'consumer'
+require 'publisher'
 
 Dir[File.join(File.dirname(__FILE__), 'chore', 'strategies', '*.rb')].each {|f| require f } 
 Dir[File.join(File.dirname(__FILE__), 'chore', 'consumers', '*.rb')].each {|f| require f }
 
-require 'chore/fetcher'
-require 'chore/manager'
-require 'chore/job'
-require 'chore/semaphore'
-require 'chore/lease'
+require 'fetcher'
+require 'manager'
+require 'job'
+require 'semaphore'
+require 'lease'
 
 module Chore
   VERSION = '0.0.1'
@@ -41,6 +42,14 @@ module Chore
 
   def self.logger
     @logger ||= Logger.new(STDOUT)
+  end
+
+  def self.stats
+    @stats ||= Stats.new
+  end
+
+  def self.stats=(stats)
+    @stats = stats
   end
 
   def self.add_hook(name,&blk)

@@ -17,12 +17,16 @@ module Chore
     def consume
       # this is for spec purposes, so we can test this w/out looping forever
       while loop_forever?
-        msg = @queue.receive_messages(:limit => 10, :wait_time_in_seconds => 20)
-        next if msg.nil? || msg.empty?
-        if msg.kind_of? Array
-          msg.each { |m| yield m.handle, m.body unless @dupes.found_duplicate?(msg)}
-        else
-          yield msg.handle, msg.body unless @dupes.found_duplicate?(msg)
+        begin
+          msg = @queue.receive_messages(:limit => 10, :wait_time_in_seconds => 20)
+          next if msg.nil? || msg.empty?
+          if msg.kind_of? Array
+            msg.each { |m| yield m.handle, m.body unless @dupes.found_duplicate?(msg)}
+          else
+            yield msg.handle, msg.body unless @dupes.found_duplicate?(msg)
+          end
+        rescue => e
+          Chore.logger.error { "SQSConsumer#Consume: #{e.inspect}" }
         end
       end
     end

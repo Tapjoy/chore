@@ -15,6 +15,7 @@ module Chore
     end
 
     def start
+      @worker_strategy.start
       @fetcher.start
     end
 
@@ -34,7 +35,7 @@ module Chore
         break if @stopping
         assigned = @worker_strategy.assign(work)
         if assigned
-          @processed += 1
+          Chore.stats.add(:batches)
         end
 
         sleep(0.2)
@@ -42,7 +43,7 @@ module Chore
     end
 
     def report
-      {'workers' => @worker_strategy.workers_available?, 'processed' => @processed}.to_json
+      {'workers' => @worker_strategy.workers_available?, 'stats' => Chore.stats.to_json}.to_json
     end
   end
 end
