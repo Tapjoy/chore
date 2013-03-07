@@ -87,7 +87,6 @@ module Chore
                 # if the child tells us it's done, let's be done
                 if payload.to_s == 'EOF'
                   pipe_from_handle(pipe).close 
-                  remove_pipe(pipe)
                   next
                 end
                 handle_payload(payload)
@@ -133,10 +132,6 @@ module Chore
 
     def pipe_from_handle(handle)
       @pipes.values.find { |p| p.out == handle }
-    end
-
-    def remove_pipe(handle)
-      @pipes.delete_if {|k,p| p.out == handle }
     end
 
   end
