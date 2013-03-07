@@ -123,10 +123,10 @@ module Chore
       @pipes.reject! {|k,p| p.out.closed? }
     end
 
-    protected
     def handle_payload(payload)
     end
 
+    protected
     def should_stop?
       @stopping
     end

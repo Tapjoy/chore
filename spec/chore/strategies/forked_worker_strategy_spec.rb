@@ -59,4 +59,16 @@ module Chore
       end
     end
   end
+
+  describe StatListener do
+    let(:listener) { StatListener.new(1) }
+    let(:entry) { StatEntry.new(:test,nil) }
+    let(:event) { :completed }
+    let(:payload) { Marshal.dump([event,entry]) }
+
+    it 'should add to the stats when given a valid payload' do
+      Chore.stats.should_receive(:add).with(event,kind_of(StatEntry))
+      listener.handle_payload(payload)
+    end
+  end
 end
