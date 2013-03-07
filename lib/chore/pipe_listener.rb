@@ -104,6 +104,7 @@ module Chore
     def stop
       return if @stopping
       @stopping = true
+      wake_up!
       # wait for the thread to finish
       @thread.join 
       close_all
