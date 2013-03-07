@@ -34,10 +34,7 @@ module Chore
     end
 
     def start
-      # run the stat listener in it's own thread, it's blocking
-      thread do
-        @listener.start
-      end
+      @listener.start
     end
 
     def stop!
