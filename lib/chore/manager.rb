@@ -43,7 +43,7 @@ module Chore
     end
 
     def report
-      {'workers' => @worker_strategy.workers_available?, 'stats' => Chore.stats.to_json}.to_json
+      {'active_workers' => @worker_strategy.workers, 'stats' => Chore.stats.to_json}.to_json
     end
   end
 end

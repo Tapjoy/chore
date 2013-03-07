@@ -18,8 +18,9 @@ module Chore
     end
 
     def start(work)
-      work = [work] unless work.kind_of?(Array)
-      work.each do |item|
+      @work = work
+      @work = [work] unless work.kind_of?(Array)
+      @work.each do |item|
         return if @stopping
         Chore.logger.debug { "Doing: #{item.inspect}" }
         begin
@@ -45,6 +46,12 @@ module Chore
 
     def stop!
       @stopping = true
+    end
+
+    def to_json(*args)
+      {
+        :batch_size => @work.count
+      }.to_json(*args)
     end
   protected
     def payload_class(message)
