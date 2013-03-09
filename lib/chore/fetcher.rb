@@ -1,7 +1,7 @@
 module Chore
   class Fetcher
     attr_reader :manager, :consumers
-    
+
     def initialize(manager)
       @stopping = false
       @manager = manager
@@ -15,6 +15,7 @@ module Chore
 
     def self.stop!
       Chore.logger.info "Fetcher shutting down"
+      @consumers.each(&:stop)
       @stopping = true
     end
 

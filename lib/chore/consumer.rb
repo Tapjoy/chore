@@ -5,6 +5,7 @@ module Chore
 
     def initialize(queue_name, opts={})
       @queue_name = queue_name
+      @running = true
     end
 
     def consume(&block)
@@ -17,6 +18,15 @@ module Chore
 
     def complete(msg)
       raise NotImplementedError
+    end
+
+    # Perform any shutdown behavior and stop consuming messages
+    def stop
+      @running = false
+    end
+
+    def running?
+      @running
     end
   end
 end
