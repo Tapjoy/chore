@@ -1,10 +1,8 @@
 require 'aws/sqs'
-require 'chore/consumer'
-require 'chore/dedupe'
 
 module Chore
   class SQSConsumer < Consumer
-  
+
     def initialize(queue_name, opts={})
       super(queue_name, opts)
       @sqs = AWS::SQS.new(

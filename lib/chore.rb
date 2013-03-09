@@ -2,27 +2,33 @@ require 'ostruct'
 require 'logger'
 require 'zk'
 
-$:<< File.join(File.dirname(__FILE__), 'chore')
-require 'util'
-require 'hooks'
-require 'json_encoder'
-require 'stats'
-require 'version'
-
-require 'consumer'
-require 'publisher'
-
-Dir[File.join(File.dirname(__FILE__), 'chore', 'strategies', '*.rb')].each {|f| require f }
-Dir[File.join(File.dirname(__FILE__), 'chore', 'consumers', '*.rb')].each {|f| require f }
-
-require 'fetcher'
-require 'manager'
-require 'job'
-require 'semaphore'
-require 'lease'
-
 module Chore
   VERSION = Chore::Version::STRING
+
+  autoload :CLI,                "chore/cli"
+  autoload :Consumer,           "chore/consumer"
+  autoload :DuplicateDetector,  "chore/duplicate_detector"
+  autoload :Fetcher,            "chore/fetcher"
+  autoload :Hooks,              "chore/hooks"
+  autoload :Job,                "chore/job"
+  autoload :JsonEncoder,        "chore/json_encoder"
+  autoload :Lease,              "chore/lease"
+  autoload :Manager,            "chore/manager"
+  autoload :Publisher,          "chore/publisher"
+  autoload :Semaphore,          "chore/semaphore"
+  autoload :Stats,              "chore/stats"
+  autoload :Util,               "chore/util"
+
+  # Consumers
+  autoload :SQSConsumer,        "chore/consumers/sqs_consumer"
+
+  # Worker strategies
+  autoload :ForkedWorkerStrategy,  "chore/strategies/forked_worker_strategy"
+  autoload :SingleWorkerStrategy,  "chore/strategies/single_worker_strategy"
+
+  # Consumer strategies
+  autoload :SingleConsumerStrategy,    "chore/strategies/single_consumer_strategy"
+  autoload :ThreadPerConsumerStrategy, "chore/strategies/thread_per_consumer_strategy"
 
   # Simple class to hold job processing information. Stubbed as a Struct right now
   # but left as a class in case we need more methods soon.

@@ -52,6 +52,7 @@ GEM
       method_source (~> 0.8)
       slop (~> 3.4)
     rack (1.4.3)
+    rake (10.0.3)
     rb-fsevent (0.9.3)
     rdoc (3.12)
       json (~> 1.4)
@@ -84,6 +85,7 @@ DEPENDENCIES
   json
   memcached
   rack
+  rake (~> 10.0)
   rb-fsevent (~> 0.9.1)
   rdoc (~> 3.12)
   rspec (~> 2.12.0)
