@@ -33,7 +33,7 @@ describe Chore::ThreadPerConsumerStrategy do
 
     it "should queue but not assign the message" do
       strategy.fetch
-      strategy.batch.size.should == 1 
+      strategy.batcher.batch.size.should == 1 
     end
   end
 
@@ -43,7 +43,7 @@ describe Chore::ThreadPerConsumerStrategy do
     it "should assign the batch" do
       manager.should_receive(:assign)
       strategy.fetch
-      strategy.batch.size.should == 0
+      strategy.batcher.batch.size.should == 0
     end
   end
 end

@@ -1,15 +1,63 @@
+require 'monitor'
+
 module Chore
+  class Batcher
+    attr_accessor :callback
+    attr_accessor :batch
+
+    def initialize(size)
+      @size = size
+      @batch = []
+      @mutex = Monitor.new
+      @last_message = nil
+      @callback = nil
+    end
+
+    def schedule(batch_timeout=20)
+      Thread.new(batch_timeout) do |timeout|
+        Chore.logger.info "Batching timeout thread starting"
+        loop do
+          Chore.logger.debug "Last message added to batch: #{@last_message}: #{@batch.size}"
+          if @last_message && Time.now > (@last_message + timeout)
+            Chore.logger.debug "Batching timeout reached (#{@last_message + timeout}), current size: #{@batch.size}"
+            self.execute
+            @last_message = nil
+          end
+          sleep(1) 
+        end
+      end
+    end
+
+    def add(item)
+      @mutex.synchronize do
+        @batch << item
+        @last_message = Time.now
+        if @batch.size >= @size
+          execute
+        end
+      end
+    end
+
+    def execute
+      @mutex.synchronize do
+        @callback.call(@batch)
+        @batch.clear
+      end
+    end
+  end
+
   class ThreadPerConsumerStrategy
-    attr_reader :batch
+    attr_accessor :batcher
 
     def initialize(fetcher)
       @fetcher = fetcher
-      @batch = []
+      @batcher = Batcher.new(Chore.config.batch_size)
+      @batcher.callback = lambda { |batch| @fetcher.manager.assign(batch) }
+      @batcher.schedule
     end
 
     def fetch
       threads = []
-      mutex = Mutex.new
       Chore.config.queues.each do |queue|
         threads << Thread.new(queue) do |tQueue|
           consumer = Chore.config.consumer.new(tQueue)
@@ -21,15 +69,7 @@ module Chore
             Chore.logger.debug { "Got message: #{id}"}
 
             work = UnitOfWork.new(id, body, consumer)
-
-            mutex.synchronize do
-              if @batch.size < Chore.config.batch_size
-                @batch << work
-              else
-                @fetcher.manager.assign(@batch)
-                @batch.clear
-              end
-            end
+            @batcher.add(work)
           end
         end
       end

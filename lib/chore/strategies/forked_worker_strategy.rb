@@ -57,17 +57,17 @@ module Chore
 
     def assign(work)
       if workers_available?
-        w = Worker.new
+        w = Worker.new(work)
         Chore.run_hooks_for(:before_fork,w)
         @listener.add_pipe(w.object_id)
         pid = fork do
           after_fork(w)
 
           Chore.run_hooks_for(:after_fork)
-          procline("Started:#{Time.now.to_i}")
-          w.start(work)
+          procline("Started:#{Time.now}")
+          w.start
           @listener.end_pipe(w.object_id)
-          Chore.logger.info("Finished:#{Time.now.to_i}")
+          Chore.logger.info("Finished:#{Time.now}")
         end
         Chore.logger.debug { "Forked worker #{pid}"}
         workers[pid] = w
