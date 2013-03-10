@@ -40,16 +40,16 @@ module Chore
     :batch_size => 50
   }
 
+  class << self
+    attr_accessor :logger, :stats
+  end
+
   def self.logger
     @logger ||= Logger.new(STDOUT)
   end
 
   def self.stats
     @stats ||= Stats.new
-  end
-
-  def self.stats=(stats)
-    @stats = stats
   end
 
   def self.add_hook(name,&blk)
