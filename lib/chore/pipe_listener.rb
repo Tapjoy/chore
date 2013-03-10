@@ -78,11 +78,11 @@ module Chore
             # us to move on
             if pipe == @signal.out
               pipe.read(1)
-              Chore.logger.info { "PipeListener#start Woke up from a signal" }
+              Chore.logger.debug { "PipeListener#start Woke up from a signal" }
             else
               # take the actual io::pipe and find our wrapped pipe, then pull the payload
               payload = pipe_from_handle(pipe).read
-              Chore.logger.info { "PipeListener#start Woke up from a message: #{pipe.inspect}: #{payload.inspect}" }
+              Chore.logger.debug { "PipeListener#start Woke up from a message: #{pipe.inspect}: #{payload.inspect}" }
               if payload && !payload.empty?
                 # if the child tells us it's done, let's be done
                 if payload.to_s == 'EOF'
