@@ -18,8 +18,8 @@ module Chore
       # this is for spec purposes, so we can test this w/out looping forever
       while loop_forever?
         begin
-          msg = @queue.receive_messages(:limit => 10, :wait_time_in_seconds => 20)
-          next if msg.nil? || msg.empty?
+          msg = @queue.receive_messages(:limit => 10)
+          next if msg.nil? 
           if msg.kind_of? Array
             msg.each { |m| yield m.handle, m.body unless @dupes.found_duplicate?(msg)}
           else
