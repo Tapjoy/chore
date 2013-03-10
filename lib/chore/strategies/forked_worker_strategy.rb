@@ -45,6 +45,13 @@ module Chore
         rescue Errno::SRCH
         end
       end
+      begin
+        Timeout::timeout(60) do
+          Process.waitall
+        end
+      rescue Timeout::Error
+        Chore.logger.error "Timed out waiting for children to terminate."
+      end
       @listener.close_all
     end
 
