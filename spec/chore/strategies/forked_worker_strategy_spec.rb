@@ -17,12 +17,14 @@ module Chore
     let(:manager) { double('manager') }
     let(:forker) { ForkedWorkerStrategy.new(manager) }
     let(:job) { UnitOfWork.new(SecureRandom.uuid, JsonEncoder.encode(TestJob.job_hash([1,2,"3"]))) }
+    let(:worker) { Worker.new(job) }
     let(:pid) { Random.rand(2048) }
 
     context '#assign' do
       before(:each) do
         forker.stub(:after_fork)
         Process.stub(:wait2)
+        worker #can't let this resolve lazily
       end
 
       it 'should not start working if there are no workers available' do
@@ -32,7 +34,8 @@ module Chore
       end
 
       it 'should assign a job to a new worker' do
-        Worker.any_instance.should_receive(:start).with(job)
+        Worker.should_receive(:new).with(job).and_return(worker)
+        worker.should_receive(:start)
         forker.assign(job)
       end
 

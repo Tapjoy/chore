@@ -8,18 +8,19 @@ module Chore
     DEFAULT_OPTIONS = { :encoder => JsonEncoder }
     attr_accessor :options
 
-    def self.start(work,args={})
-      self.new(args).start(work)
+    def self.start(work)
+      self.new(work).start
     end
 
-    def initialize(opts={})
+    def initialize(work=[],opts={})
       @stopping = false
+      @started_at = Time.now
+      @work = work
+      @work = [work] unless work.kind_of?(Array)
       self.options = DEFAULT_OPTIONS.merge(opts)
     end
 
-    def start(work)
-      @work = work
-      @work = [work] unless work.kind_of?(Array)
+    def start
       @work.each do |item|
         return if @stopping
         Chore.logger.debug { "Doing: #{item.inspect}" }
@@ -50,7 +51,7 @@ module Chore
 
     def to_json(*args)
       {
-        :batch_size => @work.count
+        :batch_size => (@work ? @work.count : '')
       }.to_json(*args)
     end
   protected
