@@ -13,9 +13,8 @@ Gem::Specification.new do |s|
   s.description = "Job processing with pluggable backends and strategies"
   s.email = "me@tannerburson.com"
 
-  s.bindir = "."
-  s.executables = Dir["bin/*"]
-  s.default_executable = "bin/chore"
+  s.executables = Dir["bin/*"].map { |f| f.gsub(/bin\//, '') }
+  s.default_executable = "chore"
 
   s.extra_rdoc_files = [
     "LICENSE.txt",

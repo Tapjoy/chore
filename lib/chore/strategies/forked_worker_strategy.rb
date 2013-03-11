@@ -1,4 +1,4 @@
-require 'pipe_listener'
+require 'chore/pipe_listener'
 
 module Chore
   class StatListener < PipeListener
