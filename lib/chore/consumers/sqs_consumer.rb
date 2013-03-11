@@ -26,7 +26,7 @@ module Chore
       end
     end
 
-    def reject(msg)
+    def reject(id)
 
     end
 
