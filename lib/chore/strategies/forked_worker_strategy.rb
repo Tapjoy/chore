@@ -30,6 +30,9 @@ module Chore
       @manager = manager
       @workers = {}
       @listener = StatListener.new(60)
+
+      trap_master_signals
+
       Chore.run_hooks_for(:before_first_fork)
     end
 
@@ -38,6 +41,7 @@ module Chore
     end
 
     def stop!
+      Chore.logger.info { "Worker #{Process.pid} stopping" }
       @workers.keys.each do |pid|
         begin
           Chore.logger.info { "Sending TERM to: #{pid}" }
@@ -71,37 +75,46 @@ module Chore
         end
         Chore.logger.debug { "Forked worker #{pid}"}
         workers[pid] = w
-        watch_proc(pid)
       end
     end
 
-    # This is our own implementation of Process.detach, that lets us clean up
-    # the worker list first
-    def watch_proc(pid)
-      thread do
-        Process.wait2(pid)
-        Chore.logger.debug { "Removed finished worker #{pid}"}
-        workers.delete(pid)
-      end
+    def trap_master_signals
+      trap('CHLD') { reap_terminated_workers }
+    end
+
+    def trap_child_signals
+      # Register a new TERM handler to make the current worker
+      # finish this job, and not complete another one.
+      # TODO: Figure out an overall flow of signals such that we
+      # can use QUIT here instead of TERM.
+      trap("TERM") { worker.stop! }
+    end
+
+    def clear_child_signals
+      # Remove handlers from the parent process
+      trap "INT",  "DEFAULT"
+      trap "CHLD", "DEFAULT"
     end
 
     # Only call this in the forked child. It resets some things that need fixing up
     # in the child.
     def after_fork(worker)
-      # We blow away the INT handler from the parent process
-      trap "INT" do;end;
-      # Register a new TERM handler to make the current worker
-      # finish this job, and not complete another one. 
-      # TODO: Figure out an overall flow of signals such that we
-      # can use QUIT here instead of TERM.
-      trap "TERM" do
-        Chore.logger.info { "Worker #{Process.pid} stopping" }
-        worker.stop!
-      end
-      
+      clear_child_signals
+      trap_child_signals
+
       # Replace the stats instance in the child with one that can handle talking over
       # the pipe
       Chore.stats = PipedStats.new(worker.object_id,@listener)
+    end
+
+    def reap_terminated_workers
+      # Avoid a SIGCHLD race condition by reaping all available child processes
+      while pid = Process.wait(-1, Process::WNOHANG)
+        workers.delete(pid)
+        Chore.logger.debug { "Removed finished worker #{pid}"}
+      end
+    rescue Errno::ECHILD
+      # Child processes have already terminated
     end
 
     def workers_available?
@@ -111,11 +124,6 @@ module Chore
     # Wrapper around fork for specs.
     def fork(&block)
       Kernel.fork(&block)
-    end
-
-    # Wrapper around Thread.new for specs
-    def thread(&block)
-      Thread.new(&block)
     end
 
     def procline(str)
