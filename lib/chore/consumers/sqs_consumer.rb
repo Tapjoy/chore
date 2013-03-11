@@ -12,17 +12,14 @@ module Chore
       @dupes = DuplicateDetector.new(Chore.config.dedupe_servers || nil)
     end
 
-    def consume
+    def consume(&handler)
       # this is for spec purposes, so we can test this w/out looping forever
-      while loop_forever?
+      while running?
         begin
           msg = @queue.receive_messages(:limit => 10)
-          next if msg.nil? 
-          if msg.kind_of? Array
-            msg.each { |m| yield m.handle, m.body unless @dupes.found_duplicate?(msg)}
-          else
-            yield msg.handle, msg.body unless @dupes.found_duplicate?(msg)
-          end
+          next if msg.nil? || msg.empty?
+
+          handle_messages(*msg, &handler)
         rescue => e
           Chore.logger.error { "SQSConsumer#Consume: #{e.inspect}" }
         end
@@ -39,9 +36,15 @@ module Chore
     end
 
     private
-    def loop_forever?
-      # Quit looping if the fetcher is telling us that it's trying to shutdown
-      true && !Chore::Fetcher.stopping?
+
+    def handle_messages(*messages, &block)
+      messages.each do |message|
+        block.call(message.handle, message.body) unless duplicate_message?(message)
+      end
+    end
+
+    def duplicate_message?(message)
+      @dupes.found_duplicate?(message)
     end
   end
 end
