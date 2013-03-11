@@ -41,7 +41,10 @@ module Chore
   }
 
   def self.logger
-    @logger ||= Logger.new(STDOUT)
+    @logger ||= begin
+      STDOUT.sync = true
+      Logger.new(STDOUT)
+    end
   end
 
   def self.stats
