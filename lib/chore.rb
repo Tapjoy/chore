@@ -18,6 +18,7 @@ module Chore
   autoload :Semaphore,          "chore/semaphore"
   autoload :Stats,              "chore/stats"
   autoload :Util,               "chore/util"
+  autoload :Worker,             "chore/worker"
 
   # Consumers
   autoload :SQSConsumer,        "chore/consumers/sqs_consumer"
