@@ -20,6 +20,10 @@ module Chore
   autoload :Util,               "chore/util"
   autoload :Worker,             "chore/worker"
 
+  # Publishers
+  autoload :Publisher,          "chore/publisher"
+  autoload :SQSPublisher,       "chore/publishers/sqs_publisher"
+
   # Consumers
   autoload :SQSConsumer,        "chore/consumers/sqs_consumer"
 
