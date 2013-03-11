@@ -36,16 +36,16 @@ module Chore
     def parse_opts(argv)
       opts = {}
       @parser = OptionParser.new do |o|
-         o.on "-q", "--queue QUEUE1,QUEUE2", "Names of queues to process (default: all known)" do |arg|
+        o.on "-q", "--queue QUEUE1,QUEUE2", "Names of queues to process (default: all known)" do |arg|
           opts[:queues] = arg.split(",")
         end
 
-        o.on "-v", "--verbose", "Print more verbose output" do
-          Chore.logger.level = Logger::INFO
-        end
-
-        o.on "-VV", "--very-verbose", "Print the most verbose output" do
-          Chore.logger.level = Logger::DEBUG
+        o.on "-v", "--verbose", "Print more verbose output. Use twice to increase." do
+          if Chore.logger.level > Logger::INFO
+            Chore.logger.level = Logger::INFO
+          elsif Chore.logger.level > Logger::DEBUG
+            Chore.logger.level = Logger::DEBUG
+          end
         end
 
         o.on '-e', '--environment ENV', "Application environment" do |arg|
@@ -56,7 +56,7 @@ module Chore
           opts[:require] = arg
         end
 
-        o.on '-p', '--stats-port PORT', 'Port to run the stats HTTP server on' do |arg|
+        o.on '-p', '--stats-port PORT', Integer, 'Port to run the stats HTTP server on' do |arg|
           opts[:stats_port] = arg
         end
 
@@ -77,6 +77,11 @@ module Chore
 
       @parser.parse!(ARGV)
       opts = env_overrides(opts)
+
+      missing_option!("--require [PATH|DIR]") unless opts[:require]
+      missing_option!("--aws-access-key KEY") unless opts[:aws_access_key]
+      missing_option!("--aws-secret-key KEY") unless opts[:aws_secret_key]
+
       opts
     end
 
@@ -107,6 +112,11 @@ module Chore
       else
         require File.expand_path(options[:require])
       end
+    end
+
+    def missing_option!(option)
+      puts "Missing argument: #{option}"
+      exit(255)
     end
 
     def validate!
