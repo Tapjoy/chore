@@ -7,11 +7,12 @@ require 'util'
 require 'hooks'
 require 'json_encoder'
 require 'stats'
+require 'version'
 
 require 'consumer'
 require 'publisher'
 
-Dir[File.join(File.dirname(__FILE__), 'chore', 'strategies', '*.rb')].each {|f| require f } 
+Dir[File.join(File.dirname(__FILE__), 'chore', 'strategies', '*.rb')].each {|f| require f }
 Dir[File.join(File.dirname(__FILE__), 'chore', 'consumers', '*.rb')].each {|f| require f }
 
 require 'fetcher'
@@ -21,7 +22,7 @@ require 'semaphore'
 require 'lease'
 
 module Chore
-  VERSION = '0.0.1'
+  VERSION = Chore::Version::STRING
 
   # Simple class to hold job processing information. Stubbed as a Struct right now
   # but left as a class in case we need more methods soon.
@@ -32,8 +33,8 @@ module Chore
   Configuration = OpenStruct
 
   DEFAULT_OPTIONS = {
-    :num_workers => 4, 
-    :worker_strategy => ForkedWorkerStrategy, 
+    :num_workers => 4,
+    :worker_strategy => ForkedWorkerStrategy,
     :consumer => SQSConsumer,
     :fetcher => Fetcher,
     :fetcher_strategy => ThreadPerConsumerStrategy,
