@@ -23,12 +23,12 @@ module Chore
   autoload :SQSConsumer,        "chore/consumers/sqs_consumer"
 
   # Worker strategies
-  autoload :ForkedWorkerStrategy,  "chore/strategies/forked_worker_strategy"
-  autoload :SingleWorkerStrategy,  "chore/strategies/single_worker_strategy"
+  autoload :ForkedWorkerStrategy,  "chore/strategies/worker/forked_worker_strategy"
+  autoload :SingleWorkerStrategy,  "chore/strategies/worker/single_worker_strategy"
 
   # Consumer strategies
-  autoload :SingleConsumerStrategy,    "chore/strategies/single_consumer_strategy"
-  autoload :ThreadPerConsumerStrategy, "chore/strategies/thread_per_consumer_strategy"
+  autoload :SingleConsumerStrategy,    "chore/strategies/consumer/single_consumer_strategy"
+  autoload :ThreadPerConsumerStrategy, "chore/strategies/consumer/thread_per_consumer_strategy"
 
   # Simple class to hold job processing information. Stubbed as a Struct right now
   # but left as a class in case we need more methods soon.
