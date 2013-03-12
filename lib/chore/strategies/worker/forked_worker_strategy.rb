@@ -42,19 +42,14 @@ module Chore
 
     def stop!
       Chore.logger.info { "Worker #{Process.pid} stopping" }
-      @workers.keys.each do |pid|
-        begin
-          Chore.logger.info { "Sending TERM to: #{pid}" }
-          Process.kill("SIGTERM", pid)
-        rescue Errno::SRCH
-        end
-      end
       begin
+        signal_children("TERM")
         Timeout::timeout(60) do
           Process.waitall
         end
       rescue Timeout::Error
-        Chore.logger.error "Timed out waiting for children to terminate."
+        Chore.logger.error "Timed out waiting for children to terminate. Terminating with prejudice."
+        signal_children("KILL")
       end
       @listener.close_all
     end
@@ -82,11 +77,12 @@ module Chore
       trap('CHLD') { reap_terminated_workers }
     end
 
-    def trap_child_signals
+    def trap_child_signals(worker)
       # Register a new TERM handler to make the current worker
       # finish this job, and not complete another one.
       # TODO: Figure out an overall flow of signals such that we
       # can use QUIT here instead of TERM.
+      trap("INT") { worker.stop! }
       trap("TERM") { worker.stop! }
     end
 
@@ -100,7 +96,7 @@ module Chore
     # in the child.
     def after_fork(worker)
       clear_child_signals
-      trap_child_signals
+      trap_child_signals(worker)
 
       # Replace the stats instance in the child with one that can handle talking over
       # the pipe
@@ -129,6 +125,16 @@ module Chore
     def procline(str)
       Chore.logger.info str
       $0 = "chore-#{Chore::VERSION}:#{str}"
+    end
+
+    def signal_children(sig)
+      @workers.keys.each do |pid|
+        begin
+          Chore.logger.info { "Sending #{sig} to: #{pid}" }
+          Process.kill(sig, pid)
+        rescue Errno::ESRCH
+        end
+      end
     end
 
   end

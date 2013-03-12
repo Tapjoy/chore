@@ -5,7 +5,6 @@ module Chore
     def initialize(manager)
       @stopping = false
       @manager = manager
-      @consumers = Chore.config.queues.map {|q| Chore.config.consumer.new(q) }
       @strategy = Chore.config.fetcher_strategy.new(self)
     end
 
@@ -13,13 +12,15 @@ module Chore
       @strategy.fetch
     end
 
-    def self.stop!
-      Chore.logger.info "Fetcher shutting down"
-      @consumers.each(&:stop)
-      @stopping = true
+    def stop!
+      unless @stopping
+        Chore.logger.info "Fetcher shutting down"
+        @stopping = true
+        @strategy.stop!
+      end
     end
 
-    def self.stopping?
+    def stopping?
       @stopping
     end
   end
