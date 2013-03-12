@@ -44,7 +44,7 @@ module Chore
       Chore.logger.info { "Worker #{Process.pid} stopping" }
       begin
         signal_children("TERM")
-        Timeout::timeout(10) do
+        Timeout::timeout(60) do
           Process.waitall
         end
       rescue Timeout::Error
@@ -133,7 +133,6 @@ module Chore
           Chore.logger.info { "Sending #{sig} to: #{pid}" }
           Process.kill(sig, pid)
         rescue Errno::ESRCH
-          @workers.delete(pid)
         end
       end
     end
