@@ -1,6 +1,7 @@
 require 'ostruct'
 require 'logger'
 require 'zk'
+require 'chore/version'
 
 module Chore
   VERSION = Chore::Version::STRING

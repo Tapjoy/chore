@@ -54,6 +54,7 @@ module Chore
       @batcher = Batcher.new(Chore.config.batch_size)
       @batcher.callback = lambda { |batch| @fetcher.manager.assign(batch) }
       @batcher.schedule
+      @running = true
     end
 
     def fetch
@@ -65,7 +66,7 @@ module Chore
             # Quick hack to force this thread to end it's work
             # if we're shutting down. Could be delayed due to the
             # weird sometimes-blocking nature of SQS.
-            break if Chore::Fetcher.stopping?
+            consumer.stop if !running?
             Chore.logger.debug { "Got message: #{id}"}
 
             work = UnitOfWork.new(id, body, consumer)
@@ -76,5 +77,16 @@ module Chore
 
       threads.each(&:join)
     end
-  end
-end
+
+    def stop!
+      Chore.logger.info "Shutting down fetcher: #{self.class.name.to_s}"
+      @running = false
+    end
+
+    def running?
+      @running
+    end
+
+  end #ThreadPerConsumerStrategy
+
+end #Chore

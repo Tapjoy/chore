@@ -24,7 +24,7 @@ module Chore
         Chore.logger.info "Manager shutting down"
         @stopping = true
         @worker_strategy.stop!
-        Chore::Fetcher.stop!
+        @fetcher.stop!
       end
     end
 
