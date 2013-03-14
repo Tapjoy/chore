@@ -40,6 +40,7 @@ module Chore
     def handle_messages(*messages, &block)
       messages.each do |message|
         block.call(message.handle, message.body) unless duplicate_message?(message)
+        Chore.run_hooks_for(:on_fetch, message)
       end
     end
 

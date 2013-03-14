@@ -45,6 +45,10 @@ module Chore
             klass.run_hooks_for(:on_failure,*message['args'])
             Chore.run_hooks_for(:on_failure,message,e)
             Chore.stats.add(:failed,message['class'])
+          ensure
+            # after message is a generic hook for running after any
+            # state be it failed, timed out, completed, etc.
+            Chore.run_hooks_for(:after_message,message,e)
           end
         end
       end
