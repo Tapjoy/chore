@@ -22,6 +22,7 @@ describe Chore::SQSConsumer do
     AWS::SQS.any_instance.should_receive(:queues).and_return { queues }
     queues.stub(:named) { queue }
     queue.stub(:receive_message) { message }
+    queue.stub(:visibility_timeout) { 10 }
   end
 
   describe "consuming messages" do
