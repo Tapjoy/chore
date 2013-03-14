@@ -39,7 +39,7 @@ describe Chore::Job do
   end
 
   describe(:perform_async) do 
-    it 'should call an instance of the queue_optionsd publisher' do
+    it 'should call an instance of the queue_options publisher' do
       args = [1,2,{:h => 'ash'}]
       TestJob.queue_options(:publisher => Chore::Publisher)
       Chore::Publisher.any_instance.should_receive(:publish).with('test_queue',{:class => 'TestJob',:args => args}).and_return(true)

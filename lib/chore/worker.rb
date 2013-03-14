@@ -29,13 +29,18 @@ module Chore
           klass = payload_class(message)
           begin
             next unless klass.run_hooks_for(:before_perform,*message['args'])
-            klass.perform(*message['args'])
+            Timeout::timeout(klass.options[:timeout]) do
+              klass.perform(*message['args'])
+            end
             item.consumer.complete(item.id)
             klass.run_hooks_for(:after_perform,*message['args'])
             Chore.stats.add(:completed,message['class'])
           rescue Job::RejectMessageException
             item.consumer.reject(item.id)
             Chore.stats.add(:rejected,message['class'])
+          rescue Timeout::Error
+            Chore.run_hooks_for(:on_timeout, message)
+            Chore.stats.add(:timeout,message['class'])
           rescue => e
             klass.run_hooks_for(:on_failure,*message['args'])
             Chore.run_hooks_for(:on_failure,message,e)
