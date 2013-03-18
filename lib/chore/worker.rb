@@ -56,7 +56,7 @@ module Chore
 
     def to_json(*args)
       {
-        :batch_size => (@work ? @work.count : '')
+        :batch_size => (@work ? @work.length : '')
       }.to_json(*args)
     end
   protected
