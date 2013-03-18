@@ -81,7 +81,8 @@ describe Chore::Worker do
   it 'should timeout a job that runs too long' do
     work = [Chore::UnitOfWork.new(1, Chore::JsonEncoder.encode(timeout_job), consumer)]
     consumer.should_not_receive(:complete)
-    Chore.should_receive(:run_hooks_for).with(:on_timeout, anything())
+    Chore.should_receive(:hooks_for).with(:before_perform) { [] }
+    Chore.should_receive(:hooks_for).with(:on_timeout) { [] }
     Chore::Worker.start(work)
   end
 
