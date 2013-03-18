@@ -42,7 +42,14 @@ module Chore
 
   # Wrapper around an OpenStruct to define configuration data
   # (TODO): Add required opts, and validate that they're set
-  Configuration = OpenStruct
+  class Configuration < OpenStruct
+    def merge_hash(hsh={})
+      hsh.keys.each do |k|
+        self.send("#{k.to_sym}=",hsh[k])
+      end
+      self
+    end
+  end
 
   DEFAULT_OPTIONS = {
     :num_workers => 4,
@@ -88,8 +95,9 @@ module Chore
   end
 
   def self.configure(opts={})
-    @config = Chore::Configuration.new(DEFAULT_OPTIONS.merge(opts))
+    @config = (@config ? @config.merge_hash(opts) : Chore::Configuration.new(DEFAULT_OPTIONS.merge(opts)))
     yield @config if block_given?
+    @config
   end
 
   def self.config
