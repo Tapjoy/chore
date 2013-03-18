@@ -58,6 +58,7 @@ module Chore
     end
 
     def fetch
+      Chore.logger.debug "Starting up consumer strategy: #{self.class.name}"
       threads = []
       Chore.config.queues.each do |queue|
         threads << Thread.new(queue) do |tQueue|

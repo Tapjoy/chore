@@ -9,6 +9,7 @@ module Chore
     end
 
     def start
+      Chore.logger.info "Fetcher starting up"
       @strategy.fetch
     end
 

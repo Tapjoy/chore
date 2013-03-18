@@ -37,6 +37,7 @@ module Chore
     end
 
     def start
+      Chore.logger.debug "Starting up worker strategy: #{self.class.name}"
       @listener.start
     end
 

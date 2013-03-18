@@ -66,6 +66,7 @@ module Chore
 
     def start
       @thread = Thread.new do
+        Chore.logger.debug "Starting up pipe listener: #{self.class.name}"
         loop do
           prune!
           # get a list of pipes, include the signal pipe so we can break out of here
