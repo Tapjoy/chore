@@ -81,7 +81,7 @@ module Chore
     #
     def perform_async(*args)
       self.class.run_hooks_for(:before_publish,*args)
-      @chore_publisher ||= self.class.options[:publisher].new
+      @chore_publisher ||= self.class.options[:publisher]
       @chore_publisher.publish(self.class.options[:name],self.class.job_hash(args))
       self.class.run_hooks_for(:after_publish,*args)
     end
