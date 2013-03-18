@@ -4,7 +4,7 @@ require 'watcher/publisher/statsd'
 module Chore
   module Tapjoy
     def self.register_tapjoy_handlers!
-      Watcher::Metric.publisher = Watcher::Publisher::Statsd.new('localhost', '8127')
+      Watcher::Metric.publisher = Watcher::Publisher::Statsd.new(Chore.config.statsd[:host], Chore.config.statsd[:port])
       Watcher::Metric.default_scope = "jobs"
 
       after_message = Proc.new do |state|
@@ -25,7 +25,7 @@ module Chore
         after_message.call "completed"
       end
 
-      Chore.add_hook :on_fetch_tell_monitoring do 
+      Chore.add_hook :on_fetch do 
         metric = Watcher::Metric.new("fetch")
         metric.increment
       end

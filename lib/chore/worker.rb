@@ -37,6 +37,7 @@ module Chore
             Chore.stats.add(:completed,message['class'])
           rescue Job::RejectMessageException
             item.consumer.reject(item.id)
+            Chore.run_hooks_for(:on_rejected, message)
             Chore.stats.add(:rejected,message['class'])
           rescue Timeout::Error
             Chore.run_hooks_for(:on_timeout, message)
