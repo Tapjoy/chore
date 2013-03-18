@@ -6,8 +6,8 @@ group :development do
   gem 'guard-rspec'
   gem 'rb-fsevent', '~> 0.9.1'
   gem 'airbrake'
-  gem 'memcached'
   gem 'rake', '~> 10.0'
+  gem 'dalli'
 end
 
 gem 'json'

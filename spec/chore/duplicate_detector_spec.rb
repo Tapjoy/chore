@@ -20,7 +20,7 @@ describe Chore::DuplicateDetector do
   end
 
   it 'should return true if the message has already been seen' do
-    memcache.should_receive(:add).and_raise(Memcached::NotStored.new)
+    memcache.should_receive(:add).and_return(false)
     dedupe.found_duplicate?(message).should be_true
   end
 
@@ -29,7 +29,7 @@ describe Chore::DuplicateDetector do
   end
 
   it "should set the timeout to be the queue's " do
-    memcache.should_receive(:add).with(id,"1",timeout)
+    memcache.should_receive(:add).with(id,"1",timeout).and_return(true)
     dedupe.found_duplicate?(message).should be_false
   end
 

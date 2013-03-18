@@ -21,6 +21,7 @@ GEM
     builder (3.1.4)
     coderay (1.0.8)
     connection_pool (0.9.3)
+    dalli (2.6.2)
     diff-lcs (1.1.3)
     girl_friday (0.10.0)
       connection_pool (~> 0.9.0)
@@ -42,7 +43,6 @@ GEM
     logging (1.7.2)
       little-plugger (>= 1.1.3)
     lumberjack (1.0.2)
-    memcached (1.4.6)
     method_source (0.8.1)
     multi_json (1.5.0)
     multi_xml (0.5.1)
@@ -81,9 +81,9 @@ DEPENDENCIES
   aws-sdk
   bundler
   chore!
+  dalli
   guard-rspec
   json
-  memcached
   rack
   rake (~> 10.0)
   rb-fsevent (~> 0.9.1)
