@@ -8,6 +8,10 @@ module Chore
       self.options = DEFAULT_OPTIONS.merge(opts)
     end
 
+    def self.publish(queue_name,job)
+      self.new.publish(queue_name,job)
+    end
+
     def publish(job)
       raise NotImplementedError
     end
