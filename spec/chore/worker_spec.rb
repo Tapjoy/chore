@@ -97,10 +97,10 @@ describe Chore::Worker do
     work << Chore::UnitOfWork.new('4', Chore::JsonEncoder.encode(rejected_job), consumer) 
     consumer.should_receive(:complete).with('1')
     consumer.should_receive(:reject).with('4')
-    Watcher::Metric.should_receive(:new).with("finished", attributes: { state: "completed" }) { metric }
-    Watcher::Metric.should_receive(:new).with("finished", attributes: { state: "failed" }) { metric }
-    Watcher::Metric.should_receive(:new).with("finished", attributes: { state: "timeout" }) { metric }
-    Watcher::Metric.should_receive(:new).with("finished", attributes: { state: "rejected" }) { metric }
+    Watcher::Metric.should_receive(:new).with("finished", attributes: { state: "completed", queue: "SimpleJob" }) { metric }
+    Watcher::Metric.should_receive(:new).with("finished", attributes: { state: "failed", queue: "BreakingJob" }) { metric }
+    Watcher::Metric.should_receive(:new).with("finished", attributes: { state: "timeout", queue: "TimeoutJob" }) { metric }
+    Watcher::Metric.should_receive(:new).with("finished", attributes: { state: "rejected", queue: "RejectedJob" }) { metric }
     w = Chore::Worker.new(work)
     w.start
   end
