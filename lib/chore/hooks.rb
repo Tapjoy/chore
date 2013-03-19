@@ -7,7 +7,7 @@ module Chore
     # hook_name_identifier. ex: before_perform_log
     #
     def run_hooks_for(event,*args)
-      results = global_hooks_for(event).map(&:call) || [true]
+      results = global_hooks_for(event).map { |prc| prc.call(*args) } || [true]
       results << hooks_for(event).map { |method| send(method,*args) }
       results = false if results.any? {|r| false == r }
       results

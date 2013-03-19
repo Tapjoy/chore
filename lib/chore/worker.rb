@@ -33,17 +33,17 @@ module Chore
               klass.perform(*message['args'])
             end
             item.consumer.complete(item.id)
-            klass.run_hooks_for(:after_perform,*message['args'])
+            klass.run_hooks_for(:after_perform, message)
             Chore.stats.add(:completed,message['class'])
           rescue Job::RejectMessageException
             item.consumer.reject(item.id)
+            klass.run_hooks_for(:on_rejected, message)
             Chore.stats.add(:rejected,message['class'])
           rescue Timeout::Error
-            Chore.run_hooks_for(:on_timeout, message)
+            klass.run_hooks_for(:on_timeout, message)
             Chore.stats.add(:timeout,message['class'])
           rescue => e
-            klass.run_hooks_for(:on_failure,*message['args'])
-            Chore.run_hooks_for(:on_failure,message,e)
+            klass.run_hooks_for(:on_failure, message)
             Chore.stats.add(:failed,message['class'])
           end
         end
