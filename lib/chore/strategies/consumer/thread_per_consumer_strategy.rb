@@ -17,13 +17,17 @@ module Chore
       Thread.new(batch_timeout) do |timeout|
         Chore.logger.info "Batching timeout thread starting"
         loop do
-          Chore.logger.debug "Last message added to batch: #{@last_message}: #{@batch.size}"
-          if @last_message && Time.now > (@last_message + timeout)
-            Chore.logger.debug "Batching timeout reached (#{@last_message + timeout}), current size: #{@batch.size}"
-            self.execute
-            @last_message = nil
+          begin 
+            Chore.logger.debug "Last message added to batch: #{@last_message}: #{@batch.size}"
+            if @last_message && Time.now > (@last_message + timeout)
+              Chore.logger.debug "Batching timeout reached (#{@last_message + timeout}), current size: #{@batch.size}"
+              self.execute
+              @last_message = nil
+            end
+            sleep(1) 
+          rescue => e
+            Chore.logger.error "Batcher#schedule raised an exception: #{e.inspect}"
           end
-          sleep(1) 
         end
       end
     end
@@ -62,16 +66,20 @@ module Chore
       threads = []
       Chore.config.queues.each do |queue|
         threads << Thread.new(queue) do |tQueue|
-          consumer = Chore.config.consumer.new(tQueue)
-          consumer.consume do |id, body|
-            # Quick hack to force this thread to end it's work
-            # if we're shutting down. Could be delayed due to the
-            # weird sometimes-blocking nature of SQS.
-            consumer.stop if !running?
-            Chore.logger.debug { "Got message: #{id}"}
+          begin
+            consumer = Chore.config.consumer.new(tQueue)
+            consumer.consume do |id, body|
+              # Quick hack to force this thread to end it's work
+              # if we're shutting down. Could be delayed due to the
+              # weird sometimes-blocking nature of SQS.
+              consumer.stop if !running?
+              Chore.logger.debug { "Got message: #{id}"}
 
-            work = UnitOfWork.new(id, body, consumer)
-            @batcher.add(work)
+              work = UnitOfWork.new(id, body, consumer)
+              @batcher.add(work)
+            end
+          rescue => e
+            Chore.logger.error "ThreadPerConsumerStrategy#fetch raised an exception: #{e.inspect}"
           end
         end
       end

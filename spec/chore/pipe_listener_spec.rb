@@ -86,6 +86,19 @@ describe Chore::PipeListener do
       listener.stop
     end
 
+    it 'should log exceptions raised by handle_paylod' do
+      listener.stub(:handle_payload).and_raise(StandardError.new("handle_payload"))
+      Chore.logger.should_receive(:error).with(/handle_payload/)
+      data = "some data".force_encoding("UTF-8")
+      payload = Marshal.dump(data) + "\n\n"
+      listener.add_pipe(id)
+      pid = fork do
+        listener.pipes[id].write(data)
+      end
+      Process.wait(pid)
+      listener.stop
+    end
+
     after(:each) { listener.stop }
   end
 
