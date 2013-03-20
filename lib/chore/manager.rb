@@ -8,6 +8,7 @@ module Chore
     def initialize()
       Chore.logger.info "Booting Chore #{Chore::VERSION}"
       Chore.logger.debug { Chore.config.inspect }
+      @started_at = nil
       @worker_strategy = Chore.config.worker_strategy.new(self)
       @fetcher = Chore.config.fetcher.new(self)
       @processed = 0
@@ -15,6 +16,7 @@ module Chore
     end
 
     def start
+      @started_at = Time.now
       @worker_strategy.start
       @fetcher.start
     end
@@ -43,7 +45,12 @@ module Chore
     end
 
     def report
-      {'active_workers' => @worker_strategy.workers, 'stats' => Chore.stats.to_json}.to_json
+      {
+        'master_started_at' => @started_at, 
+        'queues' => Chore.config.queues,
+        'active_workers' => @worker_strategy.workers,
+        'stats' => Chore.stats
+      }.to_json
     end
   end
 end

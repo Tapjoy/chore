@@ -61,10 +61,10 @@ module Chore
     end
 
     def to_json(*args)
-    {
-      :counts => @buckets.map {|name,v| { name => v.count}},
-      :buckets => @buckets.to_json(*args)
-    }
+      {
+        :counts => @buckets.map {|name,v| { name => v.count}},
+        :buckets => @buckets
+      }.to_json(*args)
     end
 
   end
