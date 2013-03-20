@@ -44,7 +44,7 @@ module Chore
     def stop!
       Chore.logger.info { "Worker #{Process.pid} stopping" }
       begin
-        signal_children("TERM")
+        signal_children("QUIT")
         Timeout::timeout(60) do
           Process.waitall
         end
@@ -79,12 +79,10 @@ module Chore
     end
 
     def trap_child_signals(worker)
-      # Register a new TERM handler to make the current worker
+      # Register a new QUIT handler to make the current worker
       # finish this job, and not complete another one.
-      # TODO: Figure out an overall flow of signals such that we
-      # can use QUIT here instead of TERM.
       trap("INT") { worker.stop! }
-      trap("TERM") { worker.stop! }
+      trap("QUIT") { worker.stop! }
     end
 
     def clear_child_signals
