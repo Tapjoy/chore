@@ -90,7 +90,12 @@ module Chore
                   pipe_from_handle(pipe).close 
                   next
                 end
-                handle_payload(payload)
+                begin
+                  handle_payload(payload)
+                rescue => e
+                  # Many things could have gone wrong, let's log it and move on
+                  Chore.logger.error "PipeListener#handle_payload raised an exception: #{e.inspect}"
+                end
               end
             end
           end

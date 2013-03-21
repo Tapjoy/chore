@@ -27,25 +27,12 @@ module Chore
         begin
           message = decode_job(item.message)
           klass = payload_class(message)
-          begin
-            next unless klass.run_hooks_for(:before_perform,*message['args'])
-            Timeout::timeout(klass.options[:timeout]) do
-              klass.perform(*message['args'])
-            end
-            item.consumer.complete(item.id)
-            klass.run_hooks_for(:after_perform, message)
-            Chore.stats.add(:completed,message['class'])
-          rescue Job::RejectMessageException
-            item.consumer.reject(item.id)
-            klass.run_hooks_for(:on_rejected, message)
-            Chore.stats.add(:rejected,message['class'])
-          rescue Timeout::Error
-            klass.run_hooks_for(:on_timeout, message)
-            Chore.stats.add(:timeout,message['class'])
-          rescue => e
-            klass.run_hooks_for(:on_failure, message)
-            Chore.stats.add(:failed,message['class'])
-          end
+          next unless klass.run_hooks_for(:before_perform,message)
+          perform_job(item,klass,message)
+        rescue => e
+          Chore.logger.info { "#{self.inspect}: Failed to run job #{item.inspect} with error: #{e.message}" }
+          Chore.run_hooks_for(:on_failure,item.message,e)
+          Chore.stats.add(:failed,:unknown)
         end
       end
     end
@@ -65,7 +52,25 @@ module Chore
     end
 
   private
-    
+    def perform_job(item,klass, message)
+      Timeout::timeout(klass.options[:timeout]) do
+        klass.perform(*message['args'])
+      end
+      item.consumer.complete(item.id)
+      klass.run_hooks_for(:after_perform,message)
+      Chore.stats.add(:completed,message['class'])
+    rescue Job::RejectMessageException
+      item.consumer.reject(item.id)
+      klass.run_hooks_for(:on_rejected, message)
+      Chore.stats.add(:rejected,message['class'])
+    rescue Timeout::Error
+      klass.run_hooks_for(:on_timeout, message)
+      Chore.stats.add(:timeout,message['class'])
+    rescue => e
+      klass.run_hooks_for(:on_failure,message,e)
+      Chore.stats.add(:failed,message['class'])
+    end
+
     def decode_job(data)
       options[:encoder].decode(data)
     end

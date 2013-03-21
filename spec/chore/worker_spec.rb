@@ -104,4 +104,15 @@ describe Chore::Worker do
     w = Chore::Worker.new(work)
     w.start
   end
+
+  describe 'with errors' do
+    let(:job) { "Not-A-Valid-Json-String" }
+
+    it 'should fail cleanly with a badly formatted message' do
+      work = Chore::UnitOfWork.new(2,job,consumer)
+      consumer.should_not_receive(:complete)
+      Chore.should_receive(:run_hooks_for).with(:on_failure, job, anything())
+      Chore::Worker.start(work)
+    end
+  end
 end

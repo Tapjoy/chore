@@ -13,7 +13,6 @@ module Chore
     end
 
     def consume(&handler)
-      # this is for spec purposes, so we can test this w/out looping forever
       while running?
         begin
           msg = @queue.receive_messages(:limit => 10)

@@ -4,8 +4,10 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'chore'
 require 'chore/cli'
 
-trap "INT" do
-  Chore::CLI.instance.shutdown
+["INT","TERM","QUIT"].each do |sig|
+  trap sig do
+    Chore::CLI.instance.shutdown
+  end
 end
 
 begin
