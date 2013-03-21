@@ -7,6 +7,7 @@ module Chore
 
     DEFAULT_OPTIONS = { :encoder => JsonEncoder }
     attr_accessor :options
+    attr_accessor :status
 
     def self.start(work)
       self.new(work).start
@@ -27,6 +28,7 @@ module Chore
         begin
           message = decode_job(item.message)
           klass = payload_class(message)
+          self.status = {'started_at'=>Time.now,'class' => klass.name,'args'=>message['args']}
           next unless klass.run_hooks_for(:before_perform,message)
           perform_job(item,klass,message)
         rescue => e
@@ -43,7 +45,8 @@ module Chore
 
     def to_json(*args)
       {
-        :batch_size => (@work ? @work.length : '')
+        :started_at => @started_at,
+        :status => @status
       }.to_json(*args)
     end
   protected

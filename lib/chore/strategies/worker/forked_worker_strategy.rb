@@ -1,11 +1,21 @@
 require 'chore/pipe_listener'
 
 module Chore
-  class StatListener < PipeListener
+  class WorkerListener < PipeListener
+
+    def initialize(parent,timeout)
+      super(timeout)
+      @parent = parent
+    end
+
     def handle_payload(payload)
       Chore.logger.debug { "StatListener#handle_payload : #{Base64.encode64(payload)}" }
       data = Marshal.load(payload)
-      Chore.stats.add(data[0],data[1])
+      if data['type'] && data['type'] == 'stat'
+        Chore.stats.add(data['value'][0],data['value'][1])
+      elsif data['type'] && data['type'] == 'status'
+        @parent.workers[data['value']['id']].status = data['value']['status']
+      end
       data = nil
     rescue => e
       Chore.logger.error { "Failed to unmarshal data from pipe: #{e.inspect} : #{Base64.encode64(payload)}" }
@@ -19,7 +29,11 @@ module Chore
     end
 
     def add(stat,type=:global,data=nil)
-      @listener.pipes[@pipe_id].write [stat,StatEntry.new(type,data)]
+      @listener.pipes[@pipe_id].write({'type' => 'stat', 'value' => [stat,StatEntry.new(type,data)]})
+    end
+
+    def set_worker_status(id,*args)
+      @listener.pipes[@pipe_id].write({'type' =>'status', 'value' => {'id' => id, 'status' => args}})
     end
   end
 
@@ -29,7 +43,7 @@ module Chore
     def initialize(manager)
       @manager = manager
       @workers = {}
-      @listener = StatListener.new(60)
+      @listener = WorkerListener.new(self,60)
 
       trap_master_signals
 
@@ -100,6 +114,15 @@ module Chore
       # Replace the stats instance in the child with one that can handle talking over
       # the pipe
       Chore.stats = PipedStats.new(worker.object_id,@listener)
+
+      # Okay, so we replace status= in the worker to set the status over the pipe. This is
+      # pretty rough, but lets us keep the worker from caring that it's forked. 
+      class << worker
+        def status=(status)
+          Chore.stats.set_worker_status(Process.pid,status)
+        end
+      end
+        
     end
 
     def reap_terminated_workers

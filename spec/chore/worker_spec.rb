@@ -102,6 +102,14 @@ describe Chore::Worker do
     Watcher::Metric.should_receive(:new).with("finished", attributes: { state: "timeout", queue: "TimeoutJob" }) { metric }
     Watcher::Metric.should_receive(:new).with("finished", attributes: { state: "rejected", queue: "RejectedJob" }) { metric }
     w = Chore::Worker.new(work)
+  end
+
+  it 'should set the status to the current running job' do
+    work = Chore::UnitOfWork.new('1',Chore::JsonEncoder.encode(job), consumer)
+    SimpleJob.should_receive(:perform).with(*job_args)
+    consumer.should_receive(:complete)
+    w = Chore::Worker.new(work)
+    w.should_receive(:status=).with(hash_including('class'=>SimpleJob.name))
     w.start
   end
 
