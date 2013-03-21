@@ -65,21 +65,23 @@ module Chore
       Chore.logger.debug "Starting up consumer strategy: #{self.class.name}"
       threads = []
       Chore.config.queues.each do |queue|
-        threads << Thread.new(queue) do |tQueue|
-          begin
-            consumer = Chore.config.consumer.new(tQueue)
-            consumer.consume do |id, body|
-              # Quick hack to force this thread to end it's work
-              # if we're shutting down. Could be delayed due to the
-              # weird sometimes-blocking nature of SQS.
-              consumer.stop if !running?
-              Chore.logger.debug { "Got message: #{id}"}
+        Chore.config.threads_per_queue.times do 
+          threads << Thread.new(queue) do |tQueue|
+            begin
+              consumer = Chore.config.consumer.new(tQueue)
+              consumer.consume do |id, body|
+                # Quick hack to force this thread to end it's work
+                # if we're shutting down. Could be delayed due to the
+                # weird sometimes-blocking nature of SQS.
+                consumer.stop if !running?
+                Chore.logger.debug { "Got message: #{id}"}
 
-              work = UnitOfWork.new(id, body, consumer)
-              @batcher.add(work)
+                work = UnitOfWork.new(id, body, consumer)
+                @batcher.add(work)
+              end
+            rescue => e
+              Chore.logger.error "ThreadPerConsumerStrategy#fetch raised an exception: #{e.inspect}"
             end
-          rescue => e
-            Chore.logger.error "ThreadPerConsumerStrategy#fetch raised an exception: #{e.inspect}"
           end
         end
       end
