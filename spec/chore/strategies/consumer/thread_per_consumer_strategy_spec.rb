@@ -25,13 +25,13 @@ describe Chore::ThreadPerConsumerStrategy do
       c.consumer = consumer
       c.batch_size = batch_size
     end
-    consumer.any_instance.should_receive(:consume).and_yield(1, "test")
   end
 
   describe "unfilled batch" do
     let(:batch_size) { 2 }
 
     it "should queue but not assign the message" do
+      consumer.any_instance.should_receive(:consume).and_yield(1, "test")
       strategy.fetch
       strategy.batcher.batch.size.should == 1 
     end
@@ -42,8 +42,25 @@ describe Chore::ThreadPerConsumerStrategy do
 
     it "should assign the batch" do
       manager.should_receive(:assign)
+      consumer.any_instance.should_receive(:consume).and_yield(1, "test")
       strategy.fetch
       strategy.batcher.batch.size.should == 0
+    end
+  end
+
+  describe "2 threads per queue" do
+    let(:batch_size) { 2 }
+    let(:thread) { double('thread') }
+
+    before do
+      Chore.config.threads_per_queue = 2
+      thread.stub(:join)
+    end
+
+    it "should spawn two threads" do
+      # two for threads per queue and one for batcher#schedule
+      Thread.should_receive(:new).exactly(3).times { thread }
+      strategy.fetch
     end
   end
 end
