@@ -27,7 +27,7 @@ module Chore
         begin
           message = decode_job(item.message)
           klass = payload_class(message)
-          next unless klass.run_hooks_for(:before_perform,*message['args'])
+          next unless klass.run_hooks_for(:before_perform,message)
           perform_job(item,klass,message)
         rescue => e
           Chore.logger.info { "#{self.inspect}: Failed to run job #{item.inspect} with error: #{e.message}" }
