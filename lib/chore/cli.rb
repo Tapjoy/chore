@@ -4,17 +4,38 @@ require 'chore'
 require 'rack'
 
 module Chore
+
   class CLI
     include Singleton
+    include Util
+
     def initialize
       @options = {}
+      @registered_opts = {}
       @stopping = false
+    end
+
+    def registered_opts
+      @registered_opts
+    end
+
+    def self.register_option(key,*args,&blk)
+      instance.register_option(key,*args,&blk)
+    end
+
+    def register_option(key,*args,&blk)
+      registered_opts[key] = {:args => args}
+      registered_opts[key].merge!(:block => blk) if blk
     end
 
     def parse(args=ARGV)
       Chore.logger.level = Logger::WARN
-      @options = parse_opts(args)
-      Chore.configure(@options)
+      setup_options
+      parse_opts(args)
+      if @options[:config_file] 
+        parse_config_file(@options[:config_file])
+      end
+      Chore.configure(options)
       validate!
       boot_system
     end
@@ -33,41 +54,66 @@ module Chore
       end
     end
 
-    def parse_opts(argv)
-      opts = {}
-      @parser = OptionParser.new do |o|
-        o.on "-q", "--queue QUEUE1,QUEUE2", "Names of queues to process (default: all known)" do |arg|
-          opts[:queues] = arg.split(",")
-        end
+    def parse_config_file(file)
+      data = File.readlines(file).map(&:chomp).map(&:strip)
+      parse_opts(data)
+    end
 
-        o.on "-v", "--verbose", "Print more verbose output. Use twice to increase." do
-          if Chore.logger.level > Logger::INFO
-            Chore.logger.level = Logger::INFO
-          elsif Chore.logger.level > Logger::DEBUG
-            Chore.logger.level = Logger::DEBUG
-          end
-        end
+    def setup_options
+      register_option "queues", "-q", "--queues QUEUE1,QUEUE2", "Names of queues to process (default: all known)" do |arg|
+        options[:queues] = arg.split(",")
+      end
 
-        o.on '-e', '--environment ENV', "Application environment" do |arg|
-          opts[:environment] = arg
-        end
-
-        o.on '-r', '--require [PATH|DIR]', "Location of Rails application with workers or file to require" do |arg|
-          opts[:require] = arg
-        end
-
-        o.on '-p', '--stats-port PORT', Integer, 'Port to run the stats HTTP server on' do |arg|
-          opts[:stats_port] = arg
-        end
-
-        o.on '--aws-access-key KEY', 'Valid AWS Access Key' do |arg|
-          opts[:aws_access_key] = arg
-        end
-
-        o.on '--aws-secret-key KEY', 'Valid AWS Secret Key' do |arg|
-          opts[:aws_secret_key] = arg
+      register_option "verbose", "-v", "--verbose", "Print more verbose output. Use twice to increase." do
+        if Chore.logger.level > Logger::INFO
+          Chore.logger.level = Logger::INFO
+        elsif Chore.logger.level > Logger::DEBUG
+          Chore.logger.level = Logger::DEBUG
         end
       end
+
+      register_option "environment", '-e', '--environment ENV', "Application environment"
+
+      register_option "config_file", '-c', '--config-file FILE', "Location of a file specifying additional chore configuration"
+
+      register_option 'require', '-r', '--require [PATH|DIR]', "Location of Rails application with workers or file to require"
+
+      register_option 'stats_port', '-p', '--stats-port PORT', 'Port to run the stats HTTP server on'
+
+      register_option 'aws_access_key', '--aws-access-key KEY', 'Valid AWS Access Key'
+
+      register_option 'aws_secret_key', '--aws-secret-key KEY', 'Valid AWS Secret Key'
+
+      register_option 'num_workers', '--concurrency NUM', 'Number of workers to run concurrently'
+
+      register_option 'worker_strategy', '--worker-strategy CLASS_NAME', 'Name of a class to use as the worker strategy (default: ForkedWorkerStrategy' do |arg|
+        options[:worker_strategy] = constantize(arg)
+      end
+
+      register_option 'consumer', '--consumer CLASS_NAME', 'Name of a class to use as the queue consumer (default: SqsConsumer)' do |arg|
+        options[:consumer] = constantize(arg)
+      end
+
+      register_option 'fetcher_strategy', '--fetcher-strategy CLASS_NAME', 'Name of a class to use as the fetching strategy (default: ThreadPerConsumerStrategy' do |arg|
+        options[:fetcher_strategy] = constantize(arg)
+      end
+
+    end
+
+    def parse_opts(argv)
+      @options ||= {}
+      @parser = OptionParser.new do |o|
+        registered_opts.each do |key,opt|
+          if opt[:block]
+            o.on(*opt[:args],&opt[:block])
+          else
+            o.on(*opt[:args]) do |arg|
+              options[key.to_sym] = arg
+            end
+          end
+        end
+      end
+
       @parser.banner = "chore [options]"
 
       @parser.on_tail "-h", "--help", "Show help" do
@@ -75,14 +121,10 @@ module Chore
         exit 1
       end
 
-      @parser.parse!(ARGV)
-      opts = env_overrides(opts)
+      @parser.parse!(argv)
+      env_overrides
 
-      missing_option!("--require [PATH|DIR]") unless opts[:require]
-      missing_option!("--aws-access-key KEY") unless opts[:aws_access_key]
-      missing_option!("--aws-secret-key KEY") unless opts[:aws_secret_key]
-
-      opts
+      @options
     end
 
     private
@@ -90,10 +132,9 @@ module Chore
       @options
     end
 
-    def env_overrides(opts)
-      opts[:aws_access_key] ||= ENV['AWS_ACCESS_KEY']
-      opts[:aws_secret_key] ||= ENV['AWS_SECRET_KEY']
-      opts
+    def env_overrides
+      @options[:aws_access_key] ||= ENV['AWS_ACCESS_KEY']
+      @options[:aws_secret_key] ||= ENV['AWS_SECRET_KEY']
     end
 
     def detected_environment
@@ -120,6 +161,11 @@ module Chore
     end
 
     def validate!
+
+      missing_option!("--require [PATH|DIR]") unless options[:require]
+      missing_option!("--aws-access-key KEY") unless options[:aws_access_key]
+      missing_option!("--aws-secret-key KEY") unless options[:aws_secret_key]
+
       if !File.exist?(options[:require]) ||
          (File.directory?(options[:require]) && !File.exist?("#{options[:require]}/config/application.rb"))
         puts "=================================================================="
