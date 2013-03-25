@@ -53,6 +53,9 @@ module Chore
   class ThreadPerConsumerStrategy
     attr_accessor :batcher
 
+    Chore::CLI.register_option 'batch_size', '--batch-size', 'Number of items to collect for a single worker to process'
+    Chore::CLI.register_option 'threads_per_queue', '--threads-per-queue', 'Number of threads to create for each named queue'
+
     def initialize(fetcher)
       @fetcher = fetcher
       @batcher = Batcher.new(Chore.config.batch_size)
