@@ -1,0 +1,57 @@
+require 'spec_helper'
+
+TestMessage = Struct.new(:handle,:body) do
+  def empty?
+    false
+  end
+
+  # Structs define a to_a behavior that is not compatible with array splatting. Remove it so that
+  # [*message] on a struct will behave the same as on a string.
+  undef_method :to_a
+end
+
+describe Chore::LockingSQSConsumer do
+  let(:sqs) { double("sqs") }
+  let(:queue_name) { "test" }
+  let(:queues) { double("queues") }
+  let(:queue) { double("test_queue") }
+  let(:options) { {} }
+  let(:consumer) { Chore::LockingSQSConsumer.new(queue_name) }
+  let(:message) { TestMessage.new("handle","message body") }
+  let(:zk) { double('zk') }
+  let(:semaphore) { double("semaphore") }
+  let(:max_leases) { "1" }
+
+  before do
+    AWS::SQS.should_receive(:new) { sqs }
+    sqs.should_receive(:queues).and_return { queues }
+    queues.stub(:named) { queue }
+    queue.stub(:receive_message) { message }
+    queue.stub(:visibility_timeout) { 10 }
+    ZK.stub(:new) { zk }
+    zk.should_receive(:get).with("/config/#{queue_name}/max_leases") { [max_leases, nil] }
+    Chore::Semaphore.stub(:new) { semaphore }
+  end
+
+  describe "has free leases" do
+    let!(:consumer_run_for_one_message) { consumer.stub(:running?).and_return(true, false) }
+    let!(:messages_be_unique) { Chore::DuplicateDetector.any_instance.stub(:found_duplicate?).and_return(false) }
+    let!(:queue_contain_messages) { queue.stub(:receive_messages).and_return(message) }
+    it "should acquire a lock" do
+      semaphore.should_receive(:acquire)
+      consumer.consume 
+    end
+  end
+
+  describe "no free leases" do
+    let!(:consumer_run_for_one_message) { consumer.stub(:running?).and_return(true, false) }
+    let!(:messages_be_unique) { Chore::DuplicateDetector.any_instance.stub(:found_duplicate?).and_return(false) }
+    let!(:queue_contain_messages) { queue.stub(:receive_messages).and_return(message) }
+    let(:max_leases) { "0" }
+
+    it "should not acquire a lock" do
+      semaphore.should_not_receive(:acquire)
+      consumer.consume
+    end
+  end
+end

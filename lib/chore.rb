@@ -27,6 +27,7 @@ module Chore
 
   # Consumers
   autoload :SQSConsumer,        "chore/consumers/sqs_consumer"
+  autoload :LockingSQSConsumer, "chore/consumers/locking_sqs_consumer"
 
   # Worker strategies
   autoload :ForkedWorkerStrategy,  "chore/strategies/worker/forked_worker_strategy"
@@ -34,7 +35,7 @@ module Chore
 
   # Consumer strategies
   autoload :SingleConsumerStrategy,    "chore/strategies/consumer/single_consumer_strategy"
-  autoload :ThreadPerConsumerStrategy, "chore/strategies/consumer/thread_per_consumer_strategy"
+  autoload :ThreadedConsumerStrategy, "chore/strategies/consumer/threaded_consumer_strategy"
 
   # Simple class to hold job processing information. Stubbed as a Struct right now
   # but left as a class in case we need more methods soon.
@@ -57,7 +58,7 @@ module Chore
     :worker_strategy => ForkedWorkerStrategy,
     :consumer => SQSConsumer,
     :fetcher => Fetcher,
-    :fetcher_strategy => ThreadPerConsumerStrategy,
+    :fetcher_strategy => ThreadedConsumerStrategy,
     :batch_size => 50
   }
 

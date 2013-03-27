@@ -1,19 +1,18 @@
 module Chore
   class Semaphore
-    DEFAULT_OPTIONS = {:path => "/_leases", :max_leases => 10}
+    DEFAULT_OPTIONS = {:path => "/_leases"}
 
     attr_reader :max_leases
     attr_reader :path
     attr_reader :resource_name
 
-    def initialize(resource_name, opts = {})
+    def initialize(resource_name, zk, opts = {})
       opts = DEFAULT_OPTIONS.merge(opts)
 
-      @zk = ZK.new
+      @zk = zk
       @resource_name = resource_name
       @path = opts[:path]
       @resource_path = "#{@path}/#{@resource_name}"
-      @max_leases = opts[:max_leases]
       @queue = Queue.new
       @subscription = nil
 
@@ -24,7 +23,7 @@ module Chore
       if block
         wait_for_lease(&block)
       else
-        if count < @max_leases
+        if available?
           Lease.new(create_lease!, @zk)
         else
           nil
@@ -33,7 +32,7 @@ module Chore
     end
     
     def available?
-      count < @max_leases
+      count < max_leases
     end
 
     private
@@ -67,11 +66,13 @@ module Chore
         lease_path = nil
         begin
           lease_path = create_lease!
+          Chore.logger.debug "Acquired lease at #{lease_path}"
           yield block
           true
         ensure
           @queue.enq(:acquired)
           @zk.delete(lease_path)
+          Chore.logger.debug "Releasing lease at #{lease_path}"
         end
       else
         false
@@ -79,34 +80,28 @@ module Chore
     end
 
     def count
-      ensure_connection!
       @zk.stat(@resource_path).num_children
     end
 
     def set_watch
-      ensure_connection!
       @zk.children(@resource_path, :watch => true)
     end
 
     def unset_watch
-      ensure_connection!
       @zk.children(@resource_path, :watch => false)
     end
 
     def create_lease!
-      ensure_connection!
       @zk.create("#{@resource_path}/", :mode => :ephemeral_sequential)
     end
 
     def build_path!
-      ensure_connection!
       @zk.mkdir_p(@resource_path)
     end
 
-    def ensure_connection!
-      unless @zk.connected?
-        raise ZK::Exceptions::ConnectionLoss unless @zk.reopen == :connected
-      end
+    def max_leases
+      data, stat = @zk.get("/config/#{queue}/max_leases")
+      data.to_i
     end
   end
 end

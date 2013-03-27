@@ -50,7 +50,7 @@ module Chore
     end
   end
 
-  class ThreadPerConsumerStrategy
+  class ThreadedConsumerStrategy
     attr_accessor :batcher
 
     Chore::CLI.register_option 'batch_size', '--batch-size', 'Number of items to collect for a single worker to process'
@@ -83,7 +83,7 @@ module Chore
                 @batcher.add(work)
               end
             rescue => e
-              Chore.logger.error "ThreadPerConsumerStrategy#fetch raised an exception: #{e.inspect}"
+              Chore.logger.error "ThreadedConsumerStrategy#fetch raised an exception: #{e.inspect}"
             end
           end
         end
@@ -101,6 +101,6 @@ module Chore
       @running
     end
 
-  end #ThreadPerConsumerStrategy
+  end #ThreadedConsumerStrategy
 
 end #Chore

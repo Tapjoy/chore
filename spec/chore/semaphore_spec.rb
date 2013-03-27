@@ -4,8 +4,8 @@ describe Chore::Semaphore do
 
   let(:resource_name) { "sqs" }
   let(:max_leases) { 1 }
-  let(:semaphore) { Chore::Semaphore.new(resource_name, max_leases: max_leases ) }
   let(:zk) { double("zk") }
+  let(:semaphore) { Chore::Semaphore.new(resource_name, zk) }
   let(:count) { 0 }
 
   before(:each) do
@@ -13,6 +13,7 @@ describe Chore::Semaphore do
     zk.stub(:mkdir_p)
     zk.stub(:delete)
     zk.stub(:connected?) { true }
+    semaphore.stub(:max_leases) { max_leases }
     semaphore.stub(:count) { count }
     semaphore.stub(:create_lease!) { "0" }
     semaphore.stub(:set_watch)
