@@ -6,14 +6,16 @@ module Chore
 
     def initialize(queue_name, opts={})
       super(queue_name, opts)
-      @zk = ZK.new(Chore.config.zookeeper_hosts)
+      @@zk ||= ZK.new(Chore.config.zookeeper_hosts)
+      @last_updated = Time.now - 120 # 2 minutes
+      @requires = false
     end
 
     def consume(&handler)
       while running?
         begin
           if requires_lock?
-            semaphore = Semaphore.new(@queue_name, @zk)
+            semaphore = Semaphore.new(@queue_name, @@zk)
             semaphore.acquire do
               msg = @queue.receive_messages(:limit => 10)
               next if msg.nil? || msg.empty?
@@ -30,13 +32,19 @@ module Chore
           Chore.logger.error { "SQSConsumer#Consume: #{e.inspect}" }
         end
       end
+    ensure
+      @@zk.close!
     end
 
     private
 
     def requires_lock?
-      data, _stat = @zk.get("/config/#{@queue_name}/max_leases")
-      data.to_i > 0
+      if Time.now > @last_updated + 120
+        data, _stat = @@zk.get("/config/#{@queue_name}/max_leases")
+        @requires = data.to_i > 0
+        @last_updated = Time.now
+      end
+      @requires
     end
   end
 end

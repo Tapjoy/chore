@@ -1,15 +1,5 @@
 require 'spec_helper'
 
-TestMessage = Struct.new(:handle,:body) do
-  def empty?
-    false
-  end
-
-  # Structs define a to_a behavior that is not compatible with array splatting. Remove it so that
-  # [*message] on a struct will behave the same as on a string.
-  undef_method :to_a
-end
-
 describe Chore::SQSConsumer do
   let(:queue_name) { "test" }
   let(:queues) { double("queues") }

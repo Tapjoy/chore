@@ -1,15 +1,5 @@
 require 'spec_helper'
 
-TestMessage = Struct.new(:handle,:body) do
-  def empty?
-    false
-  end
-
-  # Structs define a to_a behavior that is not compatible with array splatting. Remove it so that
-  # [*message] on a struct will behave the same as on a string.
-  undef_method :to_a
-end
-
 describe Chore::LockingSQSConsumer do
   let(:sqs) { double("sqs") }
   let(:queue_name) { "test" }
@@ -31,6 +21,11 @@ describe Chore::LockingSQSConsumer do
     ZK.stub(:new) { zk }
     zk.should_receive(:get).with("/config/#{queue_name}/max_leases") { [max_leases, nil] }
     Chore::Semaphore.stub(:new) { semaphore }
+    zk.stub(:close!)
+  end
+
+  before(:each) do 
+    Chore::LockingSQSConsumer.class_variable_set(:@@zk, nil)
   end
 
   describe "has free leases" do
