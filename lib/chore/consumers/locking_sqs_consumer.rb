@@ -9,28 +9,30 @@ module Chore
       super(queue_name, opts)
       @@zk ||= ZK.new(Chore.config.zookeeper_hosts)
       @last_updated = Time.now - UPDATE_TIMEOUT
-      @requires = false
+      @max_leases = 0
     end
 
     def consume(&handler)
       while running?
         begin
-          if requires_lock?
-            semaphore = Semaphore.new(@queue_name, @@zk)
-            semaphore.acquire do
+          if enabled?
+            if requires_lock?
+              semaphore = Semaphore.new(@queue_name, @@zk)
+              semaphore.acquire do
+                msg = @queue.receive_messages(:limit => 10)
+                next if msg.nil? || msg.empty?
+
+                handle_messages(*msg, &handler)
+              end
+            else
               msg = @queue.receive_messages(:limit => 10)
               next if msg.nil? || msg.empty?
 
               handle_messages(*msg, &handler)
             end
-          else
-            msg = @queue.receive_messages(:limit => 10)
-            next if msg.nil? || msg.empty?
-
-            handle_messages(*msg, &handler)
           end
         rescue => e
-          Chore.logger.error { "SQSConsumer#Consume: #{e.inspect}" }
+          Chore.logger.error { "LockingSQSConsumer#Consume: #{e.inspect}" }
         end
       end
     ensure
@@ -40,12 +42,20 @@ module Chore
     private
 
     def requires_lock?
+      max_leases > 0
+    end
+
+    def enabled?
+      max_leases != -1
+    end
+
+    def max_leases
       if Time.now > @last_updated + UPDATE_TIMEOUT
         data, _stat = @@zk.get("/config/#{@queue_name}/max_leases")
-        @requires = data.to_i > 0
+        @max_leases = data.to_i
         @last_updated = Time.now
       end
-      @requires
+      @max_leases
     end
   end
 end
