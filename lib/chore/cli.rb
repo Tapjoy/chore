@@ -65,6 +65,10 @@ module Chore
         options[:queues] = arg.split(",")
       end
 
+      register_option "except_queues", "-x", "--except QUEUE1,QUEUE2", "Process all queues (cannot specify --queues), except for the ones listed here" do |arg|
+        options[:except_queues] = arg.split(",")
+      end
+
       register_option "verbose", "-v", "--verbose", "Print more verbose output. Use twice to increase." do
         if Chore.logger.level > Logger::INFO
           Chore.logger.level = Logger::INFO
@@ -157,11 +161,16 @@ module Chore
     end
 
     def detect_queues
+      if (options[:queues] && options[:except_queues])
+        raise ArgumentError, "Cannot specify both --except and --queues"
+      end
+
       if !options[:queues] 
         options[:queues] = []
         Chore::Job.job_classes.each do |j|
           klazz = constantize(j)
           options[:queues] << klazz.options[:name]
+          options[:queues] -= (options[:except_queues] || [])
         end
       end
     end
@@ -186,6 +195,7 @@ module Chore
         puts @parser
         exit(1)
       end
+
     end
 
     def start_stat_server(manager)
