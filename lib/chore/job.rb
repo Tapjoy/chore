@@ -3,6 +3,10 @@ require 'chore/hooks'
 module Chore
   module Job
     class RejectMessageException < Exception; end;
+    
+    def self.job_classes
+      @classes || []
+    end
 
     def self.included(base) #:nodoc:
       @classes ||= []

@@ -35,9 +35,10 @@ module Chore
       if @options[:config_file] 
         parse_config_file(@options[:config_file])
       end
-      Chore.configure(options)
       validate!
       boot_system
+      detect_queues
+      Chore.configure(options)
     end
 
     def run!
@@ -152,6 +153,16 @@ module Chore
         ::Rails.application.eager_load!
       else
         require File.expand_path(options[:require])
+      end
+    end
+
+    def detect_queues
+      if !options[:queues] 
+        options[:queues] = []
+        Chore::Job.job_classes.each do |j|
+          klazz = constantize(j)
+          options[:queues] << klazz.options[:name]
+        end
       end
     end
 

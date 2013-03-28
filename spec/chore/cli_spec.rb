@@ -17,4 +17,13 @@ describe Chore::CLI do
     cli.parse_config_file(file)
     cli.registered_opts['key_name'].should == {:args => args}
   end
+
+  it 'should detect queues based on included jobs' do
+    TestJob.queue_options :name => 'test_queue', :publisher => Chore::Publisher
+    cli = Chore::CLI.instance
+    cli.stub(:validate!)
+    cli.stub(:boot_system)
+    cli.parse([])
+    Chore.config.queues.should include('test_queue')
+  end
 end
