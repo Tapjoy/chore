@@ -101,7 +101,7 @@ describe Chore::Worker do
     Watcher::Metric.should_receive(:new).with("finished", attributes: { state: "failed", queue: "BreakingJob" }) { metric }
     Watcher::Metric.should_receive(:new).with("finished", attributes: { state: "timeout", queue: "TimeoutJob" }) { metric }
     Watcher::Metric.should_receive(:new).with("finished", attributes: { state: "rejected", queue: "RejectedJob" }) { metric }
-    w = Chore::Worker.new(work)
+    Chore::Worker.start(work)
   end
 
   it 'should set the status to the current running job' do
