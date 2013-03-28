@@ -3,11 +3,12 @@ require 'zk'
 module Chore
   class LockingSQSConsumer < SQSConsumer
     Chore::CLI::register_option 'zookeeper_hosts', '--zookeeper-hosts', 'Comma separated list of Zookeeper hosts in the form of host:port'
+    UPDATE_TIMEOUT = (2 * 60) # 2 minutes
 
     def initialize(queue_name, opts={})
       super(queue_name, opts)
       @@zk ||= ZK.new(Chore.config.zookeeper_hosts)
-      @last_updated = Time.now - 120 # 2 minutes
+      @last_updated = Time.now - UPDATE_TIMEOUT
       @requires = false
     end
 
@@ -39,7 +40,7 @@ module Chore
     private
 
     def requires_lock?
-      if Time.now > @last_updated + 120
+      if Time.now > @last_updated + UPDATE_TIMEOUT
         data, _stat = @@zk.get("/config/#{@queue_name}/max_leases")
         @requires = data.to_i > 0
         @last_updated = Time.now
