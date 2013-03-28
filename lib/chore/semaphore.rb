@@ -100,7 +100,7 @@ module Chore
     end
 
     def max_leases
-      data, stat = @zk.get("/config/#{queue}/max_leases")
+      data, _stat = @zk.get("/config/#{@resource_name}/max_leases")
       data.to_i
     end
   end
