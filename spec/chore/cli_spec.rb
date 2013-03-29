@@ -17,4 +17,28 @@ describe Chore::CLI do
     cli.parse_config_file(file)
     cli.registered_opts['key_name'].should == {:args => args}
   end
+
+  context 'queue mananagement' do
+    let(:cli) { Chore::CLI.instance }
+    before(:each) do
+      TestJob.queue_options :name => 'test_queue', :publisher => Chore::Publisher
+      cli.send(:options).delete(:queues) 
+      cli.stub(:validate!)
+      cli.stub(:boot_system)
+    end
+
+    it 'should detect queues based on included jobs' do
+      cli.parse([])
+      Chore.config.queues.should include('test_queue')
+    end
+
+    it 'should honor --except when processing all queues' do
+      cli.parse(['--except=test_queue'])
+      Chore.config.queues.should_not include('test_queue')
+    end
+
+    it 'should raise an exception if both --queues and --except are specified' do
+      expect { cli.parse(['--except=something','--queues=something,else']) }.to raise_error(ArgumentError)
+    end
+  end
 end

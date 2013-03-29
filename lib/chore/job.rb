@@ -3,6 +3,10 @@ require 'chore/hooks'
 module Chore
   module Job
     class RejectMessageException < Exception; end;
+    
+    def self.job_classes
+      @classes || []
+    end
 
     def self.included(base) #:nodoc:
       @classes ||= []
@@ -20,7 +24,7 @@ module Chore
       def queue_options(opts = {})
         @chore_options = (@chore_options || DEFAULT_OPTIONS).merge(opts)
         required_options.each do |k|
-          raise ArgumentError.new(":#{k} is required") unless @chore_options[k]
+          raise ArgumentError.new("#{self.to_s} :#{k} is a required option for Chore::Job") unless @chore_options[k]
         end
       end
 
