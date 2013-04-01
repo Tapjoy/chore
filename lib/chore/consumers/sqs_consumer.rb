@@ -2,6 +2,7 @@ require 'aws/sqs'
 
 module Chore
   class SQSConsumer < Consumer
+    Chore::CLI.register_option 'dedupe_servers', '--dedupe-servers', 'List of mememcache compatible server(s) to use for storing SQS Message Dedupe cache'
 
     def initialize(queue_name, opts={})
       super(queue_name, opts)
