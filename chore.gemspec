@@ -18,12 +18,12 @@ Gem::Specification.new do |s|
 
   s.extra_rdoc_files = [
     "LICENSE.txt",
-    "README.rdoc"
+    "README.md"
   ]
   s.files = Dir[*%w(
     chore.gemspec
     LICENSE.txt
-    README.rdoc
+    README.md
     Rakefile
     bin/*
     lib/**/*

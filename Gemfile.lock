@@ -112,7 +112,7 @@ PLATFORMS
 
 DEPENDENCIES
   airbrake
-  aws-sdk
+  aws-sdk (~> 1.7.1)
   bundler
   chore!
   dalli
