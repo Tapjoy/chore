@@ -9,13 +9,24 @@ describe Chore::CLI do
 
   it 'should allow configuration options to come from a file' do
     file = StringIO.new("--key-name=some_value")
-    File.stub(:readlines).and_return(file.readlines)
+    File.stub(:read).and_return(file.read)
 
     args = ['-k', '--key-name SOME_VALUE', "Some description"]
     cli = Chore::CLI.instance
     cli.register_option "key_name", *args
     cli.parse_config_file(file)
     cli.registered_opts['key_name'].should == {:args => args}
+  end
+
+  it 'should handle ERB tags in a config file' do
+    file = StringIO.new("--key-name=<%= 'erb_inserted_value' %>")
+    File.stub(:read).and_return(file.read)
+
+    args = ['-k', '--key-name SOME_VALUE', "Some description"]
+    cli = Chore::CLI.instance
+    cli.register_option "key_name", *args
+    options = cli.parse_config_file(file)
+    options[:key_name].should == 'erb_inserted_value'
   end
 
   context 'queue mananagement' do
