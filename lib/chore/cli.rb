@@ -2,6 +2,7 @@ require 'singleton'
 require 'optparse'
 require 'chore'
 require 'rack'
+require 'erb'
 
 module Chore
 
@@ -57,6 +58,7 @@ module Chore
 
     def parse_config_file(file)
       data = File.readlines(file).map(&:chomp).map(&:strip)
+      data = ERB.new(data).result
       parse_opts(data)
     end
 
