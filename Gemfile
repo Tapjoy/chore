@@ -11,7 +11,7 @@ group :development do
 end
 
 gem 'json'
-gem 'aws-sdk'
+gem 'aws-sdk', '~> 1.7.1'
 gem 'rack'
 gem 'zk'
 gem 'worqer', git: 'git@github.com:Tapjoy/worqer.git'
