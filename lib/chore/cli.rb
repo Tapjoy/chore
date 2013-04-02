@@ -1,3 +1,4 @@
+require 'pp'
 require 'singleton'
 require 'optparse'
 require 'chore'
@@ -59,7 +60,7 @@ module Chore
     def parse_config_file(file)
       data = File.read(file)
       data = ERB.new(data).result
-      parse_opts(data.split("\n").map!(&:chomp).map!(&:strip))
+      parse_opts(data.split(/\s/).map!(&:chomp).map!(&:strip))
     end
 
     def setup_options

@@ -14,19 +14,21 @@ describe Chore::CLI do
     args = ['-k', '--key-name SOME_VALUE', "Some description"]
     cli = Chore::CLI.instance
     cli.register_option "key_name", *args
-    cli.parse_config_file(file)
+    options = cli.parse_config_file(file)
     cli.registered_opts['key_name'].should == {:args => args}
+    options[:key_name].should == 'some_value'
   end
 
   it 'should handle ERB tags in a config file' do
-    file = StringIO.new("--key-name=<%= 'erb_inserted_value' %>")
+    file = StringIO.new("--key-name=<%= 'erb_inserted_value' %>\n--other-key=<%= 'second_val' %>")
     File.stub(:read).and_return(file.read)
 
-    args = ['-k', '--key-name SOME_VALUE', "Some description"]
     cli = Chore::CLI.instance
-    cli.register_option "key_name", *args
+    cli.register_option "key_name", '-k', '--key-name SOME_VALUE', "Some description"
+    cli.register_option "other_key", '-o', '--other-key SOME_VALUE', "Some description"
     options = cli.parse_config_file(file)
     options[:key_name].should == 'erb_inserted_value'
+    options[:other_key].should == 'second_val'
   end
 
   context 'queue mananagement' do
