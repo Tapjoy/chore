@@ -89,7 +89,7 @@ module Chore
 
       register_option 'aws_secret_key', '--aws-secret-key KEY', 'Valid AWS Secret Key'
 
-      register_option 'num_workers', '--concurrency NUM', 'Number of workers to run concurrently'
+      register_option 'num_workers', '--concurrency NUM', Integer, 'Number of workers to run concurrently'
 
       register_option 'worker_strategy', '--worker-strategy CLASS_NAME', 'Name of a class to use as the worker strategy (default: ForkedWorkerStrategy' do |arg|
         options[:worker_strategy] = constantize(arg)
