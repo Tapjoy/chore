@@ -57,9 +57,9 @@ module Chore
     end
 
     def parse_config_file(file)
-      data = File.readlines(file).map(&:chomp).map(&:strip)
+      data = File.read(file)
       data = ERB.new(data).result
-      parse_opts(data)
+      parse_opts(data.split("\n").map!(&:chomp).map!(&:strip))
     end
 
     def setup_options
