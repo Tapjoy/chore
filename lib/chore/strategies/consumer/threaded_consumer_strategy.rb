@@ -83,7 +83,7 @@ module Chore
                 @batcher.add(work)
               end
             rescue => e
-              Chore.logger.error "ThreadedConsumerStrategy#fetch raised an exception: #{e.inspect}"
+              Chore.logger.error "ThreadedConsumerStrategy#fetch raised an exception: #{e.inspect} at #{e.backtrace}"
             end
           end
         end

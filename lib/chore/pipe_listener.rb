@@ -22,7 +22,7 @@ module Chore
       @out.close unless @out.closed?
       Chore.logger.debug { "Writing to pipe: #{data.inspect}" }
       begin
-        @in << Marshal.dump(data)
+        @in << Marshal.dump(data).force_encoding("UTF-8")
         @in << "\n\n"
       rescue Errno::EPIPE => e
         Chore.logger.error { "Can't write to pipe. A process probably went away: #{e.message}" }

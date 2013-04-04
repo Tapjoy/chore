@@ -1,4 +1,5 @@
 require 'aws/sqs'
+AWS.eager_autoload!
 
 module Chore
   class SQSConsumer < Consumer
