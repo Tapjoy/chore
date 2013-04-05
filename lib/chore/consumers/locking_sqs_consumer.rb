@@ -2,7 +2,7 @@ require 'zk'
 
 module Chore
   class LockingSQSConsumer < SQSConsumer
-    Chore::CLI::register_option 'zookeeper_hosts', '--zookeeper-hosts', 'Comma separated list of Zookeeper hosts in the form of host:port'
+    Chore::CLI::register_option 'zookeeper_hosts', '--zookeeper-hosts HOSTS', 'Comma separated list of Zookeeper hosts in the form of host:port'
     UPDATE_TIMEOUT = (2 * 60) # 2 minutes
 
     def initialize(queue_name, opts={})
