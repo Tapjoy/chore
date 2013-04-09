@@ -46,7 +46,7 @@ module Chore
 
     def report
       {
-        'master_started_at' => @started_at, 
+        'master_started_at' => @started_at.to_i, 
         'queues' => Chore.config.queues,
         'active_workers' => @worker_strategy.workers,
         'stats' => Chore.stats
