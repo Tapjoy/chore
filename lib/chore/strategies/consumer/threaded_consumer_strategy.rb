@@ -69,29 +69,13 @@ module Chore
       threads = []
       Chore.config.queues.each do |queue|
         Chore.config.threads_per_queue.times do 
-          threads << Thread.new(queue) do |tQueue|
-            begin
-              consumer = Chore.config.consumer.new(tQueue)
-              consumer.consume do |id, body|
-                # Quick hack to force this thread to end it's work
-                # if we're shutting down. Could be delayed due to the
-                # weird sometimes-blocking nature of SQS.
-                consumer.stop if !running?
-                Chore.logger.debug { "Got message: #{id}"}
-
-                work = UnitOfWork.new(id, body, consumer)
-                @batcher.add(work)
-              end
-            rescue => e
-              Chore.logger.error "ThreadedConsumerStrategy#fetch raised an exception: #{e.inspect} at #{e.backtrace}"
-            end
-          end
+          threads << start_consumer_thread(queue)
         end
       end
 
       threads.each(&:join)
     end
-
+    
     def stop!
       Chore.logger.info "Shutting down fetcher: #{self.class.name.to_s}"
       @running = false
@@ -99,6 +83,28 @@ module Chore
 
     def running?
       @running
+    end
+
+    private 
+    def start_consumer_thread(queue)
+      t = Thread.new(queue) do |tQueue|
+        begin
+          consumer = Chore.config.consumer.new(tQueue)
+          consumer.consume do |id, body|
+            # Quick hack to force this thread to end it's work
+            # if we're shutting down. Could be delayed due to the
+            # weird sometimes-blocking nature of SQS.
+            consumer.stop if !running?
+            Chore.logger.debug { "Got message: #{id}"}
+
+            work = UnitOfWork.new(id, body, consumer)
+            @batcher.add(work)
+          end
+        rescue => e
+          Chore.logger.error "ThreadedConsumerStrategy#consumer thread raised an exception: #{e.inspect} at #{e.backtrace}"
+        end
+      end
+      t
     end
 
   end #ThreadedConsumerStrategy
