@@ -19,16 +19,10 @@ module Chore
             if requires_lock?
               semaphore = Semaphore.new(@queue_name, @@zk)
               semaphore.acquire do
-                msg = @queue.receive_messages(:limit => 10)
-                next if msg.nil? || msg.empty?
-
-                handle_messages(*msg, &handler)
+                handle_messages(&handler)
               end
             else
-              msg = @queue.receive_messages(:limit => 10)
-              next if msg.nil? || msg.empty?
-
-              handle_messages(*msg, &handler)
+              handle_messages(&handler)
             end
           end
         rescue => e

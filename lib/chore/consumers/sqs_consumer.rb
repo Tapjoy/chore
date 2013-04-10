@@ -17,10 +17,7 @@ module Chore
     def consume(&handler)
       while running?
         begin
-          msg = @queue.receive_messages(:limit => 10)
-          next if msg.nil? || msg.empty?
-
-          handle_messages(*msg, &handler)
+          handle_messages(&handler)
         rescue => e
           Chore.logger.error { "SQSConsumer#Consume: #{e.inspect}" }
         end
@@ -38,7 +35,10 @@ module Chore
 
     private
 
-    def handle_messages(*messages, &block)
+    def handle_messages(&block)
+      msg = @queue.receive_messages(:limit => 10)
+
+      messages = *msg
       messages.each do |message|
         block.call(message.handle, message.body) unless duplicate_message?(message)
         Chore.run_hooks_for(:on_fetch, message.handle, message.body)
