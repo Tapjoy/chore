@@ -1,5 +1,9 @@
 require 'spec_helper'
 
+class TestJob2
+  include Chore::Job
+end
+
 describe Chore::CLI do
   it 'should allow configuration options to be registered externally' do
     args = ['some','args']
@@ -35,6 +39,7 @@ describe Chore::CLI do
     let(:cli) { Chore::CLI.instance }
     before(:each) do
       TestJob.queue_options :name => 'test_queue', :publisher => Chore::Publisher
+      TestJob2.queue_options :name => 'test2', :publisher => Chore::Publisher
       cli.send(:options).delete(:queues) 
       cli.stub(:validate!)
       cli.stub(:boot_system)
@@ -52,6 +57,11 @@ describe Chore::CLI do
 
     it 'should raise an exception if both --queues and --except are specified' do
       expect { cli.parse(['--except=something','--queues=something,else']) }.to raise_error(ArgumentError)
+    end
+
+    it 'should raise an exception if no queues are found' do
+      Chore::Job.job_classes.clear
+      expect { cli.parse([]) }.to raise_error(ArgumentError)
     end
   end
 end

@@ -172,10 +172,12 @@ module Chore
         options[:queues] = []
         Chore::Job.job_classes.each do |j|
           klazz = constantize(j)
-          options[:queues] << klazz.options[:name]
+          options[:queues] << klazz.options[:name] if klazz.options[:name]
           options[:queues] -= (options[:except_queues] || [])
         end
       end
+
+      raise ArgumentError, "No queues specified. Either include classes that include Chore::Job, or specify the --queues option" if options[:queues].empty?
     end
 
     def missing_option!(option)
