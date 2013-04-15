@@ -52,6 +52,7 @@ module Chore
     def shutdown
       unless @stopping
         @stopping = true
+        @stat_server.shutdown if @stat_server
         @manager.shutdown! if @manager
         exit(0)
       end
@@ -205,7 +206,7 @@ module Chore
 
     def start_stat_server(manager)
       Thread.new do
-        Rack::Handler::WEBrick.run(lambda { |env| [200, {"Content-Type" => "application/json"}, [manager.report]] }, :Port => options[:stats_port] || 9090)
+        @stat_server = Rack::Handler::WEBrick.run(lambda { |env| [200, {"Content-Type" => "application/json"}, [manager.report]] }, :Port => options[:stats_port] || 9090)
       end
     end
   end
