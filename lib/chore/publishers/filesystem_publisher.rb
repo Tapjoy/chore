@@ -4,23 +4,33 @@ require 'chore/consumers/filesystem_queue'
 module Chore
   class FilesystemPublisher < Publisher
     include FilesystemQueue
-    
+
+    FILE_MUTEX = Mutex.new
+
+    # use of mutex and file locking should make this both threadsafe and safe for multiple
+    # processes to use the same queue directory simultaneously. 
     def publish(queue_name,job)
-      File.open(filename(queue_name, job[:class].to_s), "w") do |f|
-        f.write(job.to_json)
+      FILE_MUTEX.synchronize do
+        while true
+          # keep trying to get a file with nothing in it meaning we just created it
+          # as opposed to us getting someone else's file that hasn't been processed yet.
+          f = File.open(filename(queue_name, job[:class].to_s), "w")
+          if f.flock(File::LOCK_EX | File::LOCK_NB) && f.size == 0
+            begin
+              f.write(job.to_json)
+            ensure
+              f.flock(File::LOCK_UN)
+              break
+            end
+          end
+        end
       end
     end
 
     # create a unique filename for a job in a queue based on queue name, job name and date
     def filename(queue_name, job_name)
       now = Time.now.strftime "%Y%m%d-%H%M%S-%6N"
-      i = 0
-      prefix = "#{queue_name}-#{job_name}-#{now}"
-      name = File.join(new_dir(queue_name), "#{prefix}-#{i}.job")
-      while File.exist?(name)
-        name = File.join(new_dir(queue_name), "#{prefix}-#{i += 1}.job")
-      end
-      name
+      File.join(new_dir(queue_name), "#{queue_name}-#{job_name}-#{now}.job")
     end
   end
 end

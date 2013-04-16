@@ -16,8 +16,15 @@ module Chore
   class FilesystemConsumer < Consumer
     include FilesystemQueue
     
+    FILE_QUEUE_MUTEXES = {}
+    
     def initialize(queue_name, opts={})
       super(queue_name, opts)
+
+      # Even though putting these Mutexes in this hash is, by itself, not particularly threadsafe
+      # as long as some Mutex ends up in the queue after all consumers are created we're good
+      # as they are pulled from the queue and synchronized for file operations below
+      FILE_QUEUE_MUTEXES[@queue_name] ||= Mutex.new
 
       @in_progress_dir = in_progress_dir(queue_name)
       @new_dir = new_dir(queue_name)
@@ -29,9 +36,9 @@ module Chore
         begin
           #TODO move expired job files to new directory?
           handle_jobs(&handler)
-          sleep 5
         rescue => e
           Chore.logger.error { "#{self.class}#consume: #{e} #{e.backtrace * "\n"}" }
+        ensure
           sleep 5
         end
       end
@@ -39,7 +46,7 @@ module Chore
 
     def reject(id)
       Chore.logger.debug "Rejecting: #{id}"
-      FileUtils.mv(File.join(@in_progress_dir, id), @new_dir)
+      make_new_again(id)
     end
 
     def complete(id)
@@ -52,23 +59,46 @@ module Chore
     # finds all new job files, moves them to in progress and starts the job
     # Returns a list of the job files processed
     def handle_jobs(&block)
-      job_files.each do |job_file|
-        Chore.logger.debug "Found a new job #{job_file}"
-        
-        job_json = File.read(make_in_progress(job_file))
+      # all consumers on a single queue share a lock on handling files.
+      # Each consumer comes along, processes all present files and release the lock.
+      # This isn't particularly useful but is here to allow the configuration of
+      # ThreadedConsumerStrategy with mutiple threads on a queue safely although you
+      # probably wouldn't want to do that.
+      FILE_QUEUE_MUTEXES[@queue_name].synchronize do
+        job_files.each do |job_file|
+          Chore.logger.debug "Found a new job #{job_file}"
+          
+          job_json = File.read(make_in_progress(job_file))
 
-        # job_file is just the name which is the job id
-        block.call(job_file, job_json)
-        Chore.run_hooks_for(:on_fetch, job_file, job_json)
+          # job_file is just the name which is the job id
+          block.call(job_file, job_json)
+          Chore.run_hooks_for(:on_fetch, job_file, job_json)
+        end
       end
     end
 
-    # moves job file to inprogress directory and returns the full path
     def make_in_progress(job)
-      FileUtils.mv(File.join(@new_dir, job), @in_progress_dir)
-      File.join(@in_progress_dir, job)
+      move_job(job, @new_dir, @in_progress_dir)
+    end
+
+    def make_new_again(job)
+      move_job(job, @in_progress_dir, @new_dir)
     end
     
+    # moves job file to inprogress directory and returns the full path
+    def move_job(job, from, to)
+      f = File.open(File.join(from, job), "r")
+      # wait on the lock a publisher in another process might have.
+      # Once we get the lock the file is ours to move to mark it in progress
+      f.flock(File::LOCK_EX)
+      begin
+        FileUtils.mv(f.path, to)
+      ensure
+        f.flock(File::LOCK_UN) # yes we can unlock it after its been moved, I checked
+      end
+      File.join(to, job)
+    end
+
     def job_files
       Dir.entries(@new_dir).select{|e| ! e.start_with?(".")}
     end
