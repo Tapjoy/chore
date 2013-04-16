@@ -22,7 +22,7 @@ PATH
   remote: .
   specs:
     chore (0.0.0)
-      aws-sdk
+      aws-sdk (~> 1.8.5)
       json
       rack
       zk
@@ -41,15 +41,21 @@ GEM
       amq-client (~> 0.9.12)
       amq-protocol (~> 1.2.0)
       eventmachine
-    aws-sdk (1.7.1)
-      httparty (~> 0.7)
+    aws-sdk (1.8.5)
       json (~> 1.4)
       nokogiri (>= 1.4.4)
       uuidtools (~> 2.1)
     builder (3.1.4)
     coderay (1.0.8)
+    columnize (0.3.6)
     connection_pool (0.9.3)
     dalli (2.6.2)
+    debugger (1.5.0)
+      columnize (>= 0.3.1)
+      debugger-linecache (~> 1.2.0)
+      debugger-ruby_core_source (~> 1.2.0)
+    debugger-linecache (1.2.0)
+    debugger-ruby_core_source (1.2.0)
     diff-lcs (1.1.3)
     em-synchrony (1.0.3)
       eventmachine (>= 1.0.0.beta.1)
@@ -65,9 +71,6 @@ GEM
     guard-rspec (2.4.0)
       guard (>= 1.1)
       rspec (~> 2.11)
-    httparty (0.9.0)
-      multi_json (~> 1.0)
-      multi_xml
     json (1.7.6)
     listen (0.7.2)
     little-plugger (1.1.3)
@@ -76,8 +79,7 @@ GEM
     lumberjack (1.0.2)
     method_source (0.8.1)
     multi_json (1.5.0)
-    multi_xml (0.5.1)
-    nokogiri (1.5.5)
+    nokogiri (1.5.9)
     pry (0.9.11.4)
       coderay (~> 1.0.5)
       method_source (~> 0.8)
@@ -112,10 +114,11 @@ PLATFORMS
 
 DEPENDENCIES
   airbrake
-  aws-sdk (~> 1.7.1)
+  aws-sdk (~> 1.8.5)
   bundler
   chore!
   dalli
+  debugger
   guard-rspec
   json
   rack

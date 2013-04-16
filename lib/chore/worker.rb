@@ -32,7 +32,7 @@ module Chore
           next unless klass.run_hooks_for(:before_perform,message)
           perform_job(item,klass,message)
         rescue => e
-          Chore.logger.error { "Failed to run job #{item.inspect} with error: #{e.message}" }
+          Chore.logger.error { "Failed to run job #{item.inspect} with error: #{e.message} #{e.backtrace * "\n"}" }
           Chore.run_hooks_for(:on_failure,item.message,e)
           Chore.stats.add(:failed,:unknown)
         end

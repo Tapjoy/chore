@@ -8,6 +8,7 @@ group :development do
   gem 'airbrake'
   gem 'rake', '~> 10.0'
   gem 'dalli'
+  gem 'debugger'
 end
 
 gem 'json'

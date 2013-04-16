@@ -4,6 +4,7 @@ require 'optparse'
 require 'chore'
 require 'rack'
 require 'erb'
+require 'set'
 
 module Chore
 
@@ -93,6 +94,12 @@ module Chore
 
       register_option 'aws_secret_key', '--aws-secret-key KEY', 'Valid AWS Secret Key'
 
+      # TODO wanted to define this in Chore::FilesystemConsumer but since its not the default
+      # consumer its only loaded once we start parsing args and I think its too late to register
+      # more at that point.
+      # https://github.com/Tapjoy/chore/issues/31
+      register_option 'fs_queue_root', '--fs-queue-root DIRECTORY', 'Root directory for fs based queue'
+      
       register_option 'num_workers', '--concurrency NUM', Integer, 'Number of workers to run concurrently'
 
       register_option 'worker_strategy', '--worker-strategy CLASS_NAME', 'Name of a class to use as the worker strategy (default: ForkedWorkerStrategy' do |arg|
@@ -170,7 +177,7 @@ module Chore
       end
 
       if !options[:queues] 
-        options[:queues] = []
+        options[:queues] = Set.new
         Chore::Job.job_classes.each do |j|
           klazz = constantize(j)
           options[:queues] << klazz.options[:name] if klazz.options[:name]

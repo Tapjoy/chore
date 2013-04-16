@@ -24,10 +24,13 @@ module Chore
   # Publishers
   autoload :Publisher,          "chore/publisher"
   autoload :SQSPublisher,       "chore/publishers/sqs_publisher"
-
+  autoload :FilesystemPublisher, "chore/publishers/filesystem_publisher"
+  
   # Consumers
   autoload :SQSConsumer,        "chore/consumers/sqs_consumer"
   autoload :LockingSQSConsumer, "chore/consumers/locking_sqs_consumer"
+  autoload :FilesystemConsumer, "chore/consumers/filesystem_consumer"
+
 
   # Worker strategies
   autoload :ForkedWorkerStrategy,  "chore/strategies/worker/forked_worker_strategy"
