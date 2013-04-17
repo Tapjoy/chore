@@ -13,8 +13,6 @@ require 'chore/stats'
 require 'chore/util'
 require 'chore/worker'
 require 'chore/publisher'
-require 'chore/consumers/locking_sqs_consumer'
-require 'chore/publishers/sqs_publisher'
 
 # We have a number of things that can live here. I don't want to track
 ['consumers','publishers','strategies/**'].each do |p|
