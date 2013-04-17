@@ -64,12 +64,15 @@ module Chore
       Chore.stats.add(:completed,message['class'])
     rescue Job::RejectMessageException
       item.consumer.reject(item.id)
+      Chore.logger.error { "Failed to run job #{item.inspect} with error: Job raised a RejectMessageException" }
       klass.run_hooks_for(:on_rejected, message)
       Chore.stats.add(:rejected,message['class'])
     rescue Timeout::Error
+      Chore.logger.error { "Failed to run job #{item.inspect} with error: Job Timeout reached" }
       klass.run_hooks_for(:on_timeout, message)
       Chore.stats.add(:timeout,message['class'])
     rescue => e
+      Chore.logger.error { "Failed to run job #{item.inspect} with error: #{e.message} at #{e.backtrace * "\n"}" }
       klass.run_hooks_for(:on_failure,message,e)
       Chore.stats.add(:failed,message['class'])
     end
