@@ -1,4 +1,7 @@
 require 'zk'
+require 'chore/lease'
+require 'chore/semaphore'
+require 'chore/consumers/sqs_consumer'
 
 module Chore
   class LockingSQSConsumer < SQSConsumer
