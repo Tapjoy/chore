@@ -1,45 +1,29 @@
 require 'ostruct'
 require 'logger'
-require 'zk'
-require_relative 'chore/version'
+# Require chore files
+require 'chore/version'
+
+require 'chore/cli'
+require 'chore/consumer'
+require 'chore/job'
+require 'chore/json_encoder'
+require 'chore/manager'
+require 'chore/publisher'
+require 'chore/stats'
+require 'chore/util'
+require 'chore/worker'
+require 'chore/publisher'
+require 'chore/consumers/locking_sqs_consumer'
+require 'chore/publishers/sqs_publisher'
+
+# We have a number of things that can live here. I don't want to track
+['consumers','publishers','strategies/**'].each do |p|
+  Dir[File.join(File.dirname(__FILE__),'chore',p,'*.rb')].each {|f| require f}
+end
 
 module Chore
   VERSION = Chore::Version::STRING
-
-  autoload :CLI,                "chore/cli"
-  autoload :Consumer,           "chore/consumer"
-  autoload :DuplicateDetector,  "chore/duplicate_detector"
-  autoload :Fetcher,            "chore/fetcher"
-  autoload :Hooks,              "chore/hooks"
-  autoload :Job,                "chore/job"
-  autoload :JsonEncoder,        "chore/json_encoder"
-  autoload :Lease,              "chore/lease"
-  autoload :Manager,            "chore/manager"
-  autoload :Publisher,          "chore/publisher"
-  autoload :Semaphore,          "chore/semaphore"
-  autoload :Stats,              "chore/stats"
-  autoload :Util,               "chore/util"
-  autoload :Worker,             "chore/worker"
-
-  # Publishers
-  autoload :Publisher,          "chore/publisher"
-  autoload :SQSPublisher,       "chore/publishers/sqs_publisher"
-  autoload :FilesystemPublisher, "chore/publishers/filesystem_publisher"
   
-  # Consumers
-  autoload :SQSConsumer,        "chore/consumers/sqs_consumer"
-  autoload :LockingSQSConsumer, "chore/consumers/locking_sqs_consumer"
-  autoload :FilesystemConsumer, "chore/consumers/filesystem_consumer"
-
-
-  # Worker strategies
-  autoload :ForkedWorkerStrategy,  "chore/strategies/worker/forked_worker_strategy"
-  autoload :SingleWorkerStrategy,  "chore/strategies/worker/single_worker_strategy"
-
-  # Consumer strategies
-  autoload :SingleConsumerStrategy,    "chore/strategies/consumer/single_consumer_strategy"
-  autoload :ThreadedConsumerStrategy, "chore/strategies/consumer/threaded_consumer_strategy"
-
   # Simple class to hold job processing information. Stubbed as a Struct right now
   # but left as a class in case we need more methods soon.
   class UnitOfWork < Struct.new(:id,:message,:consumer); end;

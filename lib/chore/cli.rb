@@ -6,6 +6,8 @@ require 'rack'
 require 'erb'
 require 'set'
 
+require 'chore/manager'
+
 module Chore
 
   class CLI
