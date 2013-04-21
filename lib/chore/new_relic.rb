@@ -8,7 +8,7 @@ DependencyDetection.defer do
   end
 
   executes do
-    ::NewRelic::Agent.logger.info 'Installing Chore instrumentation'
+    ::NewRelic::Agent.logger.info 'Installing NewRelic instrumentation'
   end
 
   executes do
@@ -19,6 +19,7 @@ DependencyDetection.defer do
 
         def perform(*args)
           begin
+            Chore.logger.debug "Logging #{self.name}#perform to NewRelic"
             perform_action_with_newrelic_trace(:name => 'perform',
                                  :class_name => self.name,
                                  :category => 'OtherTransaction/ChoreJob') do
@@ -40,6 +41,7 @@ DependencyDetection.defer do
               klass.instance_eval do
                 extend ::Chore::NewRelicInstrumentation
               end
+              klass
             end
           end
         end
@@ -48,24 +50,24 @@ DependencyDetection.defer do
 
     ::Chore::Worker.class_eval do
       def self.new(*args)
-        super(*args).extend NewRelic::Agent::Instrumentation::ResqueInstrumentationInstaller
+        super(*args).extend NewRelic::Agent::Instrumentation::ChoreInstrumentHook
       end
     end
 
     if NewRelic::LanguageSupport.can_fork?
-      ::Resque.before_first_fork do
+      ::Chore.add_hook(:before_first_fork) do
         NewRelic::Agent.manual_start(:dispatcher   => :resque,
                                      :sync_startup => true,
                                      :start_channel_listener => true,
                                      :report_instance_busy => false)
       end
 
-      ::Chore.before_fork do |worker|
+      ::Chore.add_hook(:before_fork) do |worker|
         NewRelic::Agent.register_report_channel(worker.object_id)
       end
 
-      ::Chore.after_fork do |worker|
-        NewRelic::Agent.after_fork(:report_to_channel => job.object_id)
+      ::Chore.add_hook(:after_fork) do |worker|
+        NewRelic::Agent.after_fork(:report_to_channel => worker.object_id)
       end
     end
   end
