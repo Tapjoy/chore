@@ -77,7 +77,7 @@ module Chore
         pid = fork do
           after_fork(w)
 
-          Chore.run_hooks_for(:after_fork)
+          Chore.run_hooks_for(:after_fork,w)
           procline("Started:#{Time.now}")
           w.start
           @listener.end_pipe(w.object_id)
