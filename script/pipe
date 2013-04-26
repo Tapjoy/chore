@@ -1,0 +1,74 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'json'
+require 'aws-sdk'
+
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+require 'optparse'
+require 'chore'
+
+def calculate_show_rate(args)
+  args.shift
+end
+
+def downloads(args)
+  args.shift
+end
+
+def test(args)
+  args
+end
+
+opts = {}
+@parser = OptionParser.new do |o|
+  o.on "-t", "--to TO", "Name of queue to populate" do |arg|
+    opts[:to] = arg
+  end
+
+  o.on "-f", "--from FROM", "Name of queue to drain" do |arg|
+    opts[:from] = arg
+  end
+
+  o.on "--formatter FORMAT", "Formatting method to use for messages" do |arg|
+    opts[:format] = arg
+  end
+
+  o.on '--aws-access-key KEY', 'Valid AWS Access Key' do |arg|
+    opts[:aws_access_key] = arg
+  end
+
+  o.on '--aws-secret-key KEY', 'Valid AWS Secret Key' do |arg|
+    opts[:aws_secret_key] = arg
+  end
+end
+@parser.banner = "pipe [options]"
+
+@parser.on_tail "-h", "--help", "Show help" do
+  puts @parser
+  exit 1
+end
+
+@parser.parse!(ARGV)
+
+REQUIRED_OPTS = [:aws_secret_key, :aws_access_key, :to, :from, :format]
+
+REQUIRED_OPTS.each{ |o| raise OptionParser::MissingArgument.new(o) if opts[o].nil? }
+
+AWS.config(
+  :access_key_id => opts[:aws_access_key],
+  :secret_access_key => opts[:aws_secret_key])
+
+SQS = AWS::SQS.new
+
+puts opts[:to].class
+to_queue = SQS.queues.named(opts[:to])
+from_queue = SQS.queues.named(opts[:from])
+
+from_queue.poll({ idle_timeout: 120 }) do |msg|
+  msg = JSON.parse(msg.body)
+  puts msg
+  old_msg = JSON.unparse self.send(opts[:format], msg['args'])
+  puts "Sending #{old_msg} from #{opts[:from]} to #{opts[:to]}"
+  to_queue.send_message(old_msg)
+end
