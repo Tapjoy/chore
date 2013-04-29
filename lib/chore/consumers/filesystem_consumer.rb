@@ -1,18 +1,19 @@
 require 'fileutils'
 require 'chore/consumers/filesystem_queue'
 
-# This is the consuming side of the file system queue. This class consumes jobs created by
-# FilesystemPublisher#publish.  The root of the file system queue is configured in
-# Chore.config.fs_queue_root. In there a directory will be created for each queue name.
-# Each queue directory contains a directory called "new" and one called "inprogress".
-# FilesystemPublisher#publish creates new job files in the "new" directory. This consumer
-# polls that directory every 5 seconds for new jobs which are moved to "inprogress".
-#
-# Once complete job files are deleted.
-# If rejected they are moved back into new and will be processed again.  This may not be the
-# desired behavior long term and we may want to add configuration to this class to allow more
-# creating failure handling and retrying. 
 module Chore
+  ##
+  # This is the consuming side of the file system queue. This class consumes jobs created by
+  # FilesystemPublisher#publish.  The root of the file system queue is configured in
+  # Chore.config.fs_queue_root. In there a directory will be created for each queue name.
+  # Each queue directory contains a directory called "new" and one called "inprogress".
+  # FilesystemPublisher#publish creates new job files in the "new" directory. This consumer
+  # polls that directory every 5 seconds for new jobs which are moved to "inprogress".
+  #
+  # Once complete job files are deleted.
+  # If rejected they are moved back into new and will be processed again.  This may not be the
+  # desired behavior long term and we may want to add configuration to this class to allow more
+  # creating failure handling and retrying. 
   class FilesystemConsumer < Consumer
     include FilesystemQueue
     

@@ -27,11 +27,11 @@ Chore.add_hook(:on_failure) do |msg,error|
 end
 
 module Chore 
-  def Chore.airbrake
+  def Chore.airbrake #:nodoc:
     Chore::Airbrake
   end
 
-  class Airbrake
+  class Airbrake #:nodoc:
     def self.options=(opts)
       @options = opts
     end

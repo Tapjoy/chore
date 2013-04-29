@@ -1,8 +1,8 @@
 require 'chore/consumers/filesystem_queue'
 
-# See the top of FilesystemConsumer for comments on how this works
 module Chore
   class FilesystemPublisher < Publisher
+    # See the top of FilesystemConsumer for comments on how this works
     include FilesystemQueue
 
     FILE_MUTEX = Mutex.new

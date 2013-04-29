@@ -14,9 +14,9 @@ DependencyDetection.defer do
 
   executes do
 
-    ## Override perform to add NewRelic tracing. Call the super perform todo the actual work
     module Chore
       module NewRelicInstrumentation
+        ## Override perform to add NewRelic tracing. Call the super perform todo the actual work
         include NewRelic::Agent::Instrumentation::ControllerInstrumentation
 
         def perform(*args)
@@ -30,12 +30,12 @@ DependencyDetection.defer do
       end
     end
 
-    ## Override `payload_class` to take the new job class instance, and extend the above instrumentation
-    ## into it. This makes sure we're only messing with classes that are actually being processed.
     module NewRelic
       module Agent
         module Instrumentation
           module ChoreInstrumentHook
+            ## Override `payload_class` to take the new job class instance, and extend the above instrumentation
+            ## into it. This makes sure we're only messing with classes that are actually being processed.
             def payload_class(message)
               klass = super
               klass.instance_eval do
