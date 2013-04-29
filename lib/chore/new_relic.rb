@@ -15,7 +15,7 @@ DependencyDetection.defer do
   executes do
 
     module Chore
-      module NewRelicInstrumentation
+      module NewRelicInstrumentation #:nodoc:
         ## Override perform to add NewRelic tracing. Call the super perform todo the actual work
         include NewRelic::Agent::Instrumentation::ControllerInstrumentation
 
@@ -30,7 +30,7 @@ DependencyDetection.defer do
       end
     end
 
-    module NewRelic
+    module NewRelic #:nodoc:
       module Agent
         module Instrumentation
           module ChoreInstrumentHook
