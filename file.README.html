@@ -1,0 +1,159 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII" />
+<title>
+  File: README
+  
+    &mdash; Documentation by YARD 0.8.6.1
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '';
+  framesUrl = "frames.html#!" + escape(window.location.href);
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: README</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><div id='filecontents'><h1>chore</h1>
+
+<h2>Integration</h2>
+
+<p>Chore can be integrated with any Ruby-based project by following these instructions:</p>
+
+<p>Add the chore gem to your gemfile and run <code>bundle install</code> (at some point we&#39;ll have a proper gem release):</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_gem'>gem</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>chore</span><span class='tstring_end'>'</span></span><span class='comma'>,</span> <span class='symbol'>:git</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>git://github.com/Tapjoy/chore.git</span><span class='tstring_end'>'</span></span>
+</code></pre>
+
+<p>If you also plan on using SQS, you must also bring in dalli to use for memcached:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_gem'>gem</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>dalli</span><span class='tstring_end'>'</span></span>
+</code></pre>
+
+<p>Create a <code>chore.config</code> file in a suitable place, e.g. <code>./config</code>. This file controls how the consumer end of chore will operate. </p>
+
+<pre class="code ruby"><code class="ruby">--require=./&lt;FILE_TO_LOAD&gt;
+--aws-access-key=&lt;AWS KEY&gt;
+--aws-secret-key=&lt;AWS SECRET&gt;
+--verbose
+--concurrency 10
+</code></pre>
+
+<p>Make sure that <code>--require</code> points to the main entry point for your app. If integrating with a Rails app, just point it to the directory of your application and it will handle loading the correct files on its own. See the help options for more details on the other settings.</p>
+
+<p>Now add a configuration block inside your apps configuration to configure the producer end. </p>
+
+<pre class="code ruby"><code class="ruby">Chore.configure do |c|
+  c.aws_access_key = &lt;AWS KEY&gt;
+  c.aws_secret_key = &lt;AWS SECRET&gt;
+end
+</code></pre>
+
+<p>Add an appropriate line to your <code>Procfile</code>:</p>
+
+<pre class="code ruby"><code class="ruby">jobs: bundle exec chore -c config/chore.config
+</code></pre>
+
+<p>Create a new test job in your application:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='kw'>class</span> <span class='const'>TestJob</span> 
+  <span class='id identifier rubyid_include'>include</span> <span class='const'>Chore</span><span class='op'>::</span><span class='const'>Job</span>
+  <span class='id identifier rubyid_queue_options'>queue_options</span> <span class='symbol'>:name</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>test_queue</span><span class='tstring_end'>'</span></span><span class='comma'>,</span> <span class='symbol'>:publisher</span> <span class='op'>=&gt;</span> <span class='const'>Chore</span><span class='op'>::</span><span class='const'>SQSPublisher</span>
+
+  <span class='kw'>def</span> <span class='id identifier rubyid_perform'>perform</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>My first sync job</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
+
+<span class='kw'>end</span>
+</code></pre>
+
+<p>Don&#39;t forget to start memcached if you&#39;re using SQS:</p>
+
+<pre class="code ruby"><code class="ruby">memcached &amp;
+</code></pre>
+
+<p>If your queues do not exist, you must create them before you run the application:</p>
+
+<pre class="code ruby"><code class="ruby"> <span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>aws-sdk</span><span class='tstring_end'>'</span></span>
+ <span class='id identifier rubyid_sqs'>sqs</span> <span class='op'>=</span> <span class='const'>AWS</span><span class='op'>::</span><span class='const'>SQS</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+ <span class='id identifier rubyid_sqs'>sqs</span><span class='period'>.</span><span class='id identifier rubyid_queues'>queues</span><span class='period'>.</span><span class='id identifier rubyid_create'>create</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>test_queue</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+</code></pre>
+
+<p>Finally, start foreman as usual</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_foreman'>foreman</span> <span class='id identifier rubyid_start'>start</span>
+</code></pre>
+
+<h2>Contributing to chore</h2>
+
+<ul>
+<li>Check out the latest master to make sure the feature hasn&#39;t been implemented or the bug hasn&#39;t been fixed yet.</li>
+<li>Check out the issue tracker to make sure someone already hasn&#39;t requested it and/or contributed it.</li>
+<li>Fork the project.</li>
+<li>Start a feature/bugfix branch.</li>
+<li>Commit and push until you are happy with your contribution.</li>
+<li>Make sure to add tests for it. This is important so I don&#39;t break it in a future version unintentionally.</li>
+<li>Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.</li>
+</ul>
+
+<h2>Copyright</h2>
+
+<p>Copyright (c) 2013 Tapjoy. See LICENSE.txt for
+further details.</p>
+</div></div>
+
+    <div id="footer">
+  Generated on Mon May  6 16:09:14 2013 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.6.1 (ruby-1.9.3).
+</div>
+
+  </body>
+</html>
