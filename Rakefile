@@ -24,12 +24,9 @@ end
 
 task :default => :spec
 
-require 'rdoc/task'
-Rake::RDocTask.new do |rdoc|
-  version = File.exist?('VERSION') ? File.read('VERSION') : ""
+require 'yard'
 
-  rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "chore #{version}"
-  rdoc.rdoc_files.include('README*')
-  rdoc.rdoc_files.include('lib/**/*.rb')
+YARD::Rake::YardocTask.new do |yard|
+  require 'chore/version'
+  yard.options = [ '--output=rdoc', "title=#{Chore::Version::STRING}", 'main=README.md']
 end

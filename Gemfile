@@ -9,6 +9,8 @@ group :development do
   gem 'rake', '~> 10.0'
   gem 'dalli'
   gem 'debugger'
+  gem 'redcarpet'
+  gem 'yard'
 end
 
 gem 'json'
