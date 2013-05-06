@@ -74,7 +74,7 @@ module Chore
     # send a QUIT signal to each child, wait one minute for it to finish the last job
     # it was working on. If it times out, then we send KILL. In an ideal world this means
     # that <tt>stop!</tt> is non-destructive in that it allow each worker to complete it's
-    # current job before dieing.
+    # current job before dying.
     def stop!
       Chore.logger.info { "Worker #{Process.pid} stopping" }
       begin
