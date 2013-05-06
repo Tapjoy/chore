@@ -14,39 +14,43 @@ module Chore
     include Singleton
     include Util
 
+    attr_reader :options, :registered_opts
+
     def initialize
       @options = {}
       @registered_opts = {}
       @stopping = false
     end
 
-    def registered_opts
-      @registered_opts
-    end
-
+    #
+    # +register_option+ is a method for plugins or other components to register command-line config options.
+    # * <tt>key</tt> is the name for this option that can be referenced from Chore.config.+key+
+    # * <tt>*args</tt> is an <tt>OptionParser</tt> style list of options.
+    # * <tt>&blk</tt> is an option block, passed to <tt>OptionParser</tt>
+    #
+    # === Examples
+    #   Chore::CLI.register_option 'sample', '-s', '--sample-key SOME_VAL', 'A description of this value'
+    #
+    #   Chore::CLI.register_option 'something', '-g', '--something-complex VALUE', 'A description' do |arg|
+    #     # make sure your key here matches the key you register
+    #     options[:something] arg.split(',')
+    #   end
     def self.register_option(key,*args,&blk)
       instance.register_option(key,*args,&blk)
     end
 
-    def register_option(key,*args,&blk)
+    def register_option(key,*args,&blk) #:nodoc:#
       registered_opts[key] = {:args => args}
       registered_opts[key].merge!(:block => blk) if blk
     end
 
-    def parse(args=ARGV)
-      Chore.logger.level = Logger::WARN
-      setup_options
-      parse_opts(args)
-      if @options[:config_file] 
-        parse_config_file(@options[:config_file])
-      end
-      validate!
-      boot_system
-      detect_queues
-      Chore.configure(options)
-    end
-
-    def run!
+    #
+    # Start up the consuming side of the application. This calls both Chore::Manager#start and the internal stats server.
+    # The stat server is served up on either the configured port or 9090. It is simply  a background Thread calling 
+    # Chore::Manager#report.
+    #
+    def run!(args=ARGV)
+      parse(args)
       @manager = Chore::Manager.new
       start_stat_server(@manager)
       @manager.start
@@ -61,12 +65,27 @@ module Chore
       end
     end
 
-    def parse_config_file(file)
+    def parse_config_file(file) #:nodoc:#
       data = File.read(file)
       data = ERB.new(data).result
       parse_opts(data.split(/\s/).map!(&:chomp).map!(&:strip))
     end
 
+    def parse(args=ARGV) #:nodoc:#
+      Chore.logger.level = Logger::WARN
+      setup_options
+      parse_opts(args)
+      if @options[:config_file] 
+        parse_config_file(@options[:config_file])
+      end
+      validate!
+      boot_system
+      detect_queues
+      Chore.configure(options)
+    end
+
+
+    private
     def setup_options
       register_option "queues", "-q", "--queues QUEUE1,QUEUE2", "Names of queues to process (default: all known)" do |arg|
         options[:queues] = arg.split(",")
@@ -145,10 +164,6 @@ module Chore
       @options
     end
 
-    private
-    def options
-      @options
-    end
 
     def env_overrides
       @options[:aws_access_key] ||= ENV['AWS_ACCESS_KEY']
