@@ -32,19 +32,19 @@ If you're using SQS, you'll want to add AWS keys so that Chore can authenticate 
 
 Other options include:
 
---stats-port 9090 # port to run the stats HTTP server on
---concurrency 16 # number of concurrent worker processes, if using forked worker strategy
---worker-strategy Chore::ForkedWorkerStrategy # which worker strategy class to use
---consumer Chore::SQSConsumer # which consumer class to use
---dedupe-servers # if using SQS and your memcache is running on something other than localhost
---fetcher-strategy Chore::ThreadedConsumerStrategy # fetching strategy class, are you seeing a theme here?
---batch-size 50 # how many messages are batched together before handing them to a worker
---threads-per-queue 4 # number of threads per queue for fetching from queue
+    --stats-port 9090 # port to run the stats HTTP server on
+    --concurrency 16 # number of concurrent worker processes, if using forked worker strategy
+    --worker-strategy Chore::ForkedWorkerStrategy # which worker strategy class to use
+    --consumer Chore::SQSConsumer # which consumer class to use
+    --dedupe-servers # if using SQS and your memcache is running on something other than localhost
+    --fetcher-strategy Chore::ThreadedConsumerStrategy # fetching strategy class, are you seeing a theme here?
+    --batch-size 50 # how many messages are batched together before handing them to a worker
+    --threads-per-queue 4 # number of threads per queue for fetching from queue
 
 By default, Chore will run over all queues it detects among the required files. If you wish to change this behavior, you can use:
 
---queues QUEUE1,QUEUE2... # a list of queues to process
---except-queues QUEUE1,QUEUE2... # a list of queues _not_ to process
+    --queues QUEUE1,QUEUE2... # a list of queues to process
+    --except-queues QUEUE1,QUEUE2... # a list of queues _not_ to process
 
 Note that you can use one or the other but not both. Chore will quit and make fun of you if both options are specified.
 
@@ -62,9 +62,9 @@ Don't forget to start memcached if you're using SQS:
 If your queues do not exist, you must create them before you run the application:
 
 ```ruby
-  require 'aws-sdk'
-  sqs = AWS::SQS.new
-  sqs.queues.create("test_queue")
+require 'aws-sdk'
+sqs = AWS::SQS.new
+sqs.queues.create("test_queue")
 ```
 
 Finally, start foreman as usual
@@ -74,16 +74,17 @@ Finally, start foreman as usual
 ## Chore::Job
 
 A Chore::Job is any class that includes `Chore::Job` and implements `perform(*args)` Here is an example job class:
+
 ```ruby
-    class TestJob 
-      include Chore::Job
-      queue_options :name => 'test_queue', :publisher => Chore::SQSPublisher, :timeout => 120
+class TestJob 
+  include Chore::Job
+  queue_options :name => 'test_queue', :publisher => Chore::SQSPublisher, :timeout => 120
 
-      def perform(*args)
-        Chore.logger.debug "My first async job"
-      end
+  def perform(*args)
+    Chore.logger.debug "My first async job"
+  end
 
-    end
+end
 ```
 
 This job uses the included `Chore::SQSPublisher` to remove the message from the queue once the job is completed.
@@ -100,12 +101,15 @@ Global Hooks:
 * after_fork
 
 Filesystem Consumer/Publisher
+
 * on_fetch(job_file, job_json)
 
 SQS Consumer
+
 * on_fetch(handle, body)
 
 Per Job:
+
 * before_publish
 * after_publish
 * before_perform(message)
@@ -119,19 +123,19 @@ All per-job hooks can also be global hooks.
 Hooks can be added to a job class as so:
 
 ```ruby
-    class TestJob 
-      include Chore::Job
-      queue_options :name => 'test_queue', :publisher => Chore::SQSPublisher, :timeout => 120
+class TestJob 
+  include Chore::Job
+  queue_options :name => 'test_queue', :publisher => Chore::SQSPublisher, :timeout => 120
 
-      def perform(*args)
-        Chore.logger.debug "My first sync job"
-      end
+  def perform(*args)
+    Chore.logger.debug "My first sync job"
+  end
 
-      def on_timeout(msg)
-        # your special timeout code here
-      end
+  def on_timeout(msg)
+    # your special timeout code here
+  end
 
-    end
+end
 ```
 Global hooks can also be registered like so:
 

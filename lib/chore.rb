@@ -44,12 +44,6 @@ module Chore
 
   ##
   # The default configuration options for Chore.
-  # * +:num_workers+ => 4,
-  # * +:threads_per_queue+ => 1,
-  # * +:worker_strategy+ => ForkedWorkerStrategy,
-  # * +:consumer+ => SQSConsumer,
-  # * +:fetcher_strategy+ => ThreadedConsumerStrategy,
-  # * +:batch_size+ => 50
   DEFAULT_OPTIONS = {
     :num_workers => 4,
     :threads_per_queue => 1,
