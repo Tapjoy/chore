@@ -5,6 +5,8 @@
 Chore is a pluggable, multi-backend job processor. It was built from the ground up to be extremely flexible. We hope that you
 will find integrating and using Chore to be as pleasant as we do.
 
+The full docs for Chore can always be found at http://tapjoy.github.io/chore.
+
 ## Configuration
 
 Chore can be integrated with any Ruby-based project by following these instructions:
