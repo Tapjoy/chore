@@ -1,665 +1,946 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Class: Chore::PipeListener
+  
+    &mdash; Documentation by YARD 0.8.6.1
+  
+</title>
 
-<html>
-<head>
-<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+  <link rel="stylesheet" href="../css/style.css" type="text/css" charset="utf-8" />
 
-<title>class Chore::PipeListener - chore </title>
+  <link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8" />
 
-<link type="text/css" media="screen" href="../rdoc.css" rel="stylesheet">
-
-<script type="text/javascript">
-  var rdoc_rel_prefix = "../";
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '../';
+  framesUrl = "../frames.html#!" + escape(window.location.href);
 </script>
 
-<script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/navigation.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/search_index.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/search.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/searcher.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/darkfish.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
 
 
-<body id="top" class="class">
-<nav id="metadata">
-  <nav id="home-section" class="section">
-  <h3 class="section-header">
-    <a href="../index.html">Home</a>
-    <a href="../table_of_contents.html#classes">Classes</a>
-    <a href="../table_of_contents.html#methods">Methods</a>
-  </h3>
-</nav>
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="../_index.html">Index (P)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../Chore.html" title="Chore (module)">Chore</a></span></span>
+     &raquo; 
+    <span class="title">PipeListener</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="../method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="../file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Class: Chore::PipeListener
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+    <dt class="r1">Inherits:</dt>
+    <dd class="r1">
+      <span class="inheritName">Object</span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next">Chore::PipeListener</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+      </dd>
+    
+  
+  
+    
+  
+    
+  
+  
+  
+    <dt class="r2 last">Defined in:</dt>
+    <dd class="r2 last">lib/chore/pipe_listener.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<div id="subclasses">
+  <h2>Direct Known Subclasses</h2>
+  <p class="children"><span class='object_link'><a href="WorkerListener.html" title="Chore::WorkerListener (class)">WorkerListener</a></span></p>
+</div>
 
 
-  <nav id="search-section" class="section project-section" class="initially-hidden">
-  <form action="#" method="get" accept-charset="utf-8">
-    <h3 class="section-header">
-      <input type="text" name="search" placeholder="Search" id="search-field"
-             title="Type to search, Up and Down to navigate, Enter to load">
-    </h3>
-  </form>
-
-  <ul id="search-results" class="initially-hidden"></ul>
-</nav>
 
 
-  <div id="file-metadata">
-    <nav id="file-list-section" class="section">
-  <h3 class="section-header">Defined In</h3>
-  <ul>
-    <li>lib/chore/pipe_listener.rb
+  <h2>Instance Attribute Summary <small>(<a href="#" class="summary_toggle">collapse</a>)</small></h2>
+  <ul class="summary">
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#pipes-instance_method" title="#pipes (instance method)">- (Object) <strong>pipes</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the value of attribute pipes.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#signal-instance_method" title="#signal (instance method)">- (Object) <strong>signal</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the value of attribute signal.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#timeout-instance_method" title="#timeout (instance method)">- (Object) <strong>timeout</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the value of attribute timeout.</p>
+</div></span>
+  
+</li>
+
+    
   </ul>
-</nav>
 
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#add_pipe-instance_method" title="#add_pipe (instance method)">- (Object) <strong>add_pipe</strong>(id) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#close_all-instance_method" title="#close_all (instance method)">- (Object) <strong>close_all</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#end_pipe-instance_method" title="#end_pipe (instance method)">- (Object) <strong>end_pipe</strong>(id) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#handle_payload-instance_method" title="#handle_payload (instance method)">- (Object) <strong>handle_payload</strong>(payload) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#initialize-instance_method" title="#initialize (instance method)">- (PipeListener) <strong>initialize</strong>(timeout) </a>
+    
+
+    
+  </span>
+  
+  
+    <span class="note title constructor">constructor</span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>A new instance of PipeListener.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#prune%21-instance_method" title="#prune! (instance method)">- (Object) <strong>prune!</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#start-instance_method" title="#start (instance method)">- (Object) <strong>start</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#stop-instance_method" title="#stop (instance method)">- (Object) <strong>stop</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#wake_up%21-instance_method" title="#wake_up! (instance method)">- (Object) <strong>wake_up!</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+<div id="constructor_details" class="method_details_list">
+  <h2>Constructor Details</h2>
+  
+    <div class="method_details first">
+  <h3 class="signature first" id="initialize-instance_method">
+  
+    - (<tt><span class='object_link'><a href="" title="Chore::PipeListener (class)">PipeListener</a></span></tt>) <strong>initialize</strong>(timeout) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>A new instance of PipeListener</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+49
+50
+51
+52
+53
+54</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/pipe_listener.rb', line 49</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_timeout'>timeout</span><span class='rparen'>)</span>
+  <span class='ivar'>@signal</span> <span class='op'>=</span> <span class='const'>Pipe</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+  <span class='ivar'>@timeout</span> <span class='op'>=</span> <span class='id identifier rubyid_timeout'>timeout</span>
+  <span class='ivar'>@pipes</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
+  <span class='ivar'>@stopping</span> <span class='op'>=</span> <span class='kw'>false</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+  
+</div>
+
+  <div id="instance_attr_details" class="attr_details">
+    <h2>Instance Attribute Details</h2>
+    
+      
+      <span id="pipes=-instance_method"></span>
+      <div class="method_details first">
+  <h3 class="signature first" id="pipes-instance_method">
+  
+    - (<tt>Object</tt>) <strong>pipes</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the value of attribute pipes</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+45
+46
+47</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/pipe_listener.rb', line 45</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_pipes'>pipes</span>
+  <span class='ivar'>@pipes</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id="signal=-instance_method"></span>
+      <div class="method_details ">
+  <h3 class="signature " id="signal-instance_method">
+  
+    - (<tt>Object</tt>) <strong>signal</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the value of attribute signal</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+47
+48
+49</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/pipe_listener.rb', line 47</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_signal'>signal</span>
+  <span class='ivar'>@signal</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id="timeout=-instance_method"></span>
+      <div class="method_details ">
+  <h3 class="signature " id="timeout-instance_method">
+  
+    - (<tt>Object</tt>) <strong>timeout</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the value of attribute timeout</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+46
+47
+48</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/pipe_listener.rb', line 46</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_timeout'>timeout</span>
+  <span class='ivar'>@timeout</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
     
   </div>
 
-  <div id="class-metadata">
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
     
-    <nav id="parent-class-section" class="section">
-  <h3 class="section-header">Parent</h3>
+      <div class="method_details first">
+  <h3 class="signature first" id="add_pipe-instance_method">
   
-  <p class="link"><a href="../Object.html">Object</a>
+    - (<tt>Object</tt>) <strong>add_pipe</strong>(id) 
   
-</nav>
 
-    
-    <!-- Method Quickref -->
-<nav id="method-list-section" class="section">
-  <h3 class="section-header">Methods</h3>
+  
 
-  <ul class="link-list">
-    
-    <li><a href="#method-c-new">::new</a>
-    
-    <li><a href="#method-i-add_pipe">#add_pipe</a>
-    
-    <li><a href="#method-i-close_all">#close_all</a>
-    
-    <li><a href="#method-i-end_pipe">#end_pipe</a>
-    
-    <li><a href="#method-i-handle_payload">#handle_payload</a>
-    
-    <li><a href="#method-i-pipe_from_handle">#pipe_from_handle</a>
-    
-    <li><a href="#method-i-prune-21">#prune!</a>
-    
-    <li><a href="#method-i-should_stop-3F">#should_stop?</a>
-    
-    <li><a href="#method-i-start">#start</a>
-    
-    <li><a href="#method-i-stop">#stop</a>
-    
-    <li><a href="#method-i-wake_up-21">#wake_up!</a>
-    
-  </ul>
-</nav>
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
 
+
+56
+57
+58
+59
+60
+61</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/pipe_listener.rb', line 56</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_add_pipe'>add_pipe</span><span class='lparen'>(</span><span class='id identifier rubyid_id'>id</span><span class='rparen'>)</span>
+  <span class='ivar'>@pipes</span><span class='lbracket'>[</span><span class='id identifier rubyid_id'>id</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='const'>Pipe</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+  <span class='comment'># we need to wake up the listening loop, so it can reload the list of pipes
+</span>  <span class='id identifier rubyid_wake_up!'>wake_up!</span>
+  <span class='ivar'>@pipes</span><span class='lbracket'>[</span><span class='id identifier rubyid_id'>id</span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="close_all-instance_method">
+  
+    - (<tt>Object</tt>) <strong>close_all</strong> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+122
+123
+124
+125</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/pipe_listener.rb', line 122</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_close_all'>close_all</span>
+  <span class='ivar'>@pipes</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_k'>k</span><span class='comma'>,</span><span class='id identifier rubyid_p'>p</span><span class='op'>|</span> <span class='id identifier rubyid_p'>p</span><span class='period'>.</span><span class='id identifier rubyid_close'>close</span> <span class='rbrace'>}</span>
+  <span class='ivar'>@signal</span><span class='period'>.</span><span class='id identifier rubyid_close'>close</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="end_pipe-instance_method">
+  
+    - (<tt>Object</tt>) <strong>end_pipe</strong>(id) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+63
+64
+65</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/pipe_listener.rb', line 63</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_end_pipe'>end_pipe</span><span class='lparen'>(</span><span class='id identifier rubyid_id'>id</span><span class='rparen'>)</span>
+  <span class='ivar'>@pipes</span><span class='lbracket'>[</span><span class='id identifier rubyid_id'>id</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_in'>in</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>EOF</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="handle_payload-instance_method">
+  
+    - (<tt>Object</tt>) <strong>handle_payload</strong>(payload) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+131
+132</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/pipe_listener.rb', line 131</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_handle_payload'>handle_payload</span><span class='lparen'>(</span><span class='id identifier rubyid_payload'>payload</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="prune!-instance_method">
+  
+    - (<tt>Object</tt>) <strong>prune!</strong> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+127
+128
+129</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/pipe_listener.rb', line 127</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_prune!'>prune!</span>
+  <span class='ivar'>@pipes</span><span class='period'>.</span><span class='id identifier rubyid_reject!'>reject!</span> <span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_k'>k</span><span class='comma'>,</span><span class='id identifier rubyid_p'>p</span><span class='op'>|</span> <span class='id identifier rubyid_p'>p</span><span class='period'>.</span><span class='id identifier rubyid_out'>out</span><span class='period'>.</span><span class='id identifier rubyid_closed?'>closed?</span> <span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="start-instance_method">
+  
+    - (<tt>Object</tt>) <strong>start</strong> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/pipe_listener.rb', line 67</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_start'>start</span>
+  <span class='ivar'>@thread</span> <span class='op'>=</span> <span class='const'>Thread</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='kw'>do</span>
+    <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Starting up pipe listener: </span><span class='embexpr_beg'>#{</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='rbrace'>}</span><span class='tstring_end'>&quot;</span></span>
+    <span class='id identifier rubyid_loop'>loop</span> <span class='kw'>do</span>
+      <span class='id identifier rubyid_prune!'>prune!</span>
+      <span class='comment'># get a list of pipes, include the signal pipe so we can break out of here
+</span>      <span class='comment'># from the outside
+</span>      <span class='id identifier rubyid_listen_to'>listen_to</span> <span class='op'>=</span> <span class='ivar'>@pipes</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_k'>k</span><span class='comma'>,</span><span class='id identifier rubyid_p'>p</span><span class='op'>|</span> <span class='id identifier rubyid_p'>p</span><span class='period'>.</span><span class='id identifier rubyid_out'>out</span> <span class='rbrace'>}</span> <span class='op'>+</span> <span class='lbracket'>[</span><span class='ivar'>@signal</span><span class='period'>.</span><span class='id identifier rubyid_out'>out</span><span class='rbracket'>]</span>
+      <span class='comment'># check if any pipes are ready for reading
+</span>      <span class='kw'>if</span> <span class='id identifier rubyid_ready'>ready</span> <span class='op'>=</span> <span class='const'>IO</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='lparen'>(</span><span class='id identifier rubyid_listen_to'>listen_to</span><span class='comma'>,</span><span class='lbracket'>[</span><span class='rbracket'>]</span><span class='comma'>,</span><span class='lbracket'>[</span><span class='rbracket'>]</span><span class='comma'>,</span><span class='ivar'>@timeout</span><span class='rparen'>)</span>
+        <span class='id identifier rubyid_pipe'>pipe</span> <span class='op'>=</span> <span class='id identifier rubyid_ready'>ready</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
+        <span class='comment'># don't try to process stuff from the signal pipe, it's just noise to signal
+</span>        <span class='comment'># us to move on
+</span>        <span class='kw'>if</span> <span class='id identifier rubyid_pipe'>pipe</span> <span class='op'>==</span> <span class='ivar'>@signal</span><span class='period'>.</span><span class='id identifier rubyid_out'>out</span>
+          <span class='id identifier rubyid_pipe'>pipe</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='int'>1</span><span class='rparen'>)</span>
+          <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>PipeListener#start Woke up from a signal</span><span class='tstring_end'>&quot;</span></span> <span class='rbrace'>}</span>
+        <span class='kw'>else</span>
+          <span class='comment'># take the actual io::pipe and find our wrapped pipe, then pull the payload
+</span>          <span class='id identifier rubyid_payload'>payload</span> <span class='op'>=</span> <span class='id identifier rubyid_pipe_from_handle'>pipe_from_handle</span><span class='lparen'>(</span><span class='id identifier rubyid_pipe'>pipe</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span>
+          <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>PipeListener#start Woke up from a message: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_pipe'>pipe</span><span class='period'>.</span><span class='id identifier rubyid_inspect'>inspect</span><span class='rbrace'>}</span><span class='tstring_content'>: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_payload'>payload</span><span class='period'>.</span><span class='id identifier rubyid_inspect'>inspect</span><span class='rbrace'>}</span><span class='tstring_end'>&quot;</span></span> <span class='rbrace'>}</span>
+          <span class='kw'>if</span> <span class='id identifier rubyid_payload'>payload</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_payload'>payload</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+            <span class='comment'># if the child tells us it's done, let's be done
+</span>            <span class='kw'>if</span> <span class='id identifier rubyid_payload'>payload</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>EOF</span><span class='tstring_end'>'</span></span>
+              <span class='id identifier rubyid_pipe_from_handle'>pipe_from_handle</span><span class='lparen'>(</span><span class='id identifier rubyid_pipe'>pipe</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_close'>close</span> 
+              <span class='kw'>next</span>
+            <span class='kw'>end</span>
+            <span class='kw'>begin</span>
+              <span class='id identifier rubyid_handle_payload'>handle_payload</span><span class='lparen'>(</span><span class='id identifier rubyid_payload'>payload</span><span class='rparen'>)</span>
+            <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+              <span class='comment'># Many things could have gone wrong, let's log it and move on
+</span>              <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>PipeListener#handle_payload raised an exception: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_inspect'>inspect</span><span class='rbrace'>}</span><span class='tstring_end'>&quot;</span></span>
+            <span class='kw'>end</span>
+          <span class='kw'>end</span>
+        <span class='kw'>end</span>
+      <span class='kw'>end</span>
+
+      <span class='kw'>break</span> <span class='kw'>if</span> <span class='id identifier rubyid_should_stop?'>should_stop?</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="stop-instance_method">
+  
+    - (<tt>Object</tt>) <strong>stop</strong> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+108
+109
+110
+111
+112
+113
+114
+115
+116</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/pipe_listener.rb', line 108</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_stop'>stop</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='ivar'>@stopping</span>
+  <span class='ivar'>@stopping</span> <span class='op'>=</span> <span class='kw'>true</span>
+  <span class='id identifier rubyid_wake_up!'>wake_up!</span>
+  <span class='comment'># wait for the thread to finish
+</span>  <span class='ivar'>@thread</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span> 
+  <span class='id identifier rubyid_close_all'>close_all</span>
+  <span class='ivar'>@signal</span><span class='period'>.</span><span class='id identifier rubyid_close'>close</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="wake_up!-instance_method">
+  
+    - (<tt>Object</tt>) <strong>wake_up!</strong> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+118
+119
+120</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/pipe_listener.rb', line 118</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_wake_up!'>wake_up!</span>
+  <span class='ivar'>@signal</span><span class='period'>.</span><span class='id identifier rubyid_in'>in</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>.</span><span class='tstring_end'>'</span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
   </div>
 
-  <div id="project-metadata">
-    
-    <nav id="classindex-section" class="section project-section">
-  <h3 class="section-header">Class and Module Index</h3>
-
-  <ul class="link-list">
-  
-    <li><a href="../Chore.html">Chore</a>
-  
-    <li><a href="../Chore/CLI.html">Chore::CLI</a>
-  
-    <li><a href="../Chore/Configuration.html">Chore::Configuration</a>
-  
-    <li><a href="../Chore/Consumer.html">Chore::Consumer</a>
-  
-    <li><a href="../Chore/DuplicateDetector.html">Chore::DuplicateDetector</a>
-  
-    <li><a href="../Chore/FilesystemConsumer.html">Chore::FilesystemConsumer</a>
-  
-    <li><a href="../Chore/FilesystemPublisher.html">Chore::FilesystemPublisher</a>
-  
-    <li><a href="../Chore/FilesystemQueue.html">Chore::FilesystemQueue</a>
-  
-    <li><a href="../Chore/ForkedWorkerStrategy.html">Chore::ForkedWorkerStrategy</a>
-  
-    <li><a href="../Chore/Hooks.html">Chore::Hooks</a>
-  
-    <li><a href="../Chore/Job.html">Chore::Job</a>
-  
-    <li><a href="../Chore/Job/ClassMethods.html">Chore::Job::ClassMethods</a>
-  
-    <li><a href="../Chore/Job/RejectMessageException.html">Chore::Job::RejectMessageException</a>
-  
-    <li><a href="../Chore/JsonEncoder.html">Chore::JsonEncoder</a>
-  
-    <li><a href="../Chore/Lease.html">Chore::Lease</a>
-  
-    <li><a href="../Chore/LockingSQSConsumer.html">Chore::LockingSQSConsumer</a>
-  
-    <li><a href="../Chore/Manager.html">Chore::Manager</a>
-  
-    <li><a href="../Chore/Pipe.html">Chore::Pipe</a>
-  
-    <li><a href="../Chore/PipeListener.html">Chore::PipeListener</a>
-  
-    <li><a href="../Chore/PipedStats.html">Chore::PipedStats</a>
-  
-    <li><a href="../Chore/Publisher.html">Chore::Publisher</a>
-  
-    <li><a href="../Chore/SQSConsumer.html">Chore::SQSConsumer</a>
-  
-    <li><a href="../Chore/SQSPublisher.html">Chore::SQSPublisher</a>
-  
-    <li><a href="../Chore/Semaphore.html">Chore::Semaphore</a>
-  
-    <li><a href="../Chore/SingleConsumerStrategy.html">Chore::SingleConsumerStrategy</a>
-  
-    <li><a href="../Chore/SingleWorkerStrategy.html">Chore::SingleWorkerStrategy</a>
-  
-    <li><a href="../Chore/Stats.html">Chore::Stats</a>
-  
-    <li><a href="../Chore/Tapjoy.html">Chore::Tapjoy</a>
-  
-    <li><a href="../Chore/ThreadedConsumerStrategy.html">Chore::ThreadedConsumerStrategy</a>
-  
-    <li><a href="../Chore/UnitOfWork.html">Chore::UnitOfWork</a>
-  
-    <li><a href="../Chore/Util.html">Chore::Util</a>
-  
-    <li><a href="../Chore/Version.html">Chore::Version</a>
-  
-    <li><a href="../Chore/Worker.html">Chore::Worker</a>
-  
-    <li><a href="../Chore/WorkerListener.html">Chore::WorkerListener</a>
-  
-    <li><a href="../NewRelic.html">NewRelic</a>
-  
-    <li><a href="../NewRelic/Agent.html">NewRelic::Agent</a>
-  
-    <li><a href="../NewRelic/Agent/Instrumentation.html">NewRelic::Agent::Instrumentation</a>
-  
-    <li><a href="../NewRelic/Agent/Instrumentation/ChoreInstrumentHook.html">NewRelic::Agent::Instrumentation::ChoreInstrumentHook</a>
-  
-    <li><a href="../Object.html">Object</a>
-  
-  </ul>
-</nav>
-
-  </div>
-</nav>
-
-<div id="documentation">
-  <h1 class="class">class Chore::PipeListener</h1>
-
-  <div id="description" class="description">
-    
-  </div><!-- description -->
-
-  
-  
-  
-  <section id="5Buntitled-5D" class="documentation-section">
-    
-
-    
-
-    
-
-    
-    <!-- Attributes -->
-    <section id="attribute-method-details" class="method-section section">
-      <h3 class="section-header">Attributes</h3>
-
-      
-      <div id="attribute-i-pipes" class="method-detail">
-        <div class="method-heading attribute-method-heading">
-          <span class="method-name">pipes</span><span
-            class="attribute-access-type">[RW]</span>
-        </div>
-
-        <div class="method-description">
-        
-        
-        
-        </div>
-      </div>
-      
-      <div id="attribute-i-signal" class="method-detail">
-        <div class="method-heading attribute-method-heading">
-          <span class="method-name">signal</span><span
-            class="attribute-access-type">[RW]</span>
-        </div>
-
-        <div class="method-description">
-        
-        
-        
-        </div>
-      </div>
-      
-      <div id="attribute-i-timeout" class="method-detail">
-        <div class="method-heading attribute-method-heading">
-          <span class="method-name">timeout</span><span
-            class="attribute-access-type">[RW]</span>
-        </div>
-
-        <div class="method-description">
-        
-        
-        
-        </div>
-      </div>
-      
-    </section><!-- attribute-method-details -->
-    
-
-    <!-- Methods -->
-    
-     <section id="public-class-5Buntitled-5D-method-details" class="method-section section">
-      <h3 class="section-header">Public Class Methods</h3>
-
-    
-      <div id="method-c-new" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">new</span><span
-            class="method-args">(timeout)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
-
-        <div class="method-description">
-          
-          
-          
-
-          
-          <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/chore/pipe_listener.rb, line 49</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">timeout</span>)
-  <span class="ruby-ivar">@signal</span> = <span class="ruby-constant">Pipe</span>.<span class="ruby-identifier">new</span>
-  <span class="ruby-ivar">@timeout</span> = <span class="ruby-identifier">timeout</span>
-  <span class="ruby-ivar">@pipes</span> = {}
-  <span class="ruby-ivar">@stopping</span> = <span class="ruby-keyword">false</span>
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- new-source -->
-          
-        </div>
-
-        
-
-        
-      </div><!-- new-method -->
-
-    
-    </section><!-- public-class-method-details -->
-  
-     <section id="public-instance-5Buntitled-5D-method-details" class="method-section section">
-      <h3 class="section-header">Public Instance Methods</h3>
-
-    
-      <div id="method-i-add_pipe" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">add_pipe</span><span
-            class="method-args">(id)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
-
-        <div class="method-description">
-          
-          
-          
-
-          
-          <div class="method-source-code" id="add_pipe-source">
-            <pre><span class="ruby-comment"># File lib/chore/pipe_listener.rb, line 56</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">add_pipe</span>(<span class="ruby-identifier">id</span>)
-  <span class="ruby-ivar">@pipes</span>[<span class="ruby-identifier">id</span>] = <span class="ruby-constant">Pipe</span>.<span class="ruby-identifier">new</span>
-  <span class="ruby-comment"># we need to wake up the listening loop, so it can reload the list of pipes</span>
-  <span class="ruby-identifier">wake_up!</span>
-  <span class="ruby-ivar">@pipes</span>[<span class="ruby-identifier">id</span>]
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- add_pipe-source -->
-          
-        </div>
-
-        
-
-        
-      </div><!-- add_pipe-method -->
-
-    
-      <div id="method-i-close_all" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">close_all</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
-
-        <div class="method-description">
-          
-          
-          
-
-          
-          <div class="method-source-code" id="close_all-source">
-            <pre><span class="ruby-comment"># File lib/chore/pipe_listener.rb, line 122</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">close_all</span>
-  <span class="ruby-ivar">@pipes</span>.<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">k</span>,<span class="ruby-identifier">p</span><span class="ruby-operator">|</span> <span class="ruby-identifier">p</span>.<span class="ruby-identifier">close</span> }
-  <span class="ruby-ivar">@signal</span>.<span class="ruby-identifier">close</span>
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- close_all-source -->
-          
-        </div>
-
-        
-
-        
-      </div><!-- close_all-method -->
-
-    
-      <div id="method-i-end_pipe" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">end_pipe</span><span
-            class="method-args">(id)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
-
-        <div class="method-description">
-          
-          
-          
-
-          
-          <div class="method-source-code" id="end_pipe-source">
-            <pre><span class="ruby-comment"># File lib/chore/pipe_listener.rb, line 63</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">end_pipe</span>(<span class="ruby-identifier">id</span>)
-  <span class="ruby-ivar">@pipes</span>[<span class="ruby-identifier">id</span>].<span class="ruby-identifier">in</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-string">&quot;EOF&quot;</span>
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- end_pipe-source -->
-          
-        </div>
-
-        
-
-        
-      </div><!-- end_pipe-method -->
-
-    
-      <div id="method-i-handle_payload" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">handle_payload</span><span
-            class="method-args">(payload)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
-
-        <div class="method-description">
-          
-          
-          
-
-          
-          <div class="method-source-code" id="handle_payload-source">
-            <pre><span class="ruby-comment"># File lib/chore/pipe_listener.rb, line 131</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">handle_payload</span>(<span class="ruby-identifier">payload</span>)
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- handle_payload-source -->
-          
-        </div>
-
-        
-
-        
-      </div><!-- handle_payload-method -->
-
-    
-      <div id="method-i-prune-21" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">prune!</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
-
-        <div class="method-description">
-          
-          
-          
-
-          
-          <div class="method-source-code" id="prune-21-source">
-            <pre><span class="ruby-comment"># File lib/chore/pipe_listener.rb, line 127</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">prune!</span>
-  <span class="ruby-ivar">@pipes</span>.<span class="ruby-identifier">reject!</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">k</span>,<span class="ruby-identifier">p</span><span class="ruby-operator">|</span> <span class="ruby-identifier">p</span>.<span class="ruby-identifier">out</span>.<span class="ruby-identifier">closed?</span> }
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- prune-21-source -->
-          
-        </div>
-
-        
-
-        
-      </div><!-- prune-21-method -->
-
-    
-      <div id="method-i-start" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">start</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
-
-        <div class="method-description">
-          
-          
-          
-
-          
-          <div class="method-source-code" id="start-source">
-            <pre><span class="ruby-comment"># File lib/chore/pipe_listener.rb, line 67</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">start</span>
-  <span class="ruby-ivar">@thread</span> = <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">new</span> <span class="ruby-keyword">do</span>
-    <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Starting up pipe listener: #{self.class.name}&quot;</span>
-    <span class="ruby-identifier">loop</span> <span class="ruby-keyword">do</span>
-      <span class="ruby-identifier">prune!</span>
-      <span class="ruby-comment"># get a list of pipes, include the signal pipe so we can break out of here</span>
-      <span class="ruby-comment"># from the outside</span>
-      <span class="ruby-identifier">listen_to</span> = <span class="ruby-ivar">@pipes</span>.<span class="ruby-identifier">map</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">k</span>,<span class="ruby-identifier">p</span><span class="ruby-operator">|</span> <span class="ruby-identifier">p</span>.<span class="ruby-identifier">out</span> } <span class="ruby-operator">+</span> [<span class="ruby-ivar">@signal</span>.<span class="ruby-identifier">out</span>]
-      <span class="ruby-comment"># check if any pipes are ready for reading</span>
-      <span class="ruby-keyword">if</span> <span class="ruby-identifier">ready</span> = <span class="ruby-constant">IO</span>.<span class="ruby-identifier">select</span>(<span class="ruby-identifier">listen_to</span>,[],[],<span class="ruby-ivar">@timeout</span>)
-        <span class="ruby-identifier">pipe</span> = <span class="ruby-identifier">ready</span>[<span class="ruby-value">0</span>][<span class="ruby-value">0</span>]
-        <span class="ruby-comment"># don't try to process stuff from the signal pipe, it's just noise to signal</span>
-        <span class="ruby-comment"># us to move on</span>
-        <span class="ruby-keyword">if</span> <span class="ruby-identifier">pipe</span> <span class="ruby-operator">==</span> <span class="ruby-ivar">@signal</span>.<span class="ruby-identifier">out</span>
-          <span class="ruby-identifier">pipe</span>.<span class="ruby-identifier">read</span>(<span class="ruby-value">1</span>)
-          <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> { <span class="ruby-node">&quot;PipeListener#start Woke up from a signal&quot;</span> }
-        <span class="ruby-keyword">else</span>
-          <span class="ruby-comment"># take the actual io::pipe and find our wrapped pipe, then pull the payload</span>
-          <span class="ruby-identifier">payload</span> = <span class="ruby-identifier">pipe_from_handle</span>(<span class="ruby-identifier">pipe</span>).<span class="ruby-identifier">read</span>
-          <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> { <span class="ruby-node">&quot;PipeListener#start Woke up from a message: #{pipe.inspect}: #{payload.inspect}&quot;</span> }
-          <span class="ruby-keyword">if</span> <span class="ruby-identifier">payload</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">payload</span>.<span class="ruby-identifier">empty?</span>
-            <span class="ruby-comment"># if the child tells us it's done, let's be done</span>
-            <span class="ruby-keyword">if</span> <span class="ruby-identifier">payload</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">==</span> <span class="ruby-string">'EOF'</span>
-              <span class="ruby-identifier">pipe_from_handle</span>(<span class="ruby-identifier">pipe</span>).<span class="ruby-identifier">close</span> 
-              <span class="ruby-keyword">next</span>
-            <span class="ruby-keyword">end</span>
-            <span class="ruby-keyword">begin</span>
-              <span class="ruby-identifier">handle_payload</span>(<span class="ruby-identifier">payload</span>)
-            <span class="ruby-keyword">rescue</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
-              <span class="ruby-comment"># Many things could have gone wrong, let's log it and move on</span>
-              <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-node">&quot;PipeListener#handle_payload raised an exception: #{e.inspect}&quot;</span>
-            <span class="ruby-keyword">end</span>
-          <span class="ruby-keyword">end</span>
-        <span class="ruby-keyword">end</span>
-      <span class="ruby-keyword">end</span>
-
-      <span class="ruby-keyword">break</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">should_stop?</span>
-    <span class="ruby-keyword">end</span>
-  <span class="ruby-keyword">end</span>
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- start-source -->
-          
-        </div>
-
-        
-
-        
-      </div><!-- start-method -->
-
-    
-      <div id="method-i-stop" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">stop</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
-
-        <div class="method-description">
-          
-          
-          
-
-          
-          <div class="method-source-code" id="stop-source">
-            <pre><span class="ruby-comment"># File lib/chore/pipe_listener.rb, line 108</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">stop</span>
-  <span class="ruby-keyword">return</span> <span class="ruby-keyword">if</span> <span class="ruby-ivar">@stopping</span>
-  <span class="ruby-ivar">@stopping</span> = <span class="ruby-keyword">true</span>
-  <span class="ruby-identifier">wake_up!</span>
-  <span class="ruby-comment"># wait for the thread to finish</span>
-  <span class="ruby-ivar">@thread</span>.<span class="ruby-identifier">join</span> 
-  <span class="ruby-identifier">close_all</span>
-  <span class="ruby-ivar">@signal</span>.<span class="ruby-identifier">close</span>
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- stop-source -->
-          
-        </div>
-
-        
-
-        
-      </div><!-- stop-method -->
-
-    
-      <div id="method-i-wake_up-21" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">wake_up!</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
-
-        <div class="method-description">
-          
-          
-          
-
-          
-          <div class="method-source-code" id="wake_up-21-source">
-            <pre><span class="ruby-comment"># File lib/chore/pipe_listener.rb, line 118</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">wake_up!</span>
-  <span class="ruby-ivar">@signal</span>.<span class="ruby-identifier">in</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-string">'.'</span>
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- wake_up-21-source -->
-          
-        </div>
-
-        
-
-        
-      </div><!-- wake_up-21-method -->
-
-    
-    </section><!-- public-instance-method-details -->
-  
-     <section id="protected-instance-5Buntitled-5D-method-details" class="method-section section">
-      <h3 class="section-header">Protected Instance Methods</h3>
-
-    
-      <div id="method-i-pipe_from_handle" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">pipe_from_handle</span><span
-            class="method-args">(handle)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
-
-        <div class="method-description">
-          
-          
-          
-
-          
-          <div class="method-source-code" id="pipe_from_handle-source">
-            <pre><span class="ruby-comment"># File lib/chore/pipe_listener.rb, line 139</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">pipe_from_handle</span>(<span class="ruby-identifier">handle</span>)
-  <span class="ruby-ivar">@pipes</span>.<span class="ruby-identifier">values</span>.<span class="ruby-identifier">find</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">p</span><span class="ruby-operator">|</span> <span class="ruby-identifier">p</span>.<span class="ruby-identifier">out</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">handle</span> }
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- pipe_from_handle-source -->
-          
-        </div>
-
-        
-
-        
-      </div><!-- pipe_from_handle-method -->
-
-    
-      <div id="method-i-should_stop-3F" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">should_stop?</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
-
-        <div class="method-description">
-          
-          
-          
-
-          
-          <div class="method-source-code" id="should_stop-3F-source">
-            <pre><span class="ruby-comment"># File lib/chore/pipe_listener.rb, line 135</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">should_stop?</span>
-  <span class="ruby-ivar">@stopping</span>
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- should_stop-3F-source -->
-          
-        </div>
-
-        
-
-        
-      </div><!-- should_stop-3F-method -->
-
-    
-    </section><!-- protected-instance-method-details -->
-  
-  </section><!-- 5Buntitled-5D -->
-
-</div><!-- documentation -->
-
-
-<footer id="validator-badges">
-  <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
-  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.
-  <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
-</footer>
-
+</div>
+
+    <div id="footer">
+  Generated on Mon May  6 15:57:17 2013 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.6.1 (ruby-1.9.3).
+</div>
+
+  </body>
+</html>

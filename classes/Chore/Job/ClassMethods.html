@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Chore::Job::ClassMethods</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="../../../css/reset.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="../../../css/github.css" type="text/css" media="screen" />
+<script src="../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+<script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+<script src="../../../js/highlight.pack.js" type="text/javascript" charset="utf-8"></script>
+
+</head>
+
+<body>     
+    <div class="banner">
+        
+        <h1>
+            <span class="type">Module</span> 
+            Chore::Job::ClassMethods 
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../files/lib/chore/job_rb.html">lib/chore/job.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+  
+
+
+  
+
+
+  
+  
+
+
+  
+
+
+  
+    <!-- Method ref -->
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+      
+        <dt>J</dt>
+        <dd>
+          <ul>
+            
+              
+              <li>
+                <a href="#method-i-job_hash">job_hash</a>
+              </li>
+            
+          </ul>
+        </dd>
+      
+        <dt>P</dt>
+        <dd>
+          <ul>
+            
+              
+              <li>
+                <a href="#method-i-perform">perform</a>,
+              </li>
+            
+              
+              <li>
+                <a href="#method-i-perform_async">perform_async</a>
+              </li>
+            
+          </ul>
+        </dd>
+      
+        <dt>Q</dt>
+        <dd>
+          <ul>
+            
+              
+              <li>
+                <a href="#method-i-queue_options">queue_options</a>
+              </li>
+            
+          </ul>
+        </dd>
+      
+        <dt>R</dt>
+        <dd>
+          <ul>
+            
+              
+              <li>
+                <a href="#method-i-required_options">required_options</a>
+              </li>
+            
+          </ul>
+        </dd>
+      
+    </dl>
+  
+
+  
+
+
+
+  
+
+    
+
+    
+
+    
+      <!-- Section constants -->
+      <div class="sectiontitle">Constants</div>
+      <table border='0' cellpadding='5'>
+        
+          <tr valign='top'>
+            <td class="attr-name">DEFAULT_OPTIONS</td>
+            <td>=</td>
+            <td class="attr-value">{ :timeout =&gt; 120 }</td>
+          </tr>
+          
+            <tr valign='top'>
+              <td>&nbsp;</td>
+              <td colspan="2" class="attr-desc"><p>Default options for all jobs. <code>:timeout</code> =&gt; 120</p></td>
+            </tr>
+          
+        
+      </table>
+    
+
+
+    
+
+
+    <!-- Methods -->
+        
+      <div class="sectiontitle">Instance Public methods</div>
+      
+        <div class="method">
+          <div class="title method-title" id="method-i-job_hash">
+            
+              <b>job_hash</b>(job_params)
+            
+            <a href="../../../classes/Chore/Job/ClassMethods.html#method-i-job_hash" name="method-i-job_hash" class="permalink">Link</a>
+          </div>
+          
+          
+            <div class="description">
+              <p>Resque/Sidekiq compatible serialization. No reason to change what works</p>
+            </div>
+          
+          
+          
+          
+          
+            
+            <div class="sourcecode">
+              
+              <p class="source-link">
+                Source: 
+                <a href="javascript:toggleSource('method-i-job_hash_source')" id="l_method-i-job_hash_source">show</a>
+                
+              </p>
+              <div id="method-i-job_hash_source" class="dyn-source">
+                <pre><span class="ruby-comment"># File lib/chore/job.rb, line 72</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword ruby-title">job_hash</span>(<span class="ruby-identifier">job_params</span>)
+  {<span class="ruby-value">:class</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">to_s</span>, <span class="ruby-value">:args</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">job_params</span>}
+<span class="ruby-keyword">end</span></pre>
+              </div>
+            </div>
+            
+          </div>
+        
+        <div class="method">
+          <div class="title method-title" id="method-i-perform">
+            
+              <b>perform</b>(*args)
+            
+            <a href="../../../classes/Chore/Job/ClassMethods.html#method-i-perform" name="method-i-perform" class="permalink">Link</a>
+          </div>
+          
+          
+            <div class="description">
+              <p>Execute the current job. We create an instance of the job to do the perform
+as this allows the jobs themselves to do initialization that might require
+access to the parameters of the job.</p>
+            </div>
+          
+          
+          
+          
+          
+            
+            <div class="sourcecode">
+              
+              <p class="source-link">
+                Source: 
+                <a href="javascript:toggleSource('method-i-perform_source')" id="l_method-i-perform_source">show</a>
+                
+              </p>
+              <div id="method-i-perform_source" class="dyn-source">
+                <pre><span class="ruby-comment"># File lib/chore/job.rb, line 54</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword ruby-title">perform</span>(*<span class="ruby-identifier">args</span>)
+  <span class="ruby-identifier">job</span> = <span class="ruby-keyword">self</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">args</span>)
+  <span class="ruby-identifier">job</span>.<span class="ruby-identifier">perform</span>(*<span class="ruby-identifier">args</span>)
+<span class="ruby-keyword">end</span></pre>
+              </div>
+            </div>
+            
+          </div>
+        
+        <div class="method">
+          <div class="title method-title" id="method-i-perform_async">
+            
+              <b>perform_async</b>(*args)
+            
+            <a href="../../../classes/Chore/Job/ClassMethods.html#method-i-perform_async" name="method-i-perform_async" class="permalink">Link</a>
+          </div>
+          
+          
+            <div class="description">
+              <p>Publish a job using an instance of job. Similar to perform we do this so
+that a job can perform initialization logic before the <a
+href="ClassMethods.html#method-i-perform_async">#perform_async</a> is
+begun. This, in addition, to hooks allows for rather complex jobs to be
+written simply.</p>
+            </div>
+          
+          
+          
+          
+          
+            
+            <div class="sourcecode">
+              
+              <p class="source-link">
+                Source: 
+                <a href="javascript:toggleSource('method-i-perform_async_source')" id="l_method-i-perform_async_source">show</a>
+                
+              </p>
+              <div id="method-i-perform_async_source" class="dyn-source">
+                <pre><span class="ruby-comment"># File lib/chore/job.rb, line 64</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword ruby-title">perform_async</span>(*<span class="ruby-identifier">args</span>)
+  <span class="ruby-identifier">job</span> = <span class="ruby-keyword">self</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">args</span>)
+  <span class="ruby-identifier">job</span>.<span class="ruby-identifier">perform_async</span>(*<span class="ruby-identifier">args</span>)
+<span class="ruby-keyword">end</span></pre>
+              </div>
+            </div>
+            
+          </div>
+        
+        <div class="method">
+          <div class="title method-title" id="method-i-queue_options">
+            
+              <b>queue_options</b>(opts = {})
+            
+            <a href="../../../classes/Chore/Job/ClassMethods.html#method-i-queue_options" name="method-i-queue_options" class="permalink">Link</a>
+          </div>
+          
+          
+            <div class="description">
+              <p>Pass a hash of options to <a
+href="ClassMethods.html#method-i-queue_options">#queue_options</a> the
+included class’s use of <a href="../Job.html">Chore::Job</a>
+<code>opts</code> has a couple of required options.</p>
+<ul><li>
+<p><code>:name</code>: which should map to the name of the queue this job
+should be published to.</p>
+</li><li>
+<p><code>:publisher</code>: the publisher to use for this job.</p>
+</li></ul>
+            </div>
+          
+          
+          
+          
+          
+            
+            <div class="sourcecode">
+              
+              <p class="source-link">
+                Source: 
+                <a href="javascript:toggleSource('method-i-queue_options_source')" id="l_method-i-queue_options_source">show</a>
+                
+              </p>
+              <div id="method-i-queue_options_source" class="dyn-source">
+                <pre><span class="ruby-comment"># File lib/chore/job.rb, line 30</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword ruby-title">queue_options</span>(<span class="ruby-identifier">opts</span> = {})
+  <span class="ruby-ivar">@chore_options</span> = (<span class="ruby-ivar">@chore_options</span> <span class="ruby-operator">||</span> <span class="ruby-constant">DEFAULT_OPTIONS</span>).<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">opts</span>)
+  <span class="ruby-identifier">required_options</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">k</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-node">&quot;#{self.to_s} :#{k} is a required option for Chore::Job&quot;</span>) <span class="ruby-keyword">unless</span> <span class="ruby-ivar">@chore_options</span>[<span class="ruby-identifier">k</span>]
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+              </div>
+            </div>
+            
+          </div>
+        
+        <div class="method">
+          <div class="title method-title" id="method-i-required_options">
+            
+              <b>required_options</b>()
+            
+            <a href="../../../classes/Chore/Job/ClassMethods.html#method-i-required_options" name="method-i-required_options" class="permalink">Link</a>
+          </div>
+          
+          
+            <div class="description">
+              <p>This is a method so it can be overriden to create additional required <a
+href="ClassMethods.html#method-i-queue_options">#queue_options</a> params.</p>
+            </div>
+          
+          
+          
+          
+          
+            
+            <div class="sourcecode">
+              
+              <p class="source-link">
+                Source: 
+                <a href="javascript:toggleSource('method-i-required_options_source')" id="l_method-i-required_options_source">show</a>
+                
+              </p>
+              <div id="method-i-required_options_source" class="dyn-source">
+                <pre><span class="ruby-comment"># File lib/chore/job.rb, line 41</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword ruby-title">required_options</span>
+  [<span class="ruby-value">:name</span>,<span class="ruby-value">:publisher</span>]
+<span class="ruby-keyword">end</span></pre>
+              </div>
+            </div>
+            
+          </div>
+                    </div>
+
+    </div>
+  </body>
+</html>    

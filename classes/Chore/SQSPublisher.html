@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Chore::SQSPublisher</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="../../css/github.css" type="text/css" media="screen" />
+<script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+<script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+<script src="../../js/highlight.pack.js" type="text/javascript" charset="utf-8"></script>
+
+</head>
+
+<body>     
+    <div class="banner">
+        
+        <h1>
+            <span class="type">Class</span> 
+            Chore::SQSPublisher 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="Publisher.html">Chore::Publisher</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/lib/chore/publishers/sqs_publisher_rb.html">lib/chore/publishers/sqs_publisher.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+  
+
+
+  
+
+
+  
+  
+
+
+  
+
+
+  
+    <!-- Method ref -->
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+      
+        <dt>E</dt>
+        <dd>
+          <ul>
+            
+              
+              <li>
+                <a href="#method-i-ensure_queue-21">ensure_queue!</a>
+              </li>
+            
+          </ul>
+        </dd>
+      
+        <dt>N</dt>
+        <dd>
+          <ul>
+            
+              
+              <li>
+                <a href="#method-c-new">new</a>
+              </li>
+            
+          </ul>
+        </dd>
+      
+        <dt>P</dt>
+        <dd>
+          <ul>
+            
+              
+              <li>
+                <a href="#method-i-publish">publish</a>
+              </li>
+            
+          </ul>
+        </dd>
+      
+    </dl>
+  
+
+  
+
+
+
+  
+
+    
+
+    
+
+    
+
+
+    
+
+
+    <!-- Methods -->
+    
+      <div class="sectiontitle">Class Public methods</div>
+      
+        <div class="method">
+          <div class="title method-title" id="method-c-new">
+            
+              <b>new</b>(opts={})
+            
+            <a href="../../classes/Chore/SQSPublisher.html#method-c-new" name="method-c-new" class="permalink">Link</a>
+          </div>
+          
+          
+            <div class="description">
+              
+            </div>
+          
+          
+          
+          
+          
+            
+            <div class="sourcecode">
+              
+              <p class="source-link">
+                Source: 
+                <a href="javascript:toggleSource('method-c-new_source')" id="l_method-c-new_source">show</a>
+                
+              </p>
+              <div id="method-c-new_source" class="dyn-source">
+                <pre><span class="ruby-comment"># File lib/chore/publishers/sqs_publisher.rb, line 4</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword ruby-title">initialize</span>(<span class="ruby-identifier">opts</span>={})
+  <span class="ruby-keyword">super</span>
+  <span class="ruby-ivar">@sqs</span> = <span class="ruby-constant">AWS</span><span class="ruby-operator">::</span><span class="ruby-constant">SQS</span>.<span class="ruby-identifier">new</span>(
+      <span class="ruby-value">:access_key_id</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">config</span>.<span class="ruby-identifier">aws_access_key</span>,
+      <span class="ruby-value">:secret_access_key</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">config</span>.<span class="ruby-identifier">aws_secret_key</span>)
+<span class="ruby-keyword">end</span></pre>
+              </div>
+            </div>
+            
+          </div>
+                  
+      <div class="sectiontitle">Instance Public methods</div>
+      
+        <div class="method">
+          <div class="title method-title" id="method-i-ensure_queue-21">
+            
+              <b>ensure_queue!</b>(name)
+            
+            <a href="../../classes/Chore/SQSPublisher.html#method-i-ensure_queue-21" name="method-i-ensure_queue-21" class="permalink">Link</a>
+          </div>
+          
+          
+            <div class="description">
+              
+            </div>
+          
+          
+          
+          
+          
+            
+            <div class="sourcecode">
+              
+              <p class="source-link">
+                Source: 
+                <a href="javascript:toggleSource('method-i-ensure_queue-21_source')" id="l_method-i-ensure_queue-21_source">show</a>
+                
+              </p>
+              <div id="method-i-ensure_queue-21_source" class="dyn-source">
+                <pre><span class="ruby-comment"># File lib/chore/publishers/sqs_publisher.rb, line 16</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword ruby-title">ensure_queue!</span>(<span class="ruby-identifier">name</span>)
+  <span class="ruby-ivar">@sqs</span>.<span class="ruby-identifier">queues</span>.<span class="ruby-identifier">create</span>(<span class="ruby-identifier">name</span>)
+<span class="ruby-keyword">end</span></pre>
+              </div>
+            </div>
+            
+          </div>
+        
+        <div class="method">
+          <div class="title method-title" id="method-i-publish">
+            
+              <b>publish</b>(queue_name,job)
+            
+            <a href="../../classes/Chore/SQSPublisher.html#method-i-publish" name="method-i-publish" class="permalink">Link</a>
+          </div>
+          
+          
+            <div class="description">
+              
+            </div>
+          
+          
+          
+          
+          
+            
+            <div class="sourcecode">
+              
+              <p class="source-link">
+                Source: 
+                <a href="javascript:toggleSource('method-i-publish_source')" id="l_method-i-publish_source">show</a>
+                
+              </p>
+              <div id="method-i-publish_source" class="dyn-source">
+                <pre><span class="ruby-comment"># File lib/chore/publishers/sqs_publisher.rb, line 11</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword ruby-title">publish</span>(<span class="ruby-identifier">queue_name</span>,<span class="ruby-identifier">job</span>)
+  <span class="ruby-identifier">queue</span> = <span class="ruby-identifier">ensure_queue!</span> <span class="ruby-identifier">queue_name</span>
+  <span class="ruby-identifier">queue</span>.<span class="ruby-identifier">send_message</span>(<span class="ruby-identifier">encode_job</span>(<span class="ruby-identifier">job</span>))
+<span class="ruby-keyword">end</span></pre>
+              </div>
+            </div>
+            
+          </div>
+                    </div>
+
+    </div>
+  </body>
+</html>    

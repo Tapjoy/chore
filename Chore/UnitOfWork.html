@@ -1,167 +1,108 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Class: Chore::UnitOfWork
+  
+    &mdash; Documentation by YARD 0.8.6.1
+  
+</title>
 
-<html>
-<head>
-<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+  <link rel="stylesheet" href="../css/style.css" type="text/css" charset="utf-8" />
 
-<title>class Chore::UnitOfWork - chore </title>
+  <link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8" />
 
-<link type="text/css" media="screen" href="../rdoc.css" rel="stylesheet">
-
-<script type="text/javascript">
-  var rdoc_rel_prefix = "../";
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '../';
+  framesUrl = "../frames.html#!" + escape(window.location.href);
 </script>
 
-<script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/navigation.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/search_index.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/search.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/searcher.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/darkfish.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
 
 
-<body id="top" class="class">
-<nav id="metadata">
-  <nav id="home-section" class="section">
-  <h3 class="section-header">
-    <a href="../index.html">Home</a>
-    <a href="../table_of_contents.html#classes">Classes</a>
-    <a href="../table_of_contents.html#methods">Methods</a>
-  </h3>
-</nav>
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="../_index.html">Index (U)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../Chore.html" title="Chore (module)">Chore</a></span></span>
+     &raquo; 
+    <span class="title">UnitOfWork</span>
+  
 
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
 
-  <nav id="search-section" class="section project-section" class="initially-hidden">
-  <form action="#" method="get" accept-charset="utf-8">
-    <h3 class="section-header">
-      <input type="text" name="search" placeholder="Search" id="search-field"
-             title="Type to search, Up and Down to navigate, Enter to load">
-    </h3>
-  </form>
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="../method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="../file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
 
-  <ul id="search-results" class="initially-hidden"></ul>
-</nav>
+    <iframe id="search_frame"></iframe>
 
+    <div id="content"><h1>Class: Chore::UnitOfWork
+  
+  
+  
+</h1>
 
-  <div id="file-metadata">
-    <nav id="file-list-section" class="section">
-  <h3 class="section-header">Defined In</h3>
-  <ul>
-    <li>lib/chore.rb
-  </ul>
-</nav>
-
+<dl class="box">
+  
+    <dt class="r1">Inherits:</dt>
+    <dd class="r1">
+      <span class="inheritName">Struct</span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next">Struct</li>
+          
+            <li class="next">Chore::UnitOfWork</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+      </dd>
     
-  </div>
-
-  <div id="class-metadata">
+  
+  
     
-    <nav id="parent-class-section" class="section">
-  <h3 class="section-header">Parent</h3>
   
-  <p class="link">Struct.new(:id,:message,:consumer);
-  
-</nav>
-
     
-    
-  </div>
+  
+  
+  
+    <dt class="r2 last">Defined in:</dt>
+    <dd class="r2 last">lib/chore.rb</dd>
+  
+</dl>
+<div class="clear"></div>
 
-  <div id="project-metadata">
-    
-    <nav id="classindex-section" class="section project-section">
-  <h3 class="section-header">Class and Module Index</h3>
-
-  <ul class="link-list">
-  
-    <li><a href="../Chore.html">Chore</a>
-  
-    <li><a href="../Chore/CLI.html">Chore::CLI</a>
-  
-    <li><a href="../Chore/Configuration.html">Chore::Configuration</a>
-  
-    <li><a href="../Chore/Consumer.html">Chore::Consumer</a>
-  
-    <li><a href="../Chore/DuplicateDetector.html">Chore::DuplicateDetector</a>
-  
-    <li><a href="../Chore/FilesystemConsumer.html">Chore::FilesystemConsumer</a>
-  
-    <li><a href="../Chore/FilesystemPublisher.html">Chore::FilesystemPublisher</a>
-  
-    <li><a href="../Chore/FilesystemQueue.html">Chore::FilesystemQueue</a>
-  
-    <li><a href="../Chore/ForkedWorkerStrategy.html">Chore::ForkedWorkerStrategy</a>
-  
-    <li><a href="../Chore/Hooks.html">Chore::Hooks</a>
-  
-    <li><a href="../Chore/Job.html">Chore::Job</a>
-  
-    <li><a href="../Chore/Job/ClassMethods.html">Chore::Job::ClassMethods</a>
-  
-    <li><a href="../Chore/Job/RejectMessageException.html">Chore::Job::RejectMessageException</a>
-  
-    <li><a href="../Chore/JsonEncoder.html">Chore::JsonEncoder</a>
-  
-    <li><a href="../Chore/Lease.html">Chore::Lease</a>
-  
-    <li><a href="../Chore/LockingSQSConsumer.html">Chore::LockingSQSConsumer</a>
-  
-    <li><a href="../Chore/Manager.html">Chore::Manager</a>
-  
-    <li><a href="../Chore/Pipe.html">Chore::Pipe</a>
-  
-    <li><a href="../Chore/PipeListener.html">Chore::PipeListener</a>
-  
-    <li><a href="../Chore/PipedStats.html">Chore::PipedStats</a>
-  
-    <li><a href="../Chore/Publisher.html">Chore::Publisher</a>
-  
-    <li><a href="../Chore/SQSConsumer.html">Chore::SQSConsumer</a>
-  
-    <li><a href="../Chore/SQSPublisher.html">Chore::SQSPublisher</a>
-  
-    <li><a href="../Chore/Semaphore.html">Chore::Semaphore</a>
-  
-    <li><a href="../Chore/SingleConsumerStrategy.html">Chore::SingleConsumerStrategy</a>
-  
-    <li><a href="../Chore/SingleWorkerStrategy.html">Chore::SingleWorkerStrategy</a>
-  
-    <li><a href="../Chore/Stats.html">Chore::Stats</a>
-  
-    <li><a href="../Chore/Tapjoy.html">Chore::Tapjoy</a>
-  
-    <li><a href="../Chore/ThreadedConsumerStrategy.html">Chore::ThreadedConsumerStrategy</a>
-  
-    <li><a href="../Chore/UnitOfWork.html">Chore::UnitOfWork</a>
-  
-    <li><a href="../Chore/Util.html">Chore::Util</a>
-  
-    <li><a href="../Chore/Version.html">Chore::Version</a>
-  
-    <li><a href="../Chore/Worker.html">Chore::Worker</a>
-  
-    <li><a href="../Chore/WorkerListener.html">Chore::WorkerListener</a>
-  
-    <li><a href="../NewRelic.html">NewRelic</a>
-  
-    <li><a href="../NewRelic/Agent.html">NewRelic::Agent</a>
-  
-    <li><a href="../NewRelic/Agent/Instrumentation.html">NewRelic::Agent::Instrumentation</a>
-  
-    <li><a href="../NewRelic/Agent/Instrumentation/ChoreInstrumentHook.html">NewRelic::Agent::Instrumentation::ChoreInstrumentHook</a>
-  
-    <li><a href="../Object.html">Object</a>
-  
-  </ul>
-</nav>
-
-  </div>
-</nav>
-
-<div id="documentation">
-  <h1 class="class">class Chore::UnitOfWork</h1>
-
-  <div id="description" class="description">
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
     
 <p>Simple class to hold job processing information. Has only three attributes:</p>
 <ul><li>
@@ -176,33 +117,306 @@ will. So we</p>
 </li></ul>
 
 <p>make sure to pass it along with each message. This instance will be used by
-the <a href="Worker.html">Worker</a> for things like <code>complete</code>
-and &lt;/tt&gt;reject&lt;/tt&gt;.</p>
+the Worker for things like <code>complete</code> and
+&lt;/tt&gt;reject&lt;/tt&gt;.</p>
 
-  </div><!-- description -->
 
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+
+
+
+  <h2>Instance Attribute Summary <small>(<a href="#" class="summary_toggle">collapse</a>)</small></h2>
+  <ul class="summary">
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#consumer-instance_method" title="#consumer (instance method)">- (Object) <strong>consumer</strong> </a>
+    
+
+    
+  </span>
   
   
   
-  <section id="5Buntitled-5D" class="documentation-section">
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the value of attribute consumer.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#id-instance_method" title="#id (instance method)">- (Object) <strong>id</strong> </a>
     
 
     
+  </span>
+  
+  
+  
+    
+    
+  
+  
+  
+  
+  
 
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the value of attribute id.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#message-instance_method" title="#message (instance method)">- (Object) <strong>message</strong> </a>
     
 
     
-
-    <!-- Methods -->
+  </span>
+  
+  
+  
     
-  </section><!-- 5Buntitled-5D -->
+    
+  
+  
+  
+  
+  
 
-</div><!-- documentation -->
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the value of attribute message.</p>
+</div></span>
+  
+</li>
+
+    
+  </ul>
 
 
-<footer id="validator-badges">
-  <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
-  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.
-  <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
-</footer>
 
+
+
+  
+  <div id="instance_attr_details" class="attr_details">
+    <h2>Instance Attribute Details</h2>
+    
+      
+      <span id="consumer=-instance_method"></span>
+      <div class="method_details first">
+  <h3 class="signature first" id="consumer-instance_method">
+  
+    - (<tt>Object</tt>) <strong>consumer</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the value of attribute consumer</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the current value of consumer</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+32
+33
+34</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore.rb', line 32</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_consumer'>consumer</span>
+  <span class='ivar'>@consumer</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id="id=-instance_method"></span>
+      <div class="method_details ">
+  <h3 class="signature " id="id-instance_method">
+  
+    - (<tt>Object</tt>) <strong>id</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the value of attribute id</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the current value of id</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+32
+33
+34</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore.rb', line 32</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_id'>id</span>
+  <span class='ivar'>@id</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id="message=-instance_method"></span>
+      <div class="method_details ">
+  <h3 class="signature " id="message-instance_method">
+  
+    - (<tt>Object</tt>) <strong>message</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the value of attribute message</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the current value of message</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+32
+33
+34</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore.rb', line 32</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_message'>message</span>
+  <span class='ivar'>@message</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+
+</div>
+
+    <div id="footer">
+  Generated on Mon May  6 15:57:16 2013 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.6.1 (ruby-1.9.3).
+</div>
+
+  </body>
+</html>

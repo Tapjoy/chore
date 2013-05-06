@@ -1,317 +1,360 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Class: Chore::PipedStats
+  
+    &mdash; Documentation by YARD 0.8.6.1
+  
+</title>
 
-<html>
-<head>
-<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+  <link rel="stylesheet" href="../css/style.css" type="text/css" charset="utf-8" />
 
-<title>class Chore::PipedStats - chore </title>
+  <link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8" />
 
-<link type="text/css" media="screen" href="../rdoc.css" rel="stylesheet">
-
-<script type="text/javascript">
-  var rdoc_rel_prefix = "../";
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '../';
+  framesUrl = "../frames.html#!" + escape(window.location.href);
 </script>
 
-<script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/navigation.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/search_index.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/search.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/searcher.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/darkfish.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
 
 
-<body id="top" class="class">
-<nav id="metadata">
-  <nav id="home-section" class="section">
-  <h3 class="section-header">
-    <a href="../index.html">Home</a>
-    <a href="../table_of_contents.html#classes">Classes</a>
-    <a href="../table_of_contents.html#methods">Methods</a>
-  </h3>
-</nav>
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="../_index.html">Index (P)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../Chore.html" title="Chore (module)">Chore</a></span></span>
+     &raquo; 
+    <span class="title">PipedStats</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="../method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="../file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Class: Chore::PipedStats
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+    <dt class="r1">Inherits:</dt>
+    <dd class="r1">
+      <span class="inheritName"><span class='object_link'><a href="Stats.html" title="Chore::Stats (class)">Stats</a></span></span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next"><span class='object_link'><a href="Stats.html" title="Chore::Stats (class)">Stats</a></span></li>
+          
+            <li class="next">Chore::PipedStats</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+      </dd>
+    
+  
+  
+    
+  
+    
+  
+  
+  
+    <dt class="r2 last">Defined in:</dt>
+    <dd class="r2 last">lib/chore/strategies/worker/forked_worker_strategy.rb</dd>
+  
+</dl>
+<div class="clear"></div>
 
 
-  <nav id="search-section" class="section project-section" class="initially-hidden">
-  <form action="#" method="get" accept-charset="utf-8">
-    <h3 class="section-header">
-      <input type="text" name="search" placeholder="Search" id="search-field"
-             title="Type to search, Up and Down to navigate, Enter to load">
-    </h3>
-  </form>
-
-  <ul id="search-results" class="initially-hidden"></ul>
-</nav>
 
 
-  <div id="file-metadata">
-    <nav id="file-list-section" class="section">
-  <h3 class="section-header">Defined In</h3>
-  <ul>
-    <li>lib/chore/strategies/worker/forked_worker_strategy.rb
-  </ul>
-</nav>
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#add-instance_method" title="#add (instance method)">- (Object) <strong>add</strong>(stat, type = :global, data = nil) </a>
+    
 
     
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Override add to write data to the pipe instead of directly into memory.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#initialize-instance_method" title="#initialize (instance method)">- (PipedStats) <strong>initialize</strong>(pipe_id, listener, bucket_size = nil) </a>
+    
+
+    
+  </span>
+  
+  
+    <span class="note title constructor">constructor</span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>PipedStats is a neat trick to avoid having to let our Worker know whether
+or not it's running forked.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_worker_status-instance_method" title="#set_worker_status (instance method)">- (Object) <strong>set_worker_status</strong>(id, *args) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Override set_worker_status to write data to the pipe  instead of directly
+into memory.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods inherited from <span class='object_link'><a href="Stats.html" title="Chore::Stats (class)">Stats</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="Stats.html#%5B%5D-instance_method" title="Chore::Stats#[] (method)">#[]</a></span>, <span class='object_link'><a href="Stats.html#get-instance_method" title="Chore::Stats#get (method)">#get</a></span>, <span class='object_link'><a href="Stats.html#to_json-instance_method" title="Chore::Stats#to_json (method)">#to_json</a></span></p>
+<div id="constructor_details" class="method_details_list">
+  <h2>Constructor Details</h2>
+  
+    <div class="method_details first">
+  <h3 class="signature first" id="initialize-instance_method">
+  
+    - (<tt><span class='object_link'><a href="" title="Chore::PipedStats (class)">PipedStats</a></span></tt>) <strong>initialize</strong>(pipe_id, listener, bucket_size = nil) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>PipedStats is a neat trick to avoid having to let our Worker know whether
+or not it's running forked. After we fork a child, we reset Chore.stats to
+be an instance of PipedStats. This class overrides a couple of key methods
+to send data across the pipe, instead of directly into the in memory stats.</p>
+
+
   </div>
-
-  <div id="class-metadata">
-    
-    <nav id="parent-class-section" class="section">
-  <h3 class="section-header">Parent</h3>
+</div>
+<div class="tags">
   
-  <p class="link"><a href="Stats.html">Chore::Stats</a>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+36
+37
+38
+39</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/strategies/worker/forked_worker_strategy.rb', line 36</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_pipe_id'>pipe_id</span><span class='comma'>,</span><span class='id identifier rubyid_listener'>listener</span><span class='comma'>,</span><span class='id identifier rubyid_bucket_size'>bucket_size</span><span class='op'>=</span><span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='kw'>super</span><span class='lparen'>(</span><span class='id identifier rubyid_bucket_size'>bucket_size</span><span class='rparen'>)</span>
+  <span class='ivar'>@pipe_id</span><span class='comma'>,</span> <span class='ivar'>@listener</span> <span class='op'>=</span> <span class='id identifier rubyid_pipe_id'>pipe_id</span><span class='comma'>,</span> <span class='id identifier rubyid_listener'>listener</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
   
-</nav>
+</div>
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
 
     
-    <!-- Method Quickref -->
-<nav id="method-list-section" class="section">
-  <h3 class="section-header">Methods</h3>
+      <div class="method_details first">
+  <h3 class="signature first" id="add-instance_method">
+  
+    - (<tt>Object</tt>) <strong>add</strong>(stat, type = :global, data = nil) 
+  
 
-  <ul class="link-list">
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
     
-    <li><a href="#method-c-new">::new</a>
-    
-    <li><a href="#method-i-add">#add</a>
-    
-    <li><a href="#method-i-set_worker_status">#set_worker_status</a>
-    
-  </ul>
-</nav>
+<p>Override <code>add</code> to write data to the pipe instead of directly
+into memory. This let's us track stats  globally, even from forked workers.</p>
+
 
   </div>
+</div>
+<div class="tags">
+  
 
-  <div id="project-metadata">
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+43
+44
+45</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/strategies/worker/forked_worker_strategy.rb', line 43</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_add'>add</span><span class='lparen'>(</span><span class='id identifier rubyid_stat'>stat</span><span class='comma'>,</span><span class='id identifier rubyid_type'>type</span><span class='op'>=</span><span class='symbol'>:global</span><span class='comma'>,</span><span class='id identifier rubyid_data'>data</span><span class='op'>=</span><span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='ivar'>@listener</span><span class='period'>.</span><span class='id identifier rubyid_pipes'>pipes</span><span class='lbracket'>[</span><span class='ivar'>@pipe_id</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_write'>write</span><span class='lparen'>(</span><span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>type</span><span class='tstring_end'>'</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>stat</span><span class='tstring_end'>'</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>value</span><span class='tstring_end'>'</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='id identifier rubyid_stat'>stat</span><span class='comma'>,</span><span class='const'>StatEntry</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_type'>type</span><span class='comma'>,</span><span class='id identifier rubyid_data'>data</span><span class='rparen'>)</span><span class='rbracket'>]</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
     
-    <nav id="classindex-section" class="section project-section">
-  <h3 class="section-header">Class and Module Index</h3>
+      <div class="method_details ">
+  <h3 class="signature " id="set_worker_status-instance_method">
+  
+    - (<tt>Object</tt>) <strong>set_worker_status</strong>(id, *args) 
+  
 
-  <ul class="link-list">
   
-    <li><a href="../Chore.html">Chore</a>
-  
-    <li><a href="../Chore/CLI.html">Chore::CLI</a>
-  
-    <li><a href="../Chore/Configuration.html">Chore::Configuration</a>
-  
-    <li><a href="../Chore/Consumer.html">Chore::Consumer</a>
-  
-    <li><a href="../Chore/DuplicateDetector.html">Chore::DuplicateDetector</a>
-  
-    <li><a href="../Chore/FilesystemConsumer.html">Chore::FilesystemConsumer</a>
-  
-    <li><a href="../Chore/FilesystemPublisher.html">Chore::FilesystemPublisher</a>
-  
-    <li><a href="../Chore/FilesystemQueue.html">Chore::FilesystemQueue</a>
-  
-    <li><a href="../Chore/ForkedWorkerStrategy.html">Chore::ForkedWorkerStrategy</a>
-  
-    <li><a href="../Chore/Hooks.html">Chore::Hooks</a>
-  
-    <li><a href="../Chore/Job.html">Chore::Job</a>
-  
-    <li><a href="../Chore/Job/ClassMethods.html">Chore::Job::ClassMethods</a>
-  
-    <li><a href="../Chore/Job/RejectMessageException.html">Chore::Job::RejectMessageException</a>
-  
-    <li><a href="../Chore/JsonEncoder.html">Chore::JsonEncoder</a>
-  
-    <li><a href="../Chore/Lease.html">Chore::Lease</a>
-  
-    <li><a href="../Chore/LockingSQSConsumer.html">Chore::LockingSQSConsumer</a>
-  
-    <li><a href="../Chore/Manager.html">Chore::Manager</a>
-  
-    <li><a href="../Chore/Pipe.html">Chore::Pipe</a>
-  
-    <li><a href="../Chore/PipeListener.html">Chore::PipeListener</a>
-  
-    <li><a href="../Chore/PipedStats.html">Chore::PipedStats</a>
-  
-    <li><a href="../Chore/Publisher.html">Chore::Publisher</a>
-  
-    <li><a href="../Chore/SQSConsumer.html">Chore::SQSConsumer</a>
-  
-    <li><a href="../Chore/SQSPublisher.html">Chore::SQSPublisher</a>
-  
-    <li><a href="../Chore/Semaphore.html">Chore::Semaphore</a>
-  
-    <li><a href="../Chore/SingleConsumerStrategy.html">Chore::SingleConsumerStrategy</a>
-  
-    <li><a href="../Chore/SingleWorkerStrategy.html">Chore::SingleWorkerStrategy</a>
-  
-    <li><a href="../Chore/Stats.html">Chore::Stats</a>
-  
-    <li><a href="../Chore/Tapjoy.html">Chore::Tapjoy</a>
-  
-    <li><a href="../Chore/ThreadedConsumerStrategy.html">Chore::ThreadedConsumerStrategy</a>
-  
-    <li><a href="../Chore/UnitOfWork.html">Chore::UnitOfWork</a>
-  
-    <li><a href="../Chore/Util.html">Chore::Util</a>
-  
-    <li><a href="../Chore/Version.html">Chore::Version</a>
-  
-    <li><a href="../Chore/Worker.html">Chore::Worker</a>
-  
-    <li><a href="../Chore/WorkerListener.html">Chore::WorkerListener</a>
-  
-    <li><a href="../NewRelic.html">NewRelic</a>
-  
-    <li><a href="../NewRelic/Agent.html">NewRelic::Agent</a>
-  
-    <li><a href="../NewRelic/Agent/Instrumentation.html">NewRelic::Agent::Instrumentation</a>
-  
-    <li><a href="../NewRelic/Agent/Instrumentation/ChoreInstrumentHook.html">NewRelic::Agent::Instrumentation::ChoreInstrumentHook</a>
-  
-    <li><a href="../Object.html">Object</a>
-  
-  </ul>
-</nav>
 
-  </div>
-</nav>
-
-<div id="documentation">
-  <h1 class="class">class Chore::PipedStats</h1>
-
-  <div id="description" class="description">
+  
+</h3><div class="docstring">
+  <div class="discussion">
     
-  </div><!-- description -->
-
-  
-  
-  
-  <section id="5Buntitled-5D" class="documentation-section">
-    
-
-    
-
-    
-
-    
-
-    <!-- Methods -->
-    
-     <section id="public-class-5Buntitled-5D-method-details" class="method-section section">
-      <h3 class="section-header">Public Class Methods</h3>
-
-    
-      <div id="method-c-new" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">new</span><span
-            class="method-args">(pipe_id,listener,bucket_size=nil)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
-
-        <div class="method-description">
-          
-          <p><a href="PipedStats.html">PipedStats</a> is a neat trick to avoid having to
-let our <a href="Worker.html">Worker</a> know whether or not it's running
-forked. After we fork a child, we reset <a
-href="../Chore.html#attribute-c-stats">Chore.stats</a> to be an instance of
-<a href="PipedStats.html">PipedStats</a>. This class overrides a couple of
-key methods to send data across the pipe, instead of directly into the in
-memory stats.</p>
-          
-
-          
-          <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/chore/strategies/worker/forked_worker_strategy.rb, line 36</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">pipe_id</span>,<span class="ruby-identifier">listener</span>,<span class="ruby-identifier">bucket_size</span>=<span class="ruby-keyword">nil</span>)
-  <span class="ruby-keyword">super</span>(<span class="ruby-identifier">bucket_size</span>)
-  <span class="ruby-ivar">@pipe_id</span>, <span class="ruby-ivar">@listener</span> = <span class="ruby-identifier">pipe_id</span>, <span class="ruby-identifier">listener</span>
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- new-source -->
-          
-        </div>
-
-        
-
-        
-      </div><!-- new-method -->
-
-    
-    </section><!-- public-class-method-details -->
-  
-     <section id="public-instance-5Buntitled-5D-method-details" class="method-section section">
-      <h3 class="section-header">Public Instance Methods</h3>
-
-    
-      <div id="method-i-add" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">add</span><span
-            class="method-args">(stat,type=:global,data=nil)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
-
-        <div class="method-description">
-          
-          <p>Override <code>add</code> to write data to the pipe instead of directly
-into memory. This let’s us track stats  globally, even from forked workers.</p>
-          
-
-          
-          <div class="method-source-code" id="add-source">
-            <pre><span class="ruby-comment"># File lib/chore/strategies/worker/forked_worker_strategy.rb, line 43</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">add</span>(<span class="ruby-identifier">stat</span>,<span class="ruby-identifier">type</span>=<span class="ruby-value">:global</span>,<span class="ruby-identifier">data</span>=<span class="ruby-keyword">nil</span>)
-  <span class="ruby-ivar">@listener</span>.<span class="ruby-identifier">pipes</span>[<span class="ruby-ivar">@pipe_id</span>].<span class="ruby-identifier">write</span>({<span class="ruby-string">'type'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">'stat'</span>, <span class="ruby-string">'value'</span> =<span class="ruby-operator">&gt;</span> [<span class="ruby-identifier">stat</span>,<span class="ruby-constant">StatEntry</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">type</span>,<span class="ruby-identifier">data</span>)]})
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- add-source -->
-          
-        </div>
-
-        
-
-        
-      </div><!-- add-method -->
-
-    
-      <div id="method-i-set_worker_status" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">set_worker_status</span><span
-            class="method-args">(id,*args)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
-
-        <div class="method-description">
-          
-          <p>Override <code>set_worker_status</code> to write data to the pipe  instead
+<p>Override <code>set_worker_status</code> to write data to the pipe  instead
 of directly into memory.</p>
-          
 
-          
-          <div class="method-source-code" id="set_worker_status-source">
-            <pre><span class="ruby-comment"># File lib/chore/strategies/worker/forked_worker_strategy.rb, line 48</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">set_worker_status</span>(<span class="ruby-identifier">id</span>,*<span class="ruby-identifier">args</span>)
-  <span class="ruby-ivar">@listener</span>.<span class="ruby-identifier">pipes</span>[<span class="ruby-ivar">@pipe_id</span>].<span class="ruby-identifier">write</span>({<span class="ruby-string">'type'</span> =<span class="ruby-operator">&gt;</span><span class="ruby-string">'status'</span>, <span class="ruby-string">'value'</span> =<span class="ruby-operator">&gt;</span> {<span class="ruby-string">'id'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">id</span>, <span class="ruby-string">'status'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">args</span>}})
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- set_worker_status-source -->
-          
-        </div>
 
-        
-
-        
-      </div><!-- set_worker_status-method -->
-
-    
-    </section><!-- public-instance-method-details -->
+  </div>
+</div>
+<div class="tags">
   
-  </section><!-- 5Buntitled-5D -->
 
-</div><!-- documentation -->
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
 
 
-<footer id="validator-badges">
-  <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
-  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.
-  <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
-</footer>
+48
+49
+50</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/strategies/worker/forked_worker_strategy.rb', line 48</span>
 
+<span class='kw'>def</span> <span class='id identifier rubyid_set_worker_status'>set_worker_status</span><span class='lparen'>(</span><span class='id identifier rubyid_id'>id</span><span class='comma'>,</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
+  <span class='ivar'>@listener</span><span class='period'>.</span><span class='id identifier rubyid_pipes'>pipes</span><span class='lbracket'>[</span><span class='ivar'>@pipe_id</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_write'>write</span><span class='lparen'>(</span><span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>type</span><span class='tstring_end'>'</span></span> <span class='op'>=&gt;</span><span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>status</span><span class='tstring_end'>'</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>value</span><span class='tstring_end'>'</span></span> <span class='op'>=&gt;</span> <span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>id</span><span class='tstring_end'>'</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_id'>id</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>status</span><span class='tstring_end'>'</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_args'>args</span><span class='rbrace'>}</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Mon May  6 15:57:17 2013 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.6.1 (ruby-1.9.3).
+</div>
+
+  </body>
+</html>

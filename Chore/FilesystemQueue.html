@@ -1,351 +1,363 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Module: Chore::FilesystemQueue
+  
+    &mdash; Documentation by YARD 0.8.6.1
+  
+</title>
 
-<html>
-<head>
-<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+  <link rel="stylesheet" href="../css/style.css" type="text/css" charset="utf-8" />
 
-<title>module Chore::FilesystemQueue - chore </title>
+  <link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8" />
 
-<link type="text/css" media="screen" href="../rdoc.css" rel="stylesheet">
-
-<script type="text/javascript">
-  var rdoc_rel_prefix = "../";
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '../';
+  framesUrl = "../frames.html#!" + escape(window.location.href);
 </script>
 
-<script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/navigation.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/search_index.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/search.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/searcher.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/darkfish.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
 
 
-<body id="top" class="module">
-<nav id="metadata">
-  <nav id="home-section" class="section">
-  <h3 class="section-header">
-    <a href="../index.html">Home</a>
-    <a href="../table_of_contents.html#classes">Classes</a>
-    <a href="../table_of_contents.html#methods">Methods</a>
-  </h3>
-</nav>
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="../_index.html">Index (F)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../Chore.html" title="Chore (module)">Chore</a></span></span>
+     &raquo; 
+    <span class="title">FilesystemQueue</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="../method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="../file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Module: Chore::FilesystemQueue
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+  
+    
+  
+    
+  
+  
+    <dt class="r1">Included in:</dt>
+    <dd class="r1"><span class='object_link'><a href="FilesystemConsumer.html" title="Chore::FilesystemConsumer (class)">FilesystemConsumer</a></span>, <span class='object_link'><a href="FilesystemPublisher.html" title="Chore::FilesystemPublisher (class)">FilesystemPublisher</a></span></dd>
+    
+  
+  
+    <dt class="r2 last">Defined in:</dt>
+    <dd class="r2 last">lib/chore/consumers/filesystem_queue.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>Common methods used by FilesystemConsumer and FilesystemPublisher for
+dealing with the directories which implement the queue.</p>
 
 
-  <nav id="search-section" class="section project-section" class="initially-hidden">
-  <form action="#" method="get" accept-charset="utf-8">
-    <h3 class="section-header">
-      <input type="text" name="search" placeholder="Search" id="search-field"
-             title="Type to search, Up and Down to navigate, Enter to load">
-    </h3>
-  </form>
+  </div>
+</div>
+<div class="tags">
+  
 
-  <ul id="search-results" class="initially-hidden"></ul>
-</nav>
+</div>
+  <h2>Constant Summary</h2>
+  
+    <dl class="constants">
+      
+        <dt id="NEW_JOB_DIR-constant" class="">NEW_JOB_DIR =
+          
+        </dt>
+        <dd><pre class="code"><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>new</span><span class='tstring_end'>&quot;</span></span></pre></dd>
+      
+        <dt id="IN_PROGRESS_DIR-constant" class="">IN_PROGRESS_DIR =
+          
+        </dt>
+        <dd><pre class="code"><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>inprogress</span><span class='tstring_end'>&quot;</span></span></pre></dd>
+      
+    </dl>
+  
 
 
-  <div id="file-metadata">
-    <nav id="file-list-section" class="section">
-  <h3 class="section-header">Defined In</h3>
-  <ul>
-    <li>lib/chore/consumers/filesystem_queue.rb
-  </ul>
-</nav>
 
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#in_progress_dir-instance_method" title="#in_progress_dir (instance method)">- (Object) <strong>in_progress_dir</strong>(queue_name) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#new_dir-instance_method" title="#new_dir (instance method)">- (Object) <strong>new_dir</strong>(queue_name) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#queue_dir-instance_method" title="#queue_dir (instance method)">- (Object) <strong>queue_dir</strong>(queue_name) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#root_dir-instance_method" title="#root_dir (instance method)">- (Object) <strong>root_dir</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="in_progress_dir-instance_method">
+  
+    - (<tt>Object</tt>) <strong>in_progress_dir</strong>(queue_name) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+8
+9
+10</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/consumers/filesystem_queue.rb', line 8</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_in_progress_dir'>in_progress_dir</span><span class='lparen'>(</span><span class='id identifier rubyid_queue_name'>queue_name</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_validate_dir'>validate_dir</span><span class='lparen'>(</span><span class='id identifier rubyid_queue_name'>queue_name</span><span class='comma'>,</span> <span class='const'>IN_PROGRESS_DIR</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="new_dir-instance_method">
+  
+    - (<tt>Object</tt>) <strong>new_dir</strong>(queue_name) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+12
+13
+14</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/consumers/filesystem_queue.rb', line 12</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_new_dir'>new_dir</span><span class='lparen'>(</span><span class='id identifier rubyid_queue_name'>queue_name</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_validate_dir'>validate_dir</span><span class='lparen'>(</span><span class='id identifier rubyid_queue_name'>queue_name</span><span class='comma'>,</span> <span class='const'>NEW_JOB_DIR</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="queue_dir-instance_method">
+  
+    - (<tt>Object</tt>) <strong>queue_dir</strong>(queue_name) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+20
+21
+22</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/consumers/filesystem_queue.rb', line 20</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_queue_dir'>queue_dir</span><span class='lparen'>(</span><span class='id identifier rubyid_queue_name'>queue_name</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_prepare_dir'>prepare_dir</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_root_dir'>root_dir</span><span class='comma'>,</span> <span class='id identifier rubyid_queue_name'>queue_name</span><span class='rparen'>)</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="root_dir-instance_method">
+  
+    - (<tt>Object</tt>) <strong>root_dir</strong> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+16
+17
+18</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/consumers/filesystem_queue.rb', line 16</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_root_dir'>root_dir</span>
+  <span class='ivar'>@root_dir</span> <span class='op'>||=</span> <span class='id identifier rubyid_prepare_dir'>prepare_dir</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_expand_path'>expand_path</span><span class='lparen'>(</span><span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_fs_queue_root'>fs_queue_root</span><span class='rparen'>)</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
     
   </div>
 
-  <div id="class-metadata">
-    
-    
-    
-    <!-- Method Quickref -->
-<nav id="method-list-section" class="section">
-  <h3 class="section-header">Methods</h3>
+</div>
 
-  <ul class="link-list">
-    
-    <li><a href="#method-i-in_progress_dir">#in_progress_dir</a>
-    
-    <li><a href="#method-i-new_dir">#new_dir</a>
-    
-    <li><a href="#method-i-queue_dir">#queue_dir</a>
-    
-    <li><a href="#method-i-root_dir">#root_dir</a>
-    
-  </ul>
-</nav>
+    <div id="footer">
+  Generated on Mon May  6 15:57:16 2013 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.6.1 (ruby-1.9.3).
+</div>
 
-  </div>
-
-  <div id="project-metadata">
-    
-    <nav id="classindex-section" class="section project-section">
-  <h3 class="section-header">Class and Module Index</h3>
-
-  <ul class="link-list">
-  
-    <li><a href="../Chore.html">Chore</a>
-  
-    <li><a href="../Chore/CLI.html">Chore::CLI</a>
-  
-    <li><a href="../Chore/Configuration.html">Chore::Configuration</a>
-  
-    <li><a href="../Chore/Consumer.html">Chore::Consumer</a>
-  
-    <li><a href="../Chore/DuplicateDetector.html">Chore::DuplicateDetector</a>
-  
-    <li><a href="../Chore/FilesystemConsumer.html">Chore::FilesystemConsumer</a>
-  
-    <li><a href="../Chore/FilesystemPublisher.html">Chore::FilesystemPublisher</a>
-  
-    <li><a href="../Chore/FilesystemQueue.html">Chore::FilesystemQueue</a>
-  
-    <li><a href="../Chore/ForkedWorkerStrategy.html">Chore::ForkedWorkerStrategy</a>
-  
-    <li><a href="../Chore/Hooks.html">Chore::Hooks</a>
-  
-    <li><a href="../Chore/Job.html">Chore::Job</a>
-  
-    <li><a href="../Chore/Job/ClassMethods.html">Chore::Job::ClassMethods</a>
-  
-    <li><a href="../Chore/Job/RejectMessageException.html">Chore::Job::RejectMessageException</a>
-  
-    <li><a href="../Chore/JsonEncoder.html">Chore::JsonEncoder</a>
-  
-    <li><a href="../Chore/Lease.html">Chore::Lease</a>
-  
-    <li><a href="../Chore/LockingSQSConsumer.html">Chore::LockingSQSConsumer</a>
-  
-    <li><a href="../Chore/Manager.html">Chore::Manager</a>
-  
-    <li><a href="../Chore/Pipe.html">Chore::Pipe</a>
-  
-    <li><a href="../Chore/PipeListener.html">Chore::PipeListener</a>
-  
-    <li><a href="../Chore/PipedStats.html">Chore::PipedStats</a>
-  
-    <li><a href="../Chore/Publisher.html">Chore::Publisher</a>
-  
-    <li><a href="../Chore/SQSConsumer.html">Chore::SQSConsumer</a>
-  
-    <li><a href="../Chore/SQSPublisher.html">Chore::SQSPublisher</a>
-  
-    <li><a href="../Chore/Semaphore.html">Chore::Semaphore</a>
-  
-    <li><a href="../Chore/SingleConsumerStrategy.html">Chore::SingleConsumerStrategy</a>
-  
-    <li><a href="../Chore/SingleWorkerStrategy.html">Chore::SingleWorkerStrategy</a>
-  
-    <li><a href="../Chore/Stats.html">Chore::Stats</a>
-  
-    <li><a href="../Chore/Tapjoy.html">Chore::Tapjoy</a>
-  
-    <li><a href="../Chore/ThreadedConsumerStrategy.html">Chore::ThreadedConsumerStrategy</a>
-  
-    <li><a href="../Chore/UnitOfWork.html">Chore::UnitOfWork</a>
-  
-    <li><a href="../Chore/Util.html">Chore::Util</a>
-  
-    <li><a href="../Chore/Version.html">Chore::Version</a>
-  
-    <li><a href="../Chore/Worker.html">Chore::Worker</a>
-  
-    <li><a href="../Chore/WorkerListener.html">Chore::WorkerListener</a>
-  
-    <li><a href="../NewRelic.html">NewRelic</a>
-  
-    <li><a href="../NewRelic/Agent.html">NewRelic::Agent</a>
-  
-    <li><a href="../NewRelic/Agent/Instrumentation.html">NewRelic::Agent::Instrumentation</a>
-  
-    <li><a href="../NewRelic/Agent/Instrumentation/ChoreInstrumentHook.html">NewRelic::Agent::Instrumentation::ChoreInstrumentHook</a>
-  
-    <li><a href="../Object.html">Object</a>
-  
-  </ul>
-</nav>
-
-  </div>
-</nav>
-
-<div id="documentation">
-  <h1 class="module">module Chore::FilesystemQueue</h1>
-
-  <div id="description" class="description">
-    
-<p>Common methods used by <a
-href="FilesystemConsumer.html">FilesystemConsumer</a> and <a
-href="FilesystemPublisher.html">FilesystemPublisher</a> for dealing with
-the directories which implement the queue.</p>
-
-  </div><!-- description -->
-
-  
-  
-  
-  <section id="5Buntitled-5D" class="documentation-section">
-    
-
-    
-
-    
-    <!-- Constants -->
-    <section id="constants-list" class="section">
-      <h3 class="section-header">Constants</h3>
-      <dl>
-      
-        <dt id="IN_PROGRESS_DIR">IN_PROGRESS_DIR
-        
-        <dd class="description">
-        
-      
-        <dt id="NEW_JOB_DIR">NEW_JOB_DIR
-        
-        <dd class="description">
-        
-      
-      </dl>
-    </section>
-    
-
-    
-
-    <!-- Methods -->
-    
-     <section id="public-instance-5Buntitled-5D-method-details" class="method-section section">
-      <h3 class="section-header">Public Instance Methods</h3>
-
-    
-      <div id="method-i-in_progress_dir" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">in_progress_dir</span><span
-            class="method-args">(queue_name)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
-
-        <div class="method-description">
-          
-          
-          
-
-          
-          <div class="method-source-code" id="in_progress_dir-source">
-            <pre><span class="ruby-comment"># File lib/chore/consumers/filesystem_queue.rb, line 8</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">in_progress_dir</span>(<span class="ruby-identifier">queue_name</span>)
-  <span class="ruby-identifier">validate_dir</span>(<span class="ruby-identifier">queue_name</span>, <span class="ruby-constant">IN_PROGRESS_DIR</span>)
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- in_progress_dir-source -->
-          
-        </div>
-
-        
-
-        
-      </div><!-- in_progress_dir-method -->
-
-    
-      <div id="method-i-new_dir" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">new_dir</span><span
-            class="method-args">(queue_name)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
-
-        <div class="method-description">
-          
-          
-          
-
-          
-          <div class="method-source-code" id="new_dir-source">
-            <pre><span class="ruby-comment"># File lib/chore/consumers/filesystem_queue.rb, line 12</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">new_dir</span>(<span class="ruby-identifier">queue_name</span>)
-  <span class="ruby-identifier">validate_dir</span>(<span class="ruby-identifier">queue_name</span>, <span class="ruby-constant">NEW_JOB_DIR</span>)
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- new_dir-source -->
-          
-        </div>
-
-        
-
-        
-      </div><!-- new_dir-method -->
-
-    
-      <div id="method-i-queue_dir" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">queue_dir</span><span
-            class="method-args">(queue_name)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
-
-        <div class="method-description">
-          
-          
-          
-
-          
-          <div class="method-source-code" id="queue_dir-source">
-            <pre><span class="ruby-comment"># File lib/chore/consumers/filesystem_queue.rb, line 20</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">queue_dir</span>(<span class="ruby-identifier">queue_name</span>)
-  <span class="ruby-identifier">prepare_dir</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">root_dir</span>, <span class="ruby-identifier">queue_name</span>))
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- queue_dir-source -->
-          
-        </div>
-
-        
-
-        
-      </div><!-- queue_dir-method -->
-
-    
-      <div id="method-i-root_dir" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">root_dir</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
-
-        <div class="method-description">
-          
-          
-          
-
-          
-          <div class="method-source-code" id="root_dir-source">
-            <pre><span class="ruby-comment"># File lib/chore/consumers/filesystem_queue.rb, line 16</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">root_dir</span>
-  <span class="ruby-ivar">@root_dir</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">prepare_dir</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-constant">Chore</span>.<span class="ruby-identifier">config</span>.<span class="ruby-identifier">fs_queue_root</span>))
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- root_dir-source -->
-          
-        </div>
-
-        
-
-        
-      </div><!-- root_dir-method -->
-
-    
-    </section><!-- public-instance-method-details -->
-  
-  </section><!-- 5Buntitled-5D -->
-
-</div><!-- documentation -->
-
-
-<footer id="validator-badges">
-  <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
-  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.
-  <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
-</footer>
-
+  </body>
+</html>

@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Chore::ForkedWorkerStrategy</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="../../css/github.css" type="text/css" media="screen" />
+<script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+<script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+<script src="../../js/highlight.pack.js" type="text/javascript" charset="utf-8"></script>
+
+</head>
+
+<body>     
+    <div class="banner">
+        
+        <h1>
+            <span class="type">Class</span> 
+            Chore::ForkedWorkerStrategy 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/lib/chore/strategies/worker/forked_worker_strategy_rb.html">lib/chore/strategies/worker/forked_worker_strategy.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+  
+
+
+  
+
+
+  
+  
+
+
+  
+
+
+  
+    <!-- Method ref -->
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+      
+        <dt>A</dt>
+        <dd>
+          <ul>
+            
+              
+              <li>
+                <a href="#method-i-assign">assign</a>
+              </li>
+            
+          </ul>
+        </dd>
+      
+        <dt>N</dt>
+        <dd>
+          <ul>
+            
+              
+              <li>
+                <a href="#method-c-new">new</a>
+              </li>
+            
+          </ul>
+        </dd>
+      
+        <dt>S</dt>
+        <dd>
+          <ul>
+            
+              
+              <li>
+                <a href="#method-i-start">start</a>,
+              </li>
+            
+              
+              <li>
+                <a href="#method-i-stop-21">stop!</a>
+              </li>
+            
+          </ul>
+        </dd>
+      
+        <dt>W</dt>
+        <dd>
+          <ul>
+            
+              
+              <li>
+                <a href="#method-i-workers_available-3F">workers_available?</a>
+              </li>
+            
+          </ul>
+        </dd>
+      
+    </dl>
+  
+
+  
+
+
+
+  
+
+    
+
+    
+
+    
+
+
+    
+      <!-- Section attributes -->
+      <div class="sectiontitle">Attributes</div>
+      <table border='0' cellpadding='5'>
+        
+          <tr valign='top'>
+            <td class='attr-rw'>
+              [RW]
+            </td>
+            <td class='attr-name'>workers</td>
+            <td class='attr-desc'></td>
+          </tr>
+        
+      </table>
+    
+
+
+    <!-- Methods -->
+    
+      <div class="sectiontitle">Class Public methods</div>
+      
+        <div class="method">
+          <div class="title method-title" id="method-c-new">
+            
+              <b>new</b>(manager)
+            
+            <a href="../../classes/Chore/ForkedWorkerStrategy.html#method-c-new" name="method-c-new" class="permalink">Link</a>
+          </div>
+          
+          
+            <div class="description">
+              
+            </div>
+          
+          
+          
+          
+          
+            
+            <div class="sourcecode">
+              
+              <p class="source-link">
+                Source: 
+                <a href="javascript:toggleSource('method-c-new_source')" id="l_method-c-new_source">show</a>
+                
+              </p>
+              <div id="method-c-new_source" class="dyn-source">
+                <pre><span class="ruby-comment"># File lib/chore/strategies/worker/forked_worker_strategy.rb, line 56</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword ruby-title">initialize</span>(<span class="ruby-identifier">manager</span>)
+  <span class="ruby-ivar">@manager</span> = <span class="ruby-identifier">manager</span>
+  <span class="ruby-ivar">@workers</span> = {}
+  <span class="ruby-ivar">@listener</span> = <span class="ruby-constant">WorkerListener</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword">self</span>,<span class="ruby-number">60</span>)
+
+  <span class="ruby-identifier">trap_master_signals</span>
+
+  <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">run_hooks_for</span>(<span class="ruby-value">:before_first_fork</span>)
+<span class="ruby-keyword">end</span></pre>
+              </div>
+            </div>
+            
+          </div>
+                  
+      <div class="sectiontitle">Instance Public methods</div>
+      
+        <div class="method">
+          <div class="title method-title" id="method-i-assign">
+            
+              <b>assign</b>(work)
+            
+            <a href="../../classes/Chore/ForkedWorkerStrategy.html#method-i-assign" name="method-i-assign" class="permalink">Link</a>
+          </div>
+          
+          
+            <div class="description">
+              <p>Take a <a href="UnitOfWork.html">UnitOfWork</a> (or an Array of <a
+href="UnitOfWork.html">UnitOfWork</a>) and assign it to a <a
+href="Worker.html">Worker</a>. We only assign work if there are
+<code>workers_available?</code>.</p>
+            </div>
+          
+          
+          
+          
+          
+            
+            <div class="sourcecode">
+              
+              <p class="source-link">
+                Source: 
+                <a href="javascript:toggleSource('method-i-assign_source')" id="l_method-i-assign_source">show</a>
+                
+              </p>
+              <div id="method-i-assign_source" class="dyn-source">
+                <pre><span class="ruby-comment"># File lib/chore/strategies/worker/forked_worker_strategy.rb, line 94</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword ruby-title">assign</span>(<span class="ruby-identifier">work</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">workers_available?</span>
+    <span class="ruby-identifier">w</span> = <span class="ruby-constant">Worker</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">work</span>)
+    <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">run_hooks_for</span>(<span class="ruby-value">:before_fork</span>,<span class="ruby-identifier">w</span>)
+    <span class="ruby-ivar">@listener</span>.<span class="ruby-identifier">add_pipe</span>(<span class="ruby-identifier">w</span>.<span class="ruby-identifier">object_id</span>)
+    <span class="ruby-identifier">pid</span> = <span class="ruby-identifier">fork</span> <span class="ruby-keyword">do</span>
+      <span class="ruby-identifier">after_fork</span>(<span class="ruby-identifier">w</span>)
+
+      <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">run_hooks_for</span>(<span class="ruby-value">:after_fork</span>,<span class="ruby-identifier">w</span>)
+      <span class="ruby-identifier">procline</span>(<span class="ruby-node">&quot;Started:#{Time.now}&quot;</span>)
+      <span class="ruby-identifier">w</span>.<span class="ruby-identifier">start</span>
+      <span class="ruby-ivar">@listener</span>.<span class="ruby-identifier">end_pipe</span>(<span class="ruby-identifier">w</span>.<span class="ruby-identifier">object_id</span>)
+      <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span>(<span class="ruby-node">&quot;Finished:#{Time.now}&quot;</span>)
+    <span class="ruby-keyword">end</span>
+    <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> { <span class="ruby-node">&quot;Forked worker #{pid}&quot;</span>}
+    <span class="ruby-identifier">workers</span>[<span class="ruby-identifier">pid</span>] = <span class="ruby-identifier">w</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+              </div>
+            </div>
+            
+          </div>
+        
+        <div class="method">
+          <div class="title method-title" id="method-i-start">
+            
+              <b>start</b>()
+            
+            <a href="../../classes/Chore/ForkedWorkerStrategy.html#method-i-start" name="method-i-start" class="permalink">Link</a>
+          </div>
+          
+          
+            <div class="description">
+              <p>Start up the worker strategy. In this particular case, what we’re doing is
+starting up a <a href="WorkerListener.html">WorkerListener</a>, so we can
+talk to the children.</p>
+            </div>
+          
+          
+          
+          
+          
+            
+            <div class="sourcecode">
+              
+              <p class="source-link">
+                Source: 
+                <a href="javascript:toggleSource('method-i-start_source')" id="l_method-i-start_source">show</a>
+                
+              </p>
+              <div id="method-i-start_source" class="dyn-source">
+                <pre><span class="ruby-comment"># File lib/chore/strategies/worker/forked_worker_strategy.rb, line 68</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword ruby-title">start</span>
+  <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Starting up worker strategy: #{self.class.name}&quot;</span>
+  <span class="ruby-ivar">@listener</span>.<span class="ruby-identifier">start</span>
+<span class="ruby-keyword">end</span></pre>
+              </div>
+            </div>
+            
+          </div>
+        
+        <div class="method">
+          <div class="title method-title" id="method-i-stop-21">
+            
+              <b>stop!</b>()
+            
+            <a href="../../classes/Chore/ForkedWorkerStrategy.html#method-i-stop-21" name="method-i-stop-21" class="permalink">Link</a>
+          </div>
+          
+          
+            <div class="description">
+              <p>Stop the workers. The particulars of the implementation here are that we
+send a QUIT signal to each child, wait one minute for it to finish the last
+job it was working on. If it times out, then we send KILL. In an ideal
+world this means that <code>stop!</code> is non-destructive in that it
+allow each worker to complete it’s current job before dying.</p>
+            </div>
+          
+          
+          
+          
+          
+            
+            <div class="sourcecode">
+              
+              <p class="source-link">
+                Source: 
+                <a href="javascript:toggleSource('method-i-stop-21_source')" id="l_method-i-stop-21_source">show</a>
+                
+              </p>
+              <div id="method-i-stop-21_source" class="dyn-source">
+                <pre><span class="ruby-comment"># File lib/chore/strategies/worker/forked_worker_strategy.rb, line 78</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword ruby-title">stop!</span>
+  <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> { <span class="ruby-node">&quot;Worker #{Process.pid} stopping&quot;</span> }
+  <span class="ruby-keyword">begin</span>
+    <span class="ruby-identifier">signal_children</span>(<span class="ruby-string">&quot;QUIT&quot;</span>)
+    <span class="ruby-constant">Timeout</span><span class="ruby-operator">::</span><span class="ruby-identifier">timeout</span>(<span class="ruby-number">60</span>) <span class="ruby-keyword">do</span>
+      <span class="ruby-constant">Process</span>.<span class="ruby-identifier">waitall</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">rescue</span> <span class="ruby-constant">Timeout</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>
+    <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-string">&quot;Timed out waiting for children to terminate. Terminating with prejudice.&quot;</span>
+    <span class="ruby-identifier">signal_children</span>(<span class="ruby-string">&quot;KILL&quot;</span>)
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-ivar">@listener</span>.<span class="ruby-identifier">close_all</span>
+<span class="ruby-keyword">end</span></pre>
+              </div>
+            </div>
+            
+          </div>
+        
+        <div class="method">
+          <div class="title method-title" id="method-i-workers_available-3F">
+            
+              <b>workers_available?</b>()
+            
+            <a href="../../classes/Chore/ForkedWorkerStrategy.html#method-i-workers_available-3F" name="method-i-workers_available-3F" class="permalink">Link</a>
+          </div>
+          
+          
+            <div class="description">
+              
+            </div>
+          
+          
+          
+          
+          
+            
+            <div class="sourcecode">
+              
+              <p class="source-link">
+                Source: 
+                <a href="javascript:toggleSource('method-i-workers_available-3F_source')" id="l_method-i-workers_available-3F_source">show</a>
+                
+              </p>
+              <div id="method-i-workers_available-3F_source" class="dyn-source">
+                <pre><span class="ruby-comment"># File lib/chore/strategies/worker/forked_worker_strategy.rb, line 114</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword ruby-title">workers_available?</span>
+  <span class="ruby-identifier">workers</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">config</span>.<span class="ruby-identifier">num_workers</span>
+<span class="ruby-keyword">end</span></pre>
+              </div>
+            </div>
+            
+          </div>
+                    </div>
+
+    </div>
+  </body>
+</html>    

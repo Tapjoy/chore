@@ -1,297 +1,344 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Class: Chore::Lease
+  
+    &mdash; Documentation by YARD 0.8.6.1
+  
+</title>
 
-<html>
-<head>
-<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+  <link rel="stylesheet" href="../css/style.css" type="text/css" charset="utf-8" />
 
-<title>class Chore::Lease - chore </title>
+  <link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8" />
 
-<link type="text/css" media="screen" href="../rdoc.css" rel="stylesheet">
-
-<script type="text/javascript">
-  var rdoc_rel_prefix = "../";
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '../';
+  framesUrl = "../frames.html#!" + escape(window.location.href);
 </script>
 
-<script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/navigation.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/search_index.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/search.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/searcher.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/darkfish.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
 
 
-<body id="top" class="class">
-<nav id="metadata">
-  <nav id="home-section" class="section">
-  <h3 class="section-header">
-    <a href="../index.html">Home</a>
-    <a href="../table_of_contents.html#classes">Classes</a>
-    <a href="../table_of_contents.html#methods">Methods</a>
-  </h3>
-</nav>
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="../_index.html">Index (L)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../Chore.html" title="Chore (module)">Chore</a></span></span>
+     &raquo; 
+    <span class="title">Lease</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="../method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="../file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Class: Chore::Lease
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+    <dt class="r1">Inherits:</dt>
+    <dd class="r1">
+      <span class="inheritName">Object</span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next">Chore::Lease</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+      </dd>
+    
+  
+  
+    
+  
+    
+  
+  
+  
+    <dt class="r2 last">Defined in:</dt>
+    <dd class="r2 last">lib/chore/lease.rb</dd>
+  
+</dl>
+<div class="clear"></div>
 
 
-  <nav id="search-section" class="section project-section" class="initially-hidden">
-  <form action="#" method="get" accept-charset="utf-8">
-    <h3 class="section-header">
-      <input type="text" name="search" placeholder="Search" id="search-field"
-             title="Type to search, Up and Down to navigate, Enter to load">
-    </h3>
-  </form>
-
-  <ul id="search-results" class="initially-hidden"></ul>
-</nav>
 
 
-  <div id="file-metadata">
-    <nav id="file-list-section" class="section">
-  <h3 class="section-header">Defined In</h3>
-  <ul>
-    <li>lib/chore/lease.rb
+
+  <h2>Instance Attribute Summary <small>(<a href="#" class="summary_toggle">collapse</a>)</small></h2>
+  <ul class="summary">
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#path-instance_method" title="#path (instance method)">- (Object) <strong>path</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+      <span class="note title readonly">readonly</span>
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the value of attribute path.</p>
+</div></span>
+  
+</li>
+
+    
   </ul>
-</nav>
 
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
     
-  </div>
-
-  <div id="class-metadata">
-    
-    <nav id="parent-class-section" class="section">
-  <h3 class="section-header">Parent</h3>
-  
-  <p class="link"><a href="../Object.html">Object</a>
-  
-</nav>
-
-    
-    <!-- Method Quickref -->
-<nav id="method-list-section" class="section">
-  <h3 class="section-header">Methods</h3>
-
-  <ul class="link-list">
-    
-    <li><a href="#method-c-new">::new</a>
-    
-    <li><a href="#method-i-release">#release</a>
-    
-  </ul>
-</nav>
-
-  </div>
-
-  <div id="project-metadata">
-    
-    <nav id="classindex-section" class="section project-section">
-  <h3 class="section-header">Class and Module Index</h3>
-
-  <ul class="link-list">
-  
-    <li><a href="../Chore.html">Chore</a>
-  
-    <li><a href="../Chore/CLI.html">Chore::CLI</a>
-  
-    <li><a href="../Chore/Configuration.html">Chore::Configuration</a>
-  
-    <li><a href="../Chore/Consumer.html">Chore::Consumer</a>
-  
-    <li><a href="../Chore/DuplicateDetector.html">Chore::DuplicateDetector</a>
-  
-    <li><a href="../Chore/FilesystemConsumer.html">Chore::FilesystemConsumer</a>
-  
-    <li><a href="../Chore/FilesystemPublisher.html">Chore::FilesystemPublisher</a>
-  
-    <li><a href="../Chore/FilesystemQueue.html">Chore::FilesystemQueue</a>
-  
-    <li><a href="../Chore/ForkedWorkerStrategy.html">Chore::ForkedWorkerStrategy</a>
-  
-    <li><a href="../Chore/Hooks.html">Chore::Hooks</a>
-  
-    <li><a href="../Chore/Job.html">Chore::Job</a>
-  
-    <li><a href="../Chore/Job/ClassMethods.html">Chore::Job::ClassMethods</a>
-  
-    <li><a href="../Chore/Job/RejectMessageException.html">Chore::Job::RejectMessageException</a>
-  
-    <li><a href="../Chore/JsonEncoder.html">Chore::JsonEncoder</a>
-  
-    <li><a href="../Chore/Lease.html">Chore::Lease</a>
-  
-    <li><a href="../Chore/LockingSQSConsumer.html">Chore::LockingSQSConsumer</a>
-  
-    <li><a href="../Chore/Manager.html">Chore::Manager</a>
-  
-    <li><a href="../Chore/Pipe.html">Chore::Pipe</a>
-  
-    <li><a href="../Chore/PipeListener.html">Chore::PipeListener</a>
-  
-    <li><a href="../Chore/PipedStats.html">Chore::PipedStats</a>
-  
-    <li><a href="../Chore/Publisher.html">Chore::Publisher</a>
-  
-    <li><a href="../Chore/SQSConsumer.html">Chore::SQSConsumer</a>
-  
-    <li><a href="../Chore/SQSPublisher.html">Chore::SQSPublisher</a>
-  
-    <li><a href="../Chore/Semaphore.html">Chore::Semaphore</a>
-  
-    <li><a href="../Chore/SingleConsumerStrategy.html">Chore::SingleConsumerStrategy</a>
-  
-    <li><a href="../Chore/SingleWorkerStrategy.html">Chore::SingleWorkerStrategy</a>
-  
-    <li><a href="../Chore/Stats.html">Chore::Stats</a>
-  
-    <li><a href="../Chore/Tapjoy.html">Chore::Tapjoy</a>
-  
-    <li><a href="../Chore/ThreadedConsumerStrategy.html">Chore::ThreadedConsumerStrategy</a>
-  
-    <li><a href="../Chore/UnitOfWork.html">Chore::UnitOfWork</a>
-  
-    <li><a href="../Chore/Util.html">Chore::Util</a>
-  
-    <li><a href="../Chore/Version.html">Chore::Version</a>
-  
-    <li><a href="../Chore/Worker.html">Chore::Worker</a>
-  
-    <li><a href="../Chore/WorkerListener.html">Chore::WorkerListener</a>
-  
-    <li><a href="../NewRelic.html">NewRelic</a>
-  
-    <li><a href="../NewRelic/Agent.html">NewRelic::Agent</a>
-  
-    <li><a href="../NewRelic/Agent/Instrumentation.html">NewRelic::Agent::Instrumentation</a>
-  
-    <li><a href="../NewRelic/Agent/Instrumentation/ChoreInstrumentHook.html">NewRelic::Agent::Instrumentation::ChoreInstrumentHook</a>
-  
-    <li><a href="../Object.html">Object</a>
-  
-  </ul>
-</nav>
-
-  </div>
-</nav>
-
-<div id="documentation">
-  <h1 class="class">class Chore::Lease</h1>
-
-  <div id="description" class="description">
-    
-  </div><!-- description -->
-
-  
-  
-  
-  <section id="5Buntitled-5D" class="documentation-section">
+      <a href="#initialize-instance_method" title="#initialize (instance method)">- (Lease) <strong>initialize</strong>(path, zookeeper) </a>
     
 
     
+  </span>
+  
+  
+    <span class="note title constructor">constructor</span>
+  
+  
+  
+  
+  
+  
 
-    
-
-    
-    <!-- Attributes -->
-    <section id="attribute-method-details" class="method-section section">
-      <h3 class="section-header">Attributes</h3>
+  
+    <span class="summary_desc"><div class='inline'>
+<p>A new instance of Lease.</p>
+</div></span>
+  
+</li>
 
       
-      <div id="attribute-i-path" class="method-detail">
-        <div class="method-heading attribute-method-heading">
-          <span class="method-name">path</span><span
-            class="attribute-access-type">[R]</span>
-        </div>
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#release-instance_method" title="#release (instance method)">- (Object) <strong>release</strong> </a>
+    
 
-        <div class="method-description">
-        
-        
-        
-        </div>
-      </div>
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
       
-    </section><!-- attribute-method-details -->
-    
-
-    <!-- Methods -->
-    
-     <section id="public-class-5Buntitled-5D-method-details" class="method-section section">
-      <h3 class="section-header">Public Class Methods</h3>
-
-    
-      <div id="method-c-new" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">new</span><span
-            class="method-args">(path, zookeeper)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
-
-        <div class="method-description">
-          
-          
-          
-
-          
-          <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/chore/lease.rb, line 5</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">zookeeper</span>)
-  <span class="ruby-ivar">@path</span> = <span class="ruby-identifier">path</span>
-  <span class="ruby-ivar">@zk</span> = <span class="ruby-identifier">zookeeper</span>
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- new-source -->
-          
-        </div>
-
-        
-
-        
-      </div><!-- new-method -->
-
-    
-    </section><!-- public-class-method-details -->
+    </ul>
   
-     <section id="public-instance-5Buntitled-5D-method-details" class="method-section section">
-      <h3 class="section-header">Public Instance Methods</h3>
 
-    
-      <div id="method-i-release" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">release</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
-
-        <div class="method-description">
-          
-          
-          
-
-          
-          <div class="method-source-code" id="release-source">
-            <pre><span class="ruby-comment"># File lib/chore/lease.rb, line 10</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">release</span>
-  <span class="ruby-ivar">@zk</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">path</span>)
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- release-source -->
-          
-        </div>
-
-        
-
-        
-      </div><!-- release-method -->
-
-    
-    </section><!-- public-instance-method-details -->
+<div id="constructor_details" class="method_details_list">
+  <h2>Constructor Details</h2>
   
-  </section><!-- 5Buntitled-5D -->
+    <div class="method_details first">
+  <h3 class="signature first" id="initialize-instance_method">
+  
+    - (<tt><span class='object_link'><a href="" title="Chore::Lease (class)">Lease</a></span></tt>) <strong>initialize</strong>(path, zookeeper) 
+  
 
-</div><!-- documentation -->
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>A new instance of Lease</p>
 
 
-<footer id="validator-badges">
-  <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
-  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.
-  <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
-</footer>
+  </div>
+</div>
+<div class="tags">
+  
 
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+5
+6
+7
+8</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/lease.rb', line 5</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='id identifier rubyid_zookeeper'>zookeeper</span><span class='rparen'>)</span>
+  <span class='ivar'>@path</span> <span class='op'>=</span> <span class='id identifier rubyid_path'>path</span>
+  <span class='ivar'>@zk</span> <span class='op'>=</span> <span class='id identifier rubyid_zookeeper'>zookeeper</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+  
+</div>
+
+  <div id="instance_attr_details" class="attr_details">
+    <h2>Instance Attribute Details</h2>
+    
+      
+      <span id=""></span>
+      <div class="method_details first">
+  <h3 class="signature first" id="path-instance_method">
+  
+    - (<tt>Object</tt>) <strong>path</strong>  <span class="extras">(readonly)</span>
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the value of attribute path</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+3
+4
+5</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/lease.rb', line 3</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_path'>path</span>
+  <span class='ivar'>@path</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="release-instance_method">
+  
+    - (<tt>Object</tt>) <strong>release</strong> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+10
+11
+12</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/lease.rb', line 10</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_release'>release</span>
+  <span class='ivar'>@zk</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Mon May  6 15:57:16 2013 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.6.1 (ruby-1.9.3).
+</div>
+
+  </body>
+</html>

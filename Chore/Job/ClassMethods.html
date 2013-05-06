@@ -1,394 +1,560 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Module: Chore::Job::ClassMethods
+  
+    &mdash; Documentation by YARD 0.8.6.1
+  
+</title>
 
-<html>
-<head>
-<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+  <link rel="stylesheet" href="../../css/style.css" type="text/css" charset="utf-8" />
 
-<title>module Chore::Job::ClassMethods - chore </title>
+  <link rel="stylesheet" href="../../css/common.css" type="text/css" charset="utf-8" />
 
-<link type="text/css" media="screen" href="../../rdoc.css" rel="stylesheet">
-
-<script type="text/javascript">
-  var rdoc_rel_prefix = "../../";
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '../../';
+  framesUrl = "../../frames.html#!" + escape(window.location.href);
 </script>
 
-<script type="text/javascript" charset="utf-8" src="../../js/jquery.js"></script>
-<script type="text/javascript" charset="utf-8" src="../../js/navigation.js"></script>
-<script type="text/javascript" charset="utf-8" src="../../js/search_index.js"></script>
-<script type="text/javascript" charset="utf-8" src="../../js/search.js"></script>
-<script type="text/javascript" charset="utf-8" src="../../js/searcher.js"></script>
-<script type="text/javascript" charset="utf-8" src="../../js/darkfish.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../../js/app.js"></script>
 
 
-<body id="top" class="module">
-<nav id="metadata">
-  <nav id="home-section" class="section">
-  <h3 class="section-header">
-    <a href="../../index.html">Home</a>
-    <a href="../../table_of_contents.html#classes">Classes</a>
-    <a href="../../table_of_contents.html#methods">Methods</a>
-  </h3>
-</nav>
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="../../_index.html">Index (C)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../../Chore.html" title="Chore (module)">Chore</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../Job.html" title="Chore::Job (module)">Job</a></span></span>
+     &raquo; 
+    <span class="title">ClassMethods</span>
+  
 
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
 
-  <nav id="search-section" class="section project-section" class="initially-hidden">
-  <form action="#" method="get" accept-charset="utf-8">
-    <h3 class="section-header">
-      <input type="text" name="search" placeholder="Search" id="search-field"
-             title="Type to search, Up and Down to navigate, Enter to load">
-    </h3>
-  </form>
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../../class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="../../method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="../../file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
 
-  <ul id="search-results" class="initially-hidden"></ul>
-</nav>
+    <iframe id="search_frame"></iframe>
 
+    <div id="content"><h1>Module: Chore::Job::ClassMethods
+  
+  
+  
+</h1>
 
-  <div id="file-metadata">
-    <nav id="file-list-section" class="section">
-  <h3 class="section-header">Defined In</h3>
-  <ul>
-    <li>lib/chore/job.rb
-  </ul>
-</nav>
-
+<dl class="box">
+  
+  
     
-  </div>
+  
+    
+  
+  
+  
+    <dt class="r1 last">Defined in:</dt>
+    <dd class="r1 last">lib/chore/job.rb</dd>
+  
+</dl>
+<div class="clear"></div>
 
-  <div id="class-metadata">
-    
-    
-    
-    <!-- Method Quickref -->
-<nav id="method-list-section" class="section">
-  <h3 class="section-header">Methods</h3>
 
-  <ul class="link-list">
-    
-    <li><a href="#method-i-job_hash">#job_hash</a>
-    
-    <li><a href="#method-i-perform">#perform</a>
-    
-    <li><a href="#method-i-perform_async">#perform_async</a>
-    
-    <li><a href="#method-i-queue_options">#queue_options</a>
-    
-    <li><a href="#method-i-required_options">#required_options</a>
-    
-  </ul>
-</nav>
-
-  </div>
-
-  <div id="project-metadata">
-    
-    <nav id="classindex-section" class="section project-section">
-  <h3 class="section-header">Class and Module Index</h3>
-
-  <ul class="link-list">
+  <h2>Constant Summary</h2>
   
-    <li><a href="../../Chore.html">Chore</a>
-  
-    <li><a href="../../Chore/CLI.html">Chore::CLI</a>
-  
-    <li><a href="../../Chore/Configuration.html">Chore::Configuration</a>
-  
-    <li><a href="../../Chore/Consumer.html">Chore::Consumer</a>
-  
-    <li><a href="../../Chore/DuplicateDetector.html">Chore::DuplicateDetector</a>
-  
-    <li><a href="../../Chore/FilesystemConsumer.html">Chore::FilesystemConsumer</a>
-  
-    <li><a href="../../Chore/FilesystemPublisher.html">Chore::FilesystemPublisher</a>
-  
-    <li><a href="../../Chore/FilesystemQueue.html">Chore::FilesystemQueue</a>
-  
-    <li><a href="../../Chore/ForkedWorkerStrategy.html">Chore::ForkedWorkerStrategy</a>
-  
-    <li><a href="../../Chore/Hooks.html">Chore::Hooks</a>
-  
-    <li><a href="../../Chore/Job.html">Chore::Job</a>
-  
-    <li><a href="../../Chore/Job/ClassMethods.html">Chore::Job::ClassMethods</a>
-  
-    <li><a href="../../Chore/Job/RejectMessageException.html">Chore::Job::RejectMessageException</a>
-  
-    <li><a href="../../Chore/JsonEncoder.html">Chore::JsonEncoder</a>
-  
-    <li><a href="../../Chore/Lease.html">Chore::Lease</a>
-  
-    <li><a href="../../Chore/LockingSQSConsumer.html">Chore::LockingSQSConsumer</a>
-  
-    <li><a href="../../Chore/Manager.html">Chore::Manager</a>
-  
-    <li><a href="../../Chore/Pipe.html">Chore::Pipe</a>
-  
-    <li><a href="../../Chore/PipeListener.html">Chore::PipeListener</a>
-  
-    <li><a href="../../Chore/PipedStats.html">Chore::PipedStats</a>
-  
-    <li><a href="../../Chore/Publisher.html">Chore::Publisher</a>
-  
-    <li><a href="../../Chore/SQSConsumer.html">Chore::SQSConsumer</a>
-  
-    <li><a href="../../Chore/SQSPublisher.html">Chore::SQSPublisher</a>
-  
-    <li><a href="../../Chore/Semaphore.html">Chore::Semaphore</a>
-  
-    <li><a href="../../Chore/SingleConsumerStrategy.html">Chore::SingleConsumerStrategy</a>
-  
-    <li><a href="../../Chore/SingleWorkerStrategy.html">Chore::SingleWorkerStrategy</a>
-  
-    <li><a href="../../Chore/Stats.html">Chore::Stats</a>
-  
-    <li><a href="../../Chore/Tapjoy.html">Chore::Tapjoy</a>
-  
-    <li><a href="../../Chore/ThreadedConsumerStrategy.html">Chore::ThreadedConsumerStrategy</a>
-  
-    <li><a href="../../Chore/UnitOfWork.html">Chore::UnitOfWork</a>
-  
-    <li><a href="../../Chore/Util.html">Chore::Util</a>
-  
-    <li><a href="../../Chore/Version.html">Chore::Version</a>
-  
-    <li><a href="../../Chore/Worker.html">Chore::Worker</a>
-  
-    <li><a href="../../Chore/WorkerListener.html">Chore::WorkerListener</a>
-  
-    <li><a href="../../NewRelic.html">NewRelic</a>
-  
-    <li><a href="../../NewRelic/Agent.html">NewRelic::Agent</a>
-  
-    <li><a href="../../NewRelic/Agent/Instrumentation.html">NewRelic::Agent::Instrumentation</a>
-  
-    <li><a href="../../NewRelic/Agent/Instrumentation/ChoreInstrumentHook.html">NewRelic::Agent::Instrumentation::ChoreInstrumentHook</a>
-  
-    <li><a href="../../Object.html">Object</a>
-  
-  </ul>
-</nav>
-
-  </div>
-</nav>
-
-<div id="documentation">
-  <h1 class="module">module Chore::Job::ClassMethods</h1>
-
-  <div id="description" class="description">
-    
-  </div><!-- description -->
-
-  
-  
-  
-  <section id="5Buntitled-5D" class="documentation-section">
-    
-
-    
-
-    
-    <!-- Constants -->
-    <section id="constants-list" class="section">
-      <h3 class="section-header">Constants</h3>
-      <dl>
+    <dl class="constants">
       
-        <dt id="DEFAULT_OPTIONS">DEFAULT_OPTIONS
-        
-        <dd class="description"><p>Default options for all jobs. <code>:timeout</code> =&gt; 120</p>
-        
+        <dt id="DEFAULT_OPTIONS-constant" class="">DEFAULT_OPTIONS =
+          <div class="docstring">
+  <div class="discussion">
+    
+<p>Default options for all jobs. <code>:timeout</code> =&gt; 120</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='lbrace'>{</span> <span class='symbol'>:timeout</span> <span class='op'>=&gt;</span> <span class='int'>120</span> <span class='rbrace'>}</span></pre></dd>
       
-      </dl>
-    </section>
+    </dl>
+  
+
+
+
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#job_hash-instance_method" title="#job_hash (instance method)">- (Object) <strong>job_hash</strong>(job_params) </a>
     
 
     
+  </span>
+  
+  
+  
+  
+  
+  
+  
 
-    <!-- Methods -->
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Resque/Sidekiq compatible serialization.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
     
-     <section id="public-instance-5Buntitled-5D-method-details" class="method-section section">
-      <h3 class="section-header">Public Instance Methods</h3>
-
+      <a href="#options-instance_method" title="#options (instance method)">- (Object) <strong>options</strong> </a>
     
-      <div id="method-i-job_hash" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">job_hash</span><span
-            class="method-args">(job_params)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
-
-        <div class="method-description">
-          
-          <p>Resque/Sidekiq compatible serialization. No reason to change what works</p>
-          
-
-          
-          <div class="method-source-code" id="job_hash-source">
-            <pre><span class="ruby-comment"># File lib/chore/job.rb, line 72</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">job_hash</span>(<span class="ruby-identifier">job_params</span>)
-  {<span class="ruby-value">:class</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">to_s</span>, <span class="ruby-value">:args</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">job_params</span>}
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- job_hash-source -->
-          
-        </div>
-
-        
-
-        
-      </div><!-- job_hash-method -->
 
     
-      <div id="method-i-perform" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">perform</span><span
-            class="method-args">(*args)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
+  </span>
+  
+  
+  
+  
+  
+  
+  
 
-        <div class="method-description">
-          
-          <p>Execute the current job. We create an instance of the job to do the perform
+  
+    <span class="summary_desc"><div class='inline'>
+<p>:nodoc:.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#perform-instance_method" title="#perform (instance method)">- (Object) <strong>perform</strong>(*args) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Execute the current job.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#perform_async-instance_method" title="#perform_async (instance method)">- (Object) <strong>perform_async</strong>(*args) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Publish a job using an instance of job.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#queue_options-instance_method" title="#queue_options (instance method)">- (Object) <strong>queue_options</strong>(opts = {}) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Pass a hash of options to queue_options the included class's use of
+Chore::Job <code>opts</code> has a couple of required options.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#required_options-instance_method" title="#required_options (instance method)">- (Object) <strong>required_options</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>This is a method so it can be overriden to create additional required
+queue_options params.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="job_hash-instance_method">
+  
+    - (<tt>Object</tt>) <strong>job_hash</strong>(job_params) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Resque/Sidekiq compatible serialization. No reason to change what works</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+72
+73
+74</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/job.rb', line 72</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_job_hash'>job_hash</span><span class='lparen'>(</span><span class='id identifier rubyid_job_params'>job_params</span><span class='rparen'>)</span>
+  <span class='lbrace'>{</span><span class='symbol'>:class</span> <span class='op'>=&gt;</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span> <span class='symbol'>:args</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_job_params'>job_params</span><span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="options-instance_method">
+  
+    - (<tt>Object</tt>) <strong>options</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>:nodoc:</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+45
+46
+47</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/job.rb', line 45</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_options'>options</span> <span class='comment'>#:nodoc:
+</span>  <span class='ivar'>@chore_options</span> <span class='op'>||=</span> <span class='id identifier rubyid_queue_options'>queue_options</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="perform-instance_method">
+  
+    - (<tt>Object</tt>) <strong>perform</strong>(*args) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Execute the current job. We create an instance of the job to do the perform
 as this allows the jobs themselves to do initialization that might require
 access to the parameters of the job.</p>
-          
 
-          
-          <div class="method-source-code" id="perform-source">
-            <pre><span class="ruby-comment"># File lib/chore/job.rb, line 54</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">perform</span>(*<span class="ruby-identifier">args</span>)
-  <span class="ruby-identifier">job</span> = <span class="ruby-keyword">self</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">args</span>)
-  <span class="ruby-identifier">job</span>.<span class="ruby-identifier">perform</span>(*<span class="ruby-identifier">args</span>)
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- perform-source -->
-          
-        </div>
 
-        
+  </div>
+</div>
+<div class="tags">
+  
 
-        
-      </div><!-- perform-method -->
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
 
+
+54
+55
+56
+57</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/job.rb', line 54</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_perform'>perform</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_job'>job</span> <span class='op'>=</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_job'>job</span><span class='period'>.</span><span class='id identifier rubyid_perform'>perform</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
     
-      <div id="method-i-perform_async" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">perform_async</span><span
-            class="method-args">(*args)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
+      <div class="method_details ">
+  <h3 class="signature " id="perform_async-instance_method">
+  
+    - (<tt>Object</tt>) <strong>perform_async</strong>(*args) 
+  
 
-        <div class="method-description">
-          
-          <p>Publish a job using an instance of job. Similar to perform we do this so
-that a job can perform initialization logic before the <a
-href="ClassMethods.html#method-i-perform_async">#perform_async</a> is
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Publish a job using an instance of job. Similar to perform we do this so
+that a job can perform initialization logic before the perform_async is
 begun. This, in addition, to hooks allows for rather complex jobs to be
 written simply.</p>
-          
 
-          
-          <div class="method-source-code" id="perform_async-source">
-            <pre><span class="ruby-comment"># File lib/chore/job.rb, line 64</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">perform_async</span>(*<span class="ruby-identifier">args</span>)
-  <span class="ruby-identifier">job</span> = <span class="ruby-keyword">self</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">args</span>)
-  <span class="ruby-identifier">job</span>.<span class="ruby-identifier">perform_async</span>(*<span class="ruby-identifier">args</span>)
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- perform_async-source -->
-          
-        </div>
 
-        
+  </div>
+</div>
+<div class="tags">
+  
 
-        
-      </div><!-- perform_async-method -->
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
 
+
+64
+65
+66
+67</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/job.rb', line 64</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_perform_async'>perform_async</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_job'>job</span> <span class='op'>=</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_job'>job</span><span class='period'>.</span><span class='id identifier rubyid_perform_async'>perform_async</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
     
-      <div id="method-i-queue_options" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">queue_options</span><span
-            class="method-args">(opts = {})</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
+      <div class="method_details ">
+  <h3 class="signature " id="queue_options-instance_method">
+  
+    - (<tt>Object</tt>) <strong>queue_options</strong>(opts = {}) 
+  
 
-        <div class="method-description">
-          
-          <p>Pass a hash of options to <a
-href="ClassMethods.html#method-i-queue_options">#queue_options</a> the
-included class’s use of <a href="../Job.html">Chore::Job</a>
-<code>opts</code> has a couple of required options.</p>
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Pass a hash of options to queue_options the included class's use of
+Chore::Job <code>opts</code> has a couple of required options.</p>
 <ul><li>
 <p><code>:name</code>: which should map to the name of the queue this job
 should be published to.</p>
 </li><li>
 <p><code>:publisher</code>: the publisher to use for this job.</p>
 </li></ul>
-          
 
-          
-          <div class="method-source-code" id="queue_options-source">
-            <pre><span class="ruby-comment"># File lib/chore/job.rb, line 30</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">queue_options</span>(<span class="ruby-identifier">opts</span> = {})
-  <span class="ruby-ivar">@chore_options</span> = (<span class="ruby-ivar">@chore_options</span> <span class="ruby-operator">||</span> <span class="ruby-constant">DEFAULT_OPTIONS</span>).<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">opts</span>)
-  <span class="ruby-identifier">required_options</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">k</span><span class="ruby-operator">|</span>
-    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-node">&quot;#{self.to_s} :#{k} is a required option for Chore::Job&quot;</span>) <span class="ruby-keyword">unless</span> <span class="ruby-ivar">@chore_options</span>[<span class="ruby-identifier">k</span>]
-  <span class="ruby-keyword">end</span>
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- queue_options-source -->
-          
-        </div>
 
-        
-
-        
-      </div><!-- queue_options-method -->
-
-    
-      <div id="method-i-required_options" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">required_options</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
-
-        <div class="method-description">
-          
-          <p>This is a method so it can be overriden to create additional required <a
-href="ClassMethods.html#method-i-queue_options">#queue_options</a> params.</p>
-          
-
-          
-          <div class="method-source-code" id="required_options-source">
-            <pre><span class="ruby-comment"># File lib/chore/job.rb, line 41</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">required_options</span>
-  [<span class="ruby-value">:name</span>,<span class="ruby-value">:publisher</span>]
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- required_options-source -->
-          
-        </div>
-
-        
-
-        
-      </div><!-- required_options-method -->
-
-    
-    </section><!-- public-instance-method-details -->
+  </div>
+</div>
+<div class="tags">
   
-  </section><!-- 5Buntitled-5D -->
 
-</div><!-- documentation -->
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
 
 
-<footer id="validator-badges">
-  <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
-  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.
-  <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
-</footer>
+30
+31
+32
+33
+34
+35</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/job.rb', line 30</span>
 
+<span class='kw'>def</span> <span class='id identifier rubyid_queue_options'>queue_options</span><span class='lparen'>(</span><span class='id identifier rubyid_opts'>opts</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+  <span class='ivar'>@chore_options</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='ivar'>@chore_options</span> <span class='op'>||</span> <span class='const'>DEFAULT_OPTIONS</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_merge'>merge</span><span class='lparen'>(</span><span class='id identifier rubyid_opts'>opts</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_required_options'>required_options</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_k'>k</span><span class='op'>|</span>
+    <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rbrace'>}</span><span class='tstring_content'> :</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_k'>k</span><span class='rbrace'>}</span><span class='tstring_content'> is a required option for Chore::Job</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='ivar'>@chore_options</span><span class='lbracket'>[</span><span class='id identifier rubyid_k'>k</span><span class='rbracket'>]</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="required_options-instance_method">
+  
+    - (<tt>Object</tt>) <strong>required_options</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>This is a method so it can be overriden to create additional required
+queue_options params.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+41
+42
+43</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/job.rb', line 41</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_required_options'>required_options</span>
+  <span class='lbracket'>[</span><span class='symbol'>:name</span><span class='comma'>,</span><span class='symbol'>:publisher</span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Mon May  6 15:57:16 2013 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.6.1 (ruby-1.9.3).
+</div>
+
+  </body>
+</html>

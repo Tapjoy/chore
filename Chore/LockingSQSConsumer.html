@@ -1,309 +1,354 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Class: Chore::LockingSQSConsumer
+  
+    &mdash; Documentation by YARD 0.8.6.1
+  
+</title>
 
-<html>
-<head>
-<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+  <link rel="stylesheet" href="../css/style.css" type="text/css" charset="utf-8" />
 
-<title>class Chore::LockingSQSConsumer - chore </title>
+  <link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8" />
 
-<link type="text/css" media="screen" href="../rdoc.css" rel="stylesheet">
-
-<script type="text/javascript">
-  var rdoc_rel_prefix = "../";
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '../';
+  framesUrl = "../frames.html#!" + escape(window.location.href);
 </script>
 
-<script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/navigation.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/search_index.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/search.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/searcher.js"></script>
-<script type="text/javascript" charset="utf-8" src="../js/darkfish.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
 
 
-<body id="top" class="class">
-<nav id="metadata">
-  <nav id="home-section" class="section">
-  <h3 class="section-header">
-    <a href="../index.html">Home</a>
-    <a href="../table_of_contents.html#classes">Classes</a>
-    <a href="../table_of_contents.html#methods">Methods</a>
-  </h3>
-</nav>
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="../_index.html">Index (L)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../Chore.html" title="Chore (module)">Chore</a></span></span>
+     &raquo; 
+    <span class="title">LockingSQSConsumer</span>
+  
 
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
 
-  <nav id="search-section" class="section project-section" class="initially-hidden">
-  <form action="#" method="get" accept-charset="utf-8">
-    <h3 class="section-header">
-      <input type="text" name="search" placeholder="Search" id="search-field"
-             title="Type to search, Up and Down to navigate, Enter to load">
-    </h3>
-  </form>
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="../method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="../file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
 
-  <ul id="search-results" class="initially-hidden"></ul>
-</nav>
+    <iframe id="search_frame"></iframe>
 
+    <div id="content"><h1>Class: Chore::LockingSQSConsumer
+  
+  
+  
+</h1>
 
-  <div id="file-metadata">
-    <nav id="file-list-section" class="section">
-  <h3 class="section-header">Defined In</h3>
-  <ul>
-    <li>lib/chore/consumers/locking_sqs_consumer.rb
-  </ul>
-</nav>
-
-    
-  </div>
-
-  <div id="class-metadata">
-    
-    <nav id="parent-class-section" class="section">
-  <h3 class="section-header">Parent</h3>
+<dl class="box">
   
-  <p class="link">SQSConsumer
-  
-</nav>
-
-    
-    <!-- Method Quickref -->
-<nav id="method-list-section" class="section">
-  <h3 class="section-header">Methods</h3>
-
-  <ul class="link-list">
-    
-    <li><a href="#method-c-new">::new</a>
-    
-    <li><a href="#method-i-consume">#consume</a>
-    
-  </ul>
-</nav>
-
-  </div>
-
-  <div id="project-metadata">
-    
-    <nav id="classindex-section" class="section project-section">
-  <h3 class="section-header">Class and Module Index</h3>
-
-  <ul class="link-list">
-  
-    <li><a href="../Chore.html">Chore</a>
-  
-    <li><a href="../Chore/CLI.html">Chore::CLI</a>
-  
-    <li><a href="../Chore/Configuration.html">Chore::Configuration</a>
-  
-    <li><a href="../Chore/Consumer.html">Chore::Consumer</a>
-  
-    <li><a href="../Chore/DuplicateDetector.html">Chore::DuplicateDetector</a>
-  
-    <li><a href="../Chore/FilesystemConsumer.html">Chore::FilesystemConsumer</a>
-  
-    <li><a href="../Chore/FilesystemPublisher.html">Chore::FilesystemPublisher</a>
-  
-    <li><a href="../Chore/FilesystemQueue.html">Chore::FilesystemQueue</a>
-  
-    <li><a href="../Chore/ForkedWorkerStrategy.html">Chore::ForkedWorkerStrategy</a>
-  
-    <li><a href="../Chore/Hooks.html">Chore::Hooks</a>
-  
-    <li><a href="../Chore/Job.html">Chore::Job</a>
-  
-    <li><a href="../Chore/Job/ClassMethods.html">Chore::Job::ClassMethods</a>
-  
-    <li><a href="../Chore/Job/RejectMessageException.html">Chore::Job::RejectMessageException</a>
-  
-    <li><a href="../Chore/JsonEncoder.html">Chore::JsonEncoder</a>
-  
-    <li><a href="../Chore/Lease.html">Chore::Lease</a>
-  
-    <li><a href="../Chore/LockingSQSConsumer.html">Chore::LockingSQSConsumer</a>
-  
-    <li><a href="../Chore/Manager.html">Chore::Manager</a>
-  
-    <li><a href="../Chore/Pipe.html">Chore::Pipe</a>
-  
-    <li><a href="../Chore/PipeListener.html">Chore::PipeListener</a>
-  
-    <li><a href="../Chore/PipedStats.html">Chore::PipedStats</a>
-  
-    <li><a href="../Chore/Publisher.html">Chore::Publisher</a>
-  
-    <li><a href="../Chore/SQSConsumer.html">Chore::SQSConsumer</a>
-  
-    <li><a href="../Chore/SQSPublisher.html">Chore::SQSPublisher</a>
-  
-    <li><a href="../Chore/Semaphore.html">Chore::Semaphore</a>
-  
-    <li><a href="../Chore/SingleConsumerStrategy.html">Chore::SingleConsumerStrategy</a>
-  
-    <li><a href="../Chore/SingleWorkerStrategy.html">Chore::SingleWorkerStrategy</a>
-  
-    <li><a href="../Chore/Stats.html">Chore::Stats</a>
-  
-    <li><a href="../Chore/Tapjoy.html">Chore::Tapjoy</a>
-  
-    <li><a href="../Chore/ThreadedConsumerStrategy.html">Chore::ThreadedConsumerStrategy</a>
-  
-    <li><a href="../Chore/UnitOfWork.html">Chore::UnitOfWork</a>
-  
-    <li><a href="../Chore/Util.html">Chore::Util</a>
-  
-    <li><a href="../Chore/Version.html">Chore::Version</a>
-  
-    <li><a href="../Chore/Worker.html">Chore::Worker</a>
-  
-    <li><a href="../Chore/WorkerListener.html">Chore::WorkerListener</a>
-  
-    <li><a href="../NewRelic.html">NewRelic</a>
-  
-    <li><a href="../NewRelic/Agent.html">NewRelic::Agent</a>
-  
-    <li><a href="../NewRelic/Agent/Instrumentation.html">NewRelic::Agent::Instrumentation</a>
-  
-    <li><a href="../NewRelic/Agent/Instrumentation/ChoreInstrumentHook.html">NewRelic::Agent::Instrumentation::ChoreInstrumentHook</a>
-  
-    <li><a href="../Object.html">Object</a>
-  
-  </ul>
-</nav>
-
-  </div>
-</nav>
-
-<div id="documentation">
-  <h1 class="class">class Chore::LockingSQSConsumer</h1>
-
-  <div id="description" class="description">
-    
-  </div><!-- description -->
-
-  
-  
-  
-  <section id="5Buntitled-5D" class="documentation-section">
-    
-
-    
-
-    
-    <!-- Constants -->
-    <section id="constants-list" class="section">
-      <h3 class="section-header">Constants</h3>
-      <dl>
+    <dt class="r1">Inherits:</dt>
+    <dd class="r1">
+      <span class="inheritName"><span class='object_link'><a href="SQSConsumer.html" title="Chore::SQSConsumer (class)">SQSConsumer</a></span></span>
       
-        <dt id="UPDATE_TIMEOUT">UPDATE_TIMEOUT
-        
-        <dd class="description">
-        
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next"><span class='object_link'><a href="Consumer.html" title="Chore::Consumer (class)">Consumer</a></span></li>
+          
+            <li class="next"><span class='object_link'><a href="SQSConsumer.html" title="Chore::SQSConsumer (class)">SQSConsumer</a></span></li>
+          
+            <li class="next">Chore::LockingSQSConsumer</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
       
-      </dl>
-    </section>
+      </dd>
     
-
-    
-
-    <!-- Methods -->
-    
-     <section id="public-class-5Buntitled-5D-method-details" class="method-section section">
-      <h3 class="section-header">Public Class Methods</h3>
-
-    
-      <div id="method-c-new" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">new</span><span
-            class="method-args">(queue_name, opts={})</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
-
-        <div class="method-description">
-          
-          
-          
-
-          
-          <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/chore/consumers/locking_sqs_consumer.rb, line 11</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">queue_name</span>, <span class="ruby-identifier">opts</span>={})
-  <span class="ruby-keyword">super</span>(<span class="ruby-identifier">queue_name</span>, <span class="ruby-identifier">opts</span>)
-  <span class="ruby-identifier">@@zk</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">ZK</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">Chore</span>.<span class="ruby-identifier">config</span>.<span class="ruby-identifier">zookeeper_hosts</span>)
-  <span class="ruby-ivar">@last_updated</span> = <span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span> <span class="ruby-operator">-</span> <span class="ruby-constant">UPDATE_TIMEOUT</span>
-  <span class="ruby-ivar">@max_leases</span> = <span class="ruby-value">0</span>
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- new-source -->
-          
-        </div>
-
-        
-
-        
-      </div><!-- new-method -->
-
-    
-    </section><!-- public-class-method-details -->
   
-     <section id="public-instance-5Buntitled-5D-method-details" class="method-section section">
-      <h3 class="section-header">Public Instance Methods</h3>
-
-    
-      <div id="method-i-consume" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">consume</span><span
-            class="method-args">(&handler)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
-
-        <div class="method-description">
-          
-          
-          
-
-          
-          <div class="method-source-code" id="consume-source">
-            <pre><span class="ruby-comment"># File lib/chore/consumers/locking_sqs_consumer.rb, line 18</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">consume</span>(&amp;<span class="ruby-identifier">handler</span>)
-  <span class="ruby-keyword">while</span> <span class="ruby-identifier">running?</span>
-    <span class="ruby-keyword">begin</span>
-      <span class="ruby-keyword">if</span> <span class="ruby-identifier">enabled?</span>
-        <span class="ruby-keyword">if</span> <span class="ruby-identifier">requires_lock?</span>
-          <span class="ruby-identifier">semaphore</span> = <span class="ruby-constant">Semaphore</span>.<span class="ruby-identifier">new</span>(<span class="ruby-ivar">@queue_name</span>, <span class="ruby-identifier">@@zk</span>)
-          <span class="ruby-identifier">semaphore</span>.<span class="ruby-identifier">acquire</span> <span class="ruby-keyword">do</span>
-            <span class="ruby-identifier">handle_messages</span>(&amp;<span class="ruby-identifier">handler</span>)
-          <span class="ruby-keyword">end</span>
-        <span class="ruby-keyword">else</span>
-          <span class="ruby-identifier">handle_messages</span>(&amp;<span class="ruby-identifier">handler</span>)
-        <span class="ruby-keyword">end</span>
-      <span class="ruby-keyword">end</span>
-    <span class="ruby-keyword">rescue</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
-      <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> { <span class="ruby-node">&quot;LockingSQSConsumer#Consume: #{e.inspect}&quot;</span> }
-    <span class="ruby-keyword">end</span>
-  <span class="ruby-keyword">end</span>
-<span class="ruby-keyword">ensure</span>
-  <span class="ruby-identifier">@@zk</span>.<span class="ruby-identifier">close!</span>
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- consume-source -->
-          
-        </div>
-
-        
-
-        
-      </div><!-- consume-method -->
-
-    
-    </section><!-- public-instance-method-details -->
   
-  </section><!-- 5Buntitled-5D -->
+    
+  
+    
+  
+  
+  
+    <dt class="r2 last">Defined in:</dt>
+    <dd class="r2 last">lib/chore/consumers/locking_sqs_consumer.rb</dd>
+  
+</dl>
+<div class="clear"></div>
 
-</div><!-- documentation -->
+
+  <h2>Constant Summary</h2>
+  
+    <dl class="constants">
+      
+        <dt id="UPDATE_TIMEOUT-constant" class="">UPDATE_TIMEOUT =
+          <div class="docstring">
+  <div class="discussion">
+    
+<p>2 minutes</p>
 
 
-<footer id="validator-badges">
-  <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
-  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.
-  <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
-</footer>
+  </div>
+</div>
+<div class="tags">
+  
 
+</div>
+        </dt>
+        <dd><pre class="code"><span class='lparen'>(</span><span class='int'>2</span> <span class='op'>*</span> <span class='int'>60</span><span class='rparen'>)</span></pre></dd>
+      
+    </dl>
+  
+
+
+
+
+
+
+  <h2>Instance Attribute Summary</h2>
+  
+  <h3 class="inherited">Attributes inherited from <span class='object_link'><a href="Consumer.html" title="Chore::Consumer (class)">Consumer</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="Consumer.html#queue_name-instance_method" title="Chore::Consumer#queue_name (method)">#queue_name</a></span></p>
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#consume-instance_method" title="#consume (instance method)">- (Object) <strong>consume</strong>(&amp;handler) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#initialize-instance_method" title="#initialize (instance method)">- (LockingSQSConsumer) <strong>initialize</strong>(queue_name, opts = {}) </a>
+    
+
+    
+  </span>
+  
+  
+    <span class="note title constructor">constructor</span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>A new instance of LockingSQSConsumer.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods inherited from <span class='object_link'><a href="SQSConsumer.html" title="Chore::SQSConsumer (class)">SQSConsumer</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="SQSConsumer.html#complete-instance_method" title="Chore::SQSConsumer#complete (method)">#complete</a></span>, <span class='object_link'><a href="SQSConsumer.html#reject-instance_method" title="Chore::SQSConsumer#reject (method)">#reject</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods inherited from <span class='object_link'><a href="Consumer.html" title="Chore::Consumer (class)">Consumer</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="Consumer.html#complete-instance_method" title="Chore::Consumer#complete (method)">#complete</a></span>, <span class='object_link'><a href="Consumer.html#reject-instance_method" title="Chore::Consumer#reject (method)">#reject</a></span>, <span class='object_link'><a href="Consumer.html#running%3F-instance_method" title="Chore::Consumer#running? (method)">#running?</a></span>, <span class='object_link'><a href="Consumer.html#stop-instance_method" title="Chore::Consumer#stop (method)">#stop</a></span></p>
+<div id="constructor_details" class="method_details_list">
+  <h2>Constructor Details</h2>
+  
+    <div class="method_details first">
+  <h3 class="signature first" id="initialize-instance_method">
+  
+    - (<tt><span class='object_link'><a href="" title="Chore::LockingSQSConsumer (class)">LockingSQSConsumer</a></span></tt>) <strong>initialize</strong>(queue_name, opts = {}) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>A new instance of LockingSQSConsumer</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+11
+12
+13
+14
+15
+16</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/consumers/locking_sqs_consumer.rb', line 11</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_queue_name'>queue_name</span><span class='comma'>,</span> <span class='id identifier rubyid_opts'>opts</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+  <span class='kw'>super</span><span class='lparen'>(</span><span class='id identifier rubyid_queue_name'>queue_name</span><span class='comma'>,</span> <span class='id identifier rubyid_opts'>opts</span><span class='rparen'>)</span>
+  <span class='cvar'>@@zk</span> <span class='op'>||=</span> <span class='const'>ZK</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_zookeeper_hosts'>zookeeper_hosts</span><span class='rparen'>)</span>
+  <span class='ivar'>@last_updated</span> <span class='op'>=</span> <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span> <span class='op'>-</span> <span class='const'>UPDATE_TIMEOUT</span>
+  <span class='ivar'>@max_leases</span> <span class='op'>=</span> <span class='int'>0</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+  
+</div>
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="consume-instance_method">
+  
+    - (<tt>Object</tt>) <strong>consume</strong>(&amp;handler) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/consumers/locking_sqs_consumer.rb', line 18</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_consume'>consume</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid_handler'>handler</span><span class='rparen'>)</span>
+  <span class='kw'>while</span> <span class='id identifier rubyid_running?'>running?</span>
+    <span class='kw'>begin</span>
+      <span class='kw'>if</span> <span class='id identifier rubyid_enabled?'>enabled?</span>
+        <span class='kw'>if</span> <span class='id identifier rubyid_requires_lock?'>requires_lock?</span>
+          <span class='id identifier rubyid_semaphore'>semaphore</span> <span class='op'>=</span> <span class='const'>Semaphore</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='ivar'>@queue_name</span><span class='comma'>,</span> <span class='cvar'>@@zk</span><span class='rparen'>)</span>
+          <span class='id identifier rubyid_semaphore'>semaphore</span><span class='period'>.</span><span class='id identifier rubyid_acquire'>acquire</span> <span class='kw'>do</span>
+            <span class='id identifier rubyid_handle_messages'>handle_messages</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid_handler'>handler</span><span class='rparen'>)</span>
+          <span class='kw'>end</span>
+        <span class='kw'>else</span>
+          <span class='id identifier rubyid_handle_messages'>handle_messages</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid_handler'>handler</span><span class='rparen'>)</span>
+        <span class='kw'>end</span>
+      <span class='kw'>end</span>
+    <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+      <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>LockingSQSConsumer#Consume: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_inspect'>inspect</span><span class='rbrace'>}</span><span class='tstring_end'>&quot;</span></span> <span class='rbrace'>}</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>ensure</span>
+  <span class='cvar'>@@zk</span><span class='period'>.</span><span class='id identifier rubyid_close!'>close!</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Mon May  6 15:57:17 2013 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.6.1 (ruby-1.9.3).
+</div>
+
+  </body>
+</html>
