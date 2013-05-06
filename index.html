@@ -61,9 +61,14 @@
 
     <iframe id="search_frame"></iframe>
 
-    <div id="content"><div id='filecontents'><h1>chore</h1>
+    <div id="content"><div id='filecontents'><h1>Chore: Job processing... for the future!</h1>
 
-<h2>Integration</h2>
+<h2>About</h2>
+
+<p>Chore is a pluggable, multi-backend job processor. It was built from the ground up to be extremely flexible. We hope that you
+will find integrating and using Chore to be as pleasant as we do.</p>
+
+<h2>Configuration</h2>
 
 <p>Chore can be integrated with any Ruby-based project by following these instructions:</p>
 
@@ -80,38 +85,41 @@
 <p>Create a <code>chore.config</code> file in a suitable place, e.g. <code>./config</code>. This file controls how the consumer end of chore will operate. </p>
 
 <pre class="code ruby"><code class="ruby">--require=./&lt;FILE_TO_LOAD&gt;
---aws-access-key=&lt;AWS KEY&gt;
---aws-secret-key=&lt;AWS SECRET&gt;
 --verbose
 --concurrency 10
 </code></pre>
 
 <p>Make sure that <code>--require</code> points to the main entry point for your app. If integrating with a Rails app, just point it to the directory of your application and it will handle loading the correct files on its own. See the help options for more details on the other settings.</p>
 
-<p>Now add a configuration block inside your apps configuration to configure the producer end. </p>
+<p>If you&#39;re using SQS, you&#39;ll want to add AWS keys so that Chore can authenticate with AWS.</p>
 
-<pre class="code ruby"><code class="ruby">Chore.configure do |c|
-  c.aws_access_key = &lt;AWS KEY&gt;
-  c.aws_secret_key = &lt;AWS SECRET&gt;
-end
+<pre class="code ruby"><code class="ruby">--aws-access-key=&lt;AWS KEY&gt;
+--aws-secret-key=&lt;AWS SECRET&gt;
 </code></pre>
+
+<p>Other options include:</p>
+
+<p>--stats-port 9090 # port to run the stats HTTP server on
+--concurrency 16 # number of concurrent worker processes, if using forked worker strategy
+--worker-strategy Chore::ForkedWorkerStrategy # which worker strategy class to use
+--consumer Chore::SQSConsumer # which consumer class to use
+--dedupe-servers # if using SQS and your memcache is running on something other than localhost
+--fetcher-strategy Chore::ThreadedConsumerStrategy # fetching strategy class, are you seeing a theme here?
+--batch-size 50 # how many messages are batched together before handing them to a worker
+--threads-per-queue 4 # number of threads per queue for fetching from queue</p>
+
+<p>By default, Chore will run over all queues it detects among the required files. If you wish to change this behavior, you can use:</p>
+
+<p>--queues QUEUE1,QUEUE2... # a list of queues to process
+--except-queues QUEUE1,QUEUE2... # a list of queues <em>not</em> to process</p>
+
+<p>Note that you can use one or the other but not both. Chore will quit and make fun of you if both options are specified.</p>
+
+<h2>Integration</h2>
 
 <p>Add an appropriate line to your <code>Procfile</code>:</p>
 
 <pre class="code ruby"><code class="ruby">jobs: bundle exec chore -c config/chore.config
-</code></pre>
-
-<p>Create a new test job in your application:</p>
-
-<pre class="code ruby"><code class="ruby"><span class='kw'>class</span> <span class='const'>TestJob</span> 
-  <span class='id identifier rubyid_include'>include</span> <span class='const'>Chore</span><span class='op'>::</span><span class='const'>Job</span>
-  <span class='id identifier rubyid_queue_options'>queue_options</span> <span class='symbol'>:name</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>test_queue</span><span class='tstring_end'>'</span></span><span class='comma'>,</span> <span class='symbol'>:publisher</span> <span class='op'>=&gt;</span> <span class='const'>Chore</span><span class='op'>::</span><span class='const'>SQSPublisher</span>
-
-  <span class='kw'>def</span> <span class='id identifier rubyid_perform'>perform</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>My first sync job</span><span class='tstring_end'>&quot;</span></span>
-  <span class='kw'>end</span>
-
-<span class='kw'>end</span>
 </code></pre>
 
 <p>Don&#39;t forget to start memcached if you&#39;re using SQS:</p>
@@ -121,14 +129,85 @@ end
 
 <p>If your queues do not exist, you must create them before you run the application:</p>
 
-<pre class="code ruby"><code class="ruby"> <span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>aws-sdk</span><span class='tstring_end'>'</span></span>
- <span class='id identifier rubyid_sqs'>sqs</span> <span class='op'>=</span> <span class='const'>AWS</span><span class='op'>::</span><span class='const'>SQS</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
- <span class='id identifier rubyid_sqs'>sqs</span><span class='period'>.</span><span class='id identifier rubyid_queues'>queues</span><span class='period'>.</span><span class='id identifier rubyid_create'>create</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>test_queue</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+<pre class="code ruby"><code class="ruby">  <span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>aws-sdk</span><span class='tstring_end'>'</span></span>
+  <span class='id identifier rubyid_sqs'>sqs</span> <span class='op'>=</span> <span class='const'>AWS</span><span class='op'>::</span><span class='const'>SQS</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+  <span class='id identifier rubyid_sqs'>sqs</span><span class='period'>.</span><span class='id identifier rubyid_queues'>queues</span><span class='period'>.</span><span class='id identifier rubyid_create'>create</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>test_queue</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
 </code></pre>
 
 <p>Finally, start foreman as usual</p>
 
 <pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_foreman'>foreman</span> <span class='id identifier rubyid_start'>start</span>
+</code></pre>
+
+<h2>Chore::Job</h2>
+
+<p>A Chore::Job is any class that includes <code>Chore::Job</code> and implements <code>perform(*args)</code> Here is an example job class:
+```ruby
+    class TestJob 
+      include Chore::Job
+      queue_options :name =&gt; &#39;test_queue&#39;, :publisher =&gt; Chore::SQSPublisher, :timeout =&gt; 120</p>
+
+<pre class="code ruby"><code class="ruby">  def perform(*args)
+    Chore.logger.debug &quot;My first async job&quot;
+  end
+
+end
+</code></pre>
+
+<pre class="code ruby"><code class="ruby">
+This job uses the included `Chore::SQSPublisher` to remove the message from the queue once the job is completed.
+It also declares that the name of the queue it uses is `test_queue` and that it has a timeout of 120 seconds.
+
+## Hooks
+
+A number of hooks, both global and per-job, exist in Chore for your convenience.
+
+Global Hooks:
+
+* before_first_fork
+* before_fork
+* after_fork
+
+Filesystem Consumer/Publisher
+* on_fetch(job_file, job_json)
+
+SQS Consumer
+* on_fetch(handle, body)
+
+Per Job:
+* before_publish
+* after_publish
+* before_perform(message)
+* after_perform(message)
+* on_rejected(message)
+* on_timeout(message)
+* on_failure(message, error)
+
+All per-job hooks can also be global hooks.
+
+Hooks can be added to a job class as so:
+
+```ruby
+    class TestJob 
+      include Chore::Job
+      queue_options :name =&gt; 'test_queue', :publisher =&gt; Chore::SQSPublisher, :timeout =&gt; 120
+
+      def perform(*args)
+        Chore.logger.debug &quot;My first sync job&quot;
+      end
+
+      def on_timeout(msg)
+        # your special timeout code here
+      end
+
+    end
+</code></pre>
+
+<p>Global hooks can also be registered like so:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_add_hook'>add_hook</span> <span class='symbol'>:after_publish</span> <span class='kw'>do</span>
+  <span class='comment'># your special handler here
+</span><span class='kw'>end</span>
 </code></pre>
 
 <h2>Contributing to chore</h2>
@@ -150,7 +229,7 @@ further details.</p>
 </div></div>
 
     <div id="footer">
-  Generated on Mon May  6 16:09:14 2013 by
+  Generated on Mon May  6 16:12:45 2013 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.8.6.1 (ruby-1.9.3).
 </div>
