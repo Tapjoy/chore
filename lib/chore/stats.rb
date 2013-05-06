@@ -1,5 +1,5 @@
 module Chore
-  class StatEntry
+  class StatEntry #:nodoc:
     attr_accessor :type, :data, :timestamp
 
     def initialize(type,data)
@@ -16,7 +16,7 @@ module Chore
     end
   end
 
-  class RingBuffer < Array
+  class RingBuffer < Array #:nodoc:
 
     alias_method :array_push, :push
     alias_method :<<, :push
@@ -36,12 +36,21 @@ module Chore
   end
 
   class Stats
+    # Stats is a class to hold current real-time information about what a chore process
+    # is up to. This includes things like: a list of workers and their uptime, the type 
+    # and timestamp of the last +max_bucket_size+ jobs to be processed. It's what gets
+    # served up on the internal stat server. Overriding <tt>to_json</tt> would change
+    # the output on the stat server.
 
     def initialize(max_bucket_size=1000)
       @max_size = max_bucket_size
       @buckets = {}
     end
 
+    # Add an entry to the stat list. 
+    # * +stat+ should be the key of the stat to track.
+    # * +type+ should be the bucket to put the stat record into, or a StatEntry instance.
+    # * +data+ if type is not a StatEntry data must be provided to build a StatEntry.
     def add(stat,type=:global,data=nil)
       entry = nil
       # Allow a stat entry to come in directly
@@ -51,12 +60,13 @@ module Chore
       self[stat] << entry
     end
 
+    # Return the data about a particular stat.
     def get(stat,type=nil)
       return self[stat] unless type
       self[stat].select {|s| s.type == type}
     end
 
-    def [](stat)
+    def [](stat) #:nodoc:
       @buckets[stat.to_sym] ||= RingBuffer.new(@max_size) #Hash.new { |h,k| h[k] = RingBuffer.new(@max_size) }
     end
 

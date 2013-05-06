@@ -13,7 +13,7 @@ module Chore
     context "signal handling" do
       it 'should trap signals from terminating children and reap them' do
         ForkedWorkerStrategy.any_instance.should_receive(:trap).with('CHLD').and_yield
-        ForkedWorkerStrategy.any_instance.should_receive(:reap_terminated_workers)
+        ForkedWorkerStrategy.any_instance.should_receive(:reap_terminated_workers!)
         forker
       end
     end
@@ -56,7 +56,7 @@ module Chore
         forker.assign(job)
 
         Process.should_receive(:wait).and_return(pid, nil)
-        forker.reap_terminated_workers
+        forker.send(:reap_terminated_workers!)
 
         forker.workers.should_not include(pid)
       end
@@ -70,17 +70,17 @@ module Chore
       it 'should clear signals' do
         forker.should_receive(:clear_child_signals)
         forker.should_receive(:trap_child_signals)
-        forker.after_fork(worker)
+        forker.send(:after_fork,worker)
       end
 
       it 'should reset Chore.stats' do
-        forker.after_fork(worker)
+        forker.send(:after_fork,worker)
         Chore.stats.should be_kind_of(PipedStats)
       end
 
       it "should replace the worker's status= method" do
         worker.methods.find {|m| m.to_s == 'status='}.should be_nil
-        forker.after_fork(worker)
+        forker.send(:after_fork,worker)
         worker.methods.find {|m| m.to_s == 'status='}.should_not be_nil
       end
 

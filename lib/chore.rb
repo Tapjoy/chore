@@ -19,12 +19,17 @@ require 'chore/publisher'
   Dir[File.join(File.dirname(__FILE__),'chore',p,'*.rb')].each {|f| require f}
 end
 
-module Chore
-  VERSION = Chore::Version::STRING
+module Chore 
+  VERSION = Chore::Version::STRING #:nodoc:
+  # = Chore
   
-  # Simple class to hold job processing information. Stubbed as a Struct right now
-  # but left as a class in case we need more methods soon.
-  class UnitOfWork < Struct.new(:id,:message,:consumer); end;
+  # Simple class to hold job processing information.
+  # Has only three attributes:
+  # * +:id+ The queue implementation specific identifier for this message.
+  # * +:message+ The actual data of the message.
+  # * +:consumer+ The consumer instance used to fetch this message. Most queue implementations won't need access to this, but some (RabbitMQ) will. So we
+  # make sure to pass it along with each message. This instance will be used by the Worker for things like <tt>complete</tt> and </tt>reject</tt>.
+  class UnitOfWork < Struct.new(:id,:message,:consumer);end;
 
   # Wrapper around an OpenStruct to define configuration data
   # (TODO): Add required opts, and validate that they're set
@@ -37,6 +42,14 @@ module Chore
     end
   end
 
+  ##
+  # The default configuration options for Chore.
+  # * +:num_workers+ => 4,
+  # * +:threads_per_queue+ => 1,
+  # * +:worker_strategy+ => ForkedWorkerStrategy,
+  # * +:consumer+ => SQSConsumer,
+  # * +:fetcher_strategy+ => ThreadedConsumerStrategy,
+  # * +:batch_size+ => 50
   DEFAULT_OPTIONS = {
     :num_workers => 4,
     :threads_per_queue => 1,
@@ -51,6 +64,8 @@ module Chore
     attr_accessor :logger, :stats
   end
 
+  # Access Chore's logger in a memoized fashion. Will create an instance of the logger if
+  # one doesn't already exist.
   def self.logger
     @logger ||= begin
       STDOUT.sync = true
@@ -62,31 +77,57 @@ module Chore
     @stats ||= Stats.new
   end
 
+  # Add a global hook for +name+. Will run +&blk+ when the hook is executed. 
+  # Global hooks are any hooks that don't have access to an instance of a job.
+  # See the docs on Hooks for a full list of global hooks.
+  #
+  # === Examples 
+  #   Chore.add_hook_for(:after_fork) do
+  #     SomeDB.reset_connection!
+  #   end
   def self.add_hook(name,&blk)
     @@hooks ||= {}
     (@@hooks[name.to_sym] ||= []) << blk
   end
 
+  # A helper to get a list of all the hooks for a given +name+
   def self.hooks_for(name)
     @@hooks ||= {}
     @@hooks[name.to_sym] || []
   end
 
-  def self.clear_hooks!
+  def self.clear_hooks! #:nodoc:
     @@hooks = {}
   end
 
+  # Run the global hooks associated with a particular +name+ passing all +args+ to the registered block.
   def self.run_hooks_for(name,*args)
     hooks = self.hooks_for(name)
     hooks.each {|h| h.call(*args)} unless hooks.nil? || hooks.empty?
   end
 
+  # Configure global chore options. Takes a hash for +opts+.
+  # This includes things like the current Worker Strategy (+:worker_strategy+), the default Consumer (+:consumer+), and the default Fetcher Strategy(+:fetcher_strategy).
+  # It's safe to call multiple times (will merge the new config, into the old)
+  # This is used by the command line parsing code to setup Chore.
+  # If a +block+ is given, <tt>configure</tt> will yield the config object, so you can set options directly.
+  # === Examples
+  #   Chore.configure({:worker_strategy => Chore::ForkedWorkerStrategy})
+  #
+  #   Chore.configure do |c|
+  #     c.consumer = Chore::SQSConsumer
+  #     c.batch_size = 50
+  #   end
   def self.configure(opts={})
     @config = (@config ? @config.merge_hash(opts) : Chore::Configuration.new(DEFAULT_OPTIONS.merge(opts)))
     yield @config if block_given?
     @config
   end
 
+  # Return the current Chore configuration as specified by <tt>configure</tt>. You can chain config options off of this to
+  # get access to current config data.
+  # === Examples
+  #   puts Chore.config.num_workers
   def self.config
     @config ||= self.configure
   end

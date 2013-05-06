@@ -2,6 +2,10 @@ require 'chore/util'
 require 'chore/json_encoder'
 
 module Chore
+  # Worker is one of the core classes in Chore. It's responsible for most of the logic
+  # relating to actually processing a job. A given worker will take an amount of +work+
+  # and then process it all until either the worker is told to stop, or the work is 
+  # completed. Worker is completely agnostic to the WorkerStrategy that it was called from.
   class Worker
     include Util
 
@@ -9,10 +13,13 @@ module Chore
     attr_accessor :options
     attr_accessor :status
 
-    def self.start(work)
+    def self.start(work) #:nodoc:
       self.new(work).start
     end
 
+    # Create a Worker. Give it an array of work (or single item), and +opts+.
+    # Currently, the only option supported by Worker is +:encoder+ which should match
+    # the +:encoder+ used by the Publisher who created the message.
     def initialize(work=[],opts={})
       @stopping = false
       @started_at = Time.now
@@ -21,6 +28,14 @@ module Chore
       self.options = DEFAULT_OPTIONS.merge(opts)
     end
 
+    # The workhorse. Do the work, all of it. This will block for an entirely unspecified amount
+    # of time based on the work to be performed. This will:
+    # * Decode each message.
+    # * Re-ify the messages into actual Job classes.
+    # * Call Job#perform on each job.
+    # * If successful it will call Consumer#complete (using the consumer in the UnitOfWork).
+    # * If unsuccessful it will call the appropriate Hooks based on the type of failure.
+    # * Log the results via the Chore.logger
     def start
       @work.each do |item|
         return if @stopping
@@ -39,10 +54,13 @@ module Chore
       end
     end
 
+    # Tell the worker to stop after it completes the current job.
     def stop!
       @stopping = true
     end
 
+    # This is used as part of the internal stat server. It let's us track the starting timestamp, and current status
+    # (what work is being performed) of each worker.
     def to_json(*args)
       {
         :started_at => @started_at,

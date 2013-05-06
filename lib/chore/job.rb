@@ -2,9 +2,12 @@ require 'chore/hooks'
 
 module Chore
   module Job
-    class RejectMessageException < Exception; end;
+    class RejectMessageException < Exception
+      # Throw a RejectMessageException from your job to signal that the message should be rejected.
+      # The semantics of +reject+ are queue implementation dependent.
+    end
     
-    def self.job_classes
+    def self.job_classes #:nodoc:
       @classes || []
     end
 
@@ -16,11 +19,14 @@ module Chore
     end
 
     module ClassMethods
+      # Default options for all jobs. +:timeout+ => 120
       DEFAULT_OPTIONS = { :timeout => 120 }
       
       #
       # Pass a hash of options to queue_options the included class's use of Chore::Job
-      #
+      # +opts+ has a couple of required options. 
+      # * +:name+: which should map to the name of the queue this job should be published to.
+      # * +:publisher+: the publisher to use for this job.
       def queue_options(opts = {})
         @chore_options = (@chore_options || DEFAULT_OPTIONS).merge(opts)
         required_options.each do |k|
@@ -36,7 +42,7 @@ module Chore
         [:name,:publisher]
       end
 
-      def options
+      def options #:nodoc:
         @chore_options ||= queue_options
       end
 
@@ -69,7 +75,8 @@ module Chore
     end #ClassMethods
 
     # This is handy to override in an included job to be able to do job setup that requires
-    # access to a job's arguments to be able to perform
+    # access to a job's arguments to be able to perform any context specific initialization that may
+    # be required.
     def initialize(args=nil)
     end
 

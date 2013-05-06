@@ -1,7 +1,7 @@
 require 'monitor'
 
 module Chore
-  class Batcher
+  class Batcher #:nodoc:
     attr_accessor :callback
     attr_accessor :batch
 

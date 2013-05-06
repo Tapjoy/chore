@@ -1,5 +1,5 @@
 module Chore
-  class Fetcher
+  class Fetcher #:nodoc:
     attr_reader :manager, :consumers
 
     def initialize(manager)
