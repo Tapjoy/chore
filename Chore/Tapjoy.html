@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+
+<title>module Chore::Tapjoy - chore </title>
+
+<link type="text/css" media="screen" href="../rdoc.css" rel="stylesheet">
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "../";
+</script>
+
+<script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+<script type="text/javascript" charset="utf-8" src="../js/navigation.js"></script>
+<script type="text/javascript" charset="utf-8" src="../js/search_index.js"></script>
+<script type="text/javascript" charset="utf-8" src="../js/search.js"></script>
+<script type="text/javascript" charset="utf-8" src="../js/searcher.js"></script>
+<script type="text/javascript" charset="utf-8" src="../js/darkfish.js"></script>
+
+
+<body id="top" class="module">
+<nav id="metadata">
+  <nav id="home-section" class="section">
+  <h3 class="section-header">
+    <a href="../index.html">Home</a>
+    <a href="../table_of_contents.html#classes">Classes</a>
+    <a href="../table_of_contents.html#methods">Methods</a>
+  </h3>
+</nav>
+
+
+  <nav id="search-section" class="section project-section" class="initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <h3 class="section-header">
+      <input type="text" name="search" placeholder="Search" id="search-field"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </h3>
+  </form>
+
+  <ul id="search-results" class="initially-hidden"></ul>
+</nav>
+
+
+  <div id="file-metadata">
+    <nav id="file-list-section" class="section">
+  <h3 class="section-header">Defined In</h3>
+  <ul>
+    <li>lib/chore/tapjoy/monitoring.rb
+  </ul>
+</nav>
+
+    
+  </div>
+
+  <div id="class-metadata">
+    
+    
+    
+    <!-- Method Quickref -->
+<nav id="method-list-section" class="section">
+  <h3 class="section-header">Methods</h3>
+
+  <ul class="link-list">
+    
+    <li><a href="#method-c-register_tapjoy_handlers-21">::register_tapjoy_handlers!</a>
+    
+  </ul>
+</nav>
+
+  </div>
+
+  <div id="project-metadata">
+    
+    <nav id="classindex-section" class="section project-section">
+  <h3 class="section-header">Class and Module Index</h3>
+
+  <ul class="link-list">
+  
+    <li><a href="../Chore.html">Chore</a>
+  
+    <li><a href="../Chore/CLI.html">Chore::CLI</a>
+  
+    <li><a href="../Chore/Configuration.html">Chore::Configuration</a>
+  
+    <li><a href="../Chore/Consumer.html">Chore::Consumer</a>
+  
+    <li><a href="../Chore/DuplicateDetector.html">Chore::DuplicateDetector</a>
+  
+    <li><a href="../Chore/FilesystemConsumer.html">Chore::FilesystemConsumer</a>
+  
+    <li><a href="../Chore/FilesystemPublisher.html">Chore::FilesystemPublisher</a>
+  
+    <li><a href="../Chore/FilesystemQueue.html">Chore::FilesystemQueue</a>
+  
+    <li><a href="../Chore/ForkedWorkerStrategy.html">Chore::ForkedWorkerStrategy</a>
+  
+    <li><a href="../Chore/Hooks.html">Chore::Hooks</a>
+  
+    <li><a href="../Chore/Job.html">Chore::Job</a>
+  
+    <li><a href="../Chore/Job/ClassMethods.html">Chore::Job::ClassMethods</a>
+  
+    <li><a href="../Chore/Job/RejectMessageException.html">Chore::Job::RejectMessageException</a>
+  
+    <li><a href="../Chore/JsonEncoder.html">Chore::JsonEncoder</a>
+  
+    <li><a href="../Chore/Lease.html">Chore::Lease</a>
+  
+    <li><a href="../Chore/LockingSQSConsumer.html">Chore::LockingSQSConsumer</a>
+  
+    <li><a href="../Chore/Manager.html">Chore::Manager</a>
+  
+    <li><a href="../Chore/Pipe.html">Chore::Pipe</a>
+  
+    <li><a href="../Chore/PipeListener.html">Chore::PipeListener</a>
+  
+    <li><a href="../Chore/PipedStats.html">Chore::PipedStats</a>
+  
+    <li><a href="../Chore/Publisher.html">Chore::Publisher</a>
+  
+    <li><a href="../Chore/SQSConsumer.html">Chore::SQSConsumer</a>
+  
+    <li><a href="../Chore/SQSPublisher.html">Chore::SQSPublisher</a>
+  
+    <li><a href="../Chore/Semaphore.html">Chore::Semaphore</a>
+  
+    <li><a href="../Chore/SingleConsumerStrategy.html">Chore::SingleConsumerStrategy</a>
+  
+    <li><a href="../Chore/SingleWorkerStrategy.html">Chore::SingleWorkerStrategy</a>
+  
+    <li><a href="../Chore/Stats.html">Chore::Stats</a>
+  
+    <li><a href="../Chore/Tapjoy.html">Chore::Tapjoy</a>
+  
+    <li><a href="../Chore/ThreadedConsumerStrategy.html">Chore::ThreadedConsumerStrategy</a>
+  
+    <li><a href="../Chore/UnitOfWork.html">Chore::UnitOfWork</a>
+  
+    <li><a href="../Chore/Util.html">Chore::Util</a>
+  
+    <li><a href="../Chore/Version.html">Chore::Version</a>
+  
+    <li><a href="../Chore/Worker.html">Chore::Worker</a>
+  
+    <li><a href="../Chore/WorkerListener.html">Chore::WorkerListener</a>
+  
+    <li><a href="../NewRelic.html">NewRelic</a>
+  
+    <li><a href="../NewRelic/Agent.html">NewRelic::Agent</a>
+  
+    <li><a href="../NewRelic/Agent/Instrumentation.html">NewRelic::Agent::Instrumentation</a>
+  
+    <li><a href="../NewRelic/Agent/Instrumentation/ChoreInstrumentHook.html">NewRelic::Agent::Instrumentation::ChoreInstrumentHook</a>
+  
+    <li><a href="../Object.html">Object</a>
+  
+  </ul>
+</nav>
+
+  </div>
+</nav>
+
+<div id="documentation">
+  <h1 class="module">module Chore::Tapjoy</h1>
+
+  <div id="description" class="description">
+    
+  </div><!-- description -->
+
+  
+  
+  
+  <section id="5Buntitled-5D" class="documentation-section">
+    
+
+    
+
+    
+
+    
+
+    <!-- Methods -->
+    
+     <section id="public-class-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Class Methods</h3>
+
+    
+      <div id="method-c-register_tapjoy_handlers-21" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">register_tapjoy_handlers!</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="register_tapjoy_handlers-21-source">
+            <pre><span class="ruby-comment"># File lib/chore/tapjoy/monitoring.rb, line 6</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">register_tapjoy_handlers!</span>
+  <span class="ruby-constant">Watcher</span><span class="ruby-operator">::</span><span class="ruby-constant">Metric</span>.<span class="ruby-identifier">publisher</span> = <span class="ruby-constant">Watcher</span><span class="ruby-operator">::</span><span class="ruby-constant">Publisher</span><span class="ruby-operator">::</span><span class="ruby-constant">Statsd</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">Chore</span>.<span class="ruby-identifier">config</span>.<span class="ruby-identifier">statsd</span>[<span class="ruby-value">:host</span>], <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">config</span>.<span class="ruby-identifier">statsd</span>[<span class="ruby-value">:port</span>])
+  <span class="ruby-constant">Watcher</span><span class="ruby-operator">::</span><span class="ruby-constant">Metric</span>.<span class="ruby-identifier">default_scope</span> = <span class="ruby-string">&quot;jobs&quot;</span>
+
+  <span class="ruby-identifier">after_message</span> = <span class="ruby-constant">Proc</span>.<span class="ruby-identifier">new</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">state</span>, <span class="ruby-identifier">queue</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">metric</span> = <span class="ruby-constant">Watcher</span><span class="ruby-operator">::</span><span class="ruby-constant">Metric</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&quot;finished&quot;</span>, <span class="ruby-identifier">attributes</span><span class="ruby-operator">:</span> { <span class="ruby-value">:state</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">state</span>, <span class="ruby-value">:queue</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">queue</span> })
+    <span class="ruby-identifier">metric</span>.<span class="ruby-identifier">increment</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">add_hook</span> <span class="ruby-value">:on_failure</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">message</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">after_message</span>.<span class="ruby-identifier">call</span> <span class="ruby-string">&quot;failed&quot;</span>, <span class="ruby-identifier">message</span>[<span class="ruby-string">'class'</span>]
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">add_hook</span> <span class="ruby-value">:on_timeout</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">message</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">after_message</span>.<span class="ruby-identifier">call</span> <span class="ruby-string">&quot;timeout&quot;</span>, <span class="ruby-identifier">message</span>[<span class="ruby-string">'class'</span>]
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">add_hook</span> <span class="ruby-value">:on_rejected</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">message</span><span class="ruby-operator">|</span> 
+    <span class="ruby-identifier">after_message</span>.<span class="ruby-identifier">call</span> <span class="ruby-string">&quot;rejected&quot;</span>, <span class="ruby-identifier">message</span>[<span class="ruby-string">'class'</span>]
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">add_hook</span> <span class="ruby-value">:after_perform</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">message</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">after_message</span>.<span class="ruby-identifier">call</span> <span class="ruby-string">&quot;completed&quot;</span>, <span class="ruby-identifier">message</span>[<span class="ruby-string">'class'</span>]
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">add_hook</span> <span class="ruby-value">:on_fetch</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">handle</span>, <span class="ruby-identifier">body</span><span class="ruby-operator">|</span> 
+    <span class="ruby-identifier">metric</span> = <span class="ruby-constant">Watcher</span><span class="ruby-operator">::</span><span class="ruby-constant">Metric</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&quot;fetch&quot;</span>)
+    <span class="ruby-identifier">metric</span>.<span class="ruby-identifier">increment</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- register_tapjoy_handlers-21-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- register_tapjoy_handlers-21-method -->
+
+    
+    </section><!-- public-class-method-details -->
+  
+  </section><!-- 5Buntitled-5D -->
+
+</div><!-- documentation -->
+
+
+<footer id="validator-badges">
+  <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
+  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.
+  <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
+</footer>
+

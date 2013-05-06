@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+
+<title>class Chore::ForkedWorkerStrategy - chore </title>
+
+<link type="text/css" media="screen" href="../rdoc.css" rel="stylesheet">
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "../";
+</script>
+
+<script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+<script type="text/javascript" charset="utf-8" src="../js/navigation.js"></script>
+<script type="text/javascript" charset="utf-8" src="../js/search_index.js"></script>
+<script type="text/javascript" charset="utf-8" src="../js/search.js"></script>
+<script type="text/javascript" charset="utf-8" src="../js/searcher.js"></script>
+<script type="text/javascript" charset="utf-8" src="../js/darkfish.js"></script>
+
+
+<body id="top" class="class">
+<nav id="metadata">
+  <nav id="home-section" class="section">
+  <h3 class="section-header">
+    <a href="../index.html">Home</a>
+    <a href="../table_of_contents.html#classes">Classes</a>
+    <a href="../table_of_contents.html#methods">Methods</a>
+  </h3>
+</nav>
+
+
+  <nav id="search-section" class="section project-section" class="initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <h3 class="section-header">
+      <input type="text" name="search" placeholder="Search" id="search-field"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </h3>
+  </form>
+
+  <ul id="search-results" class="initially-hidden"></ul>
+</nav>
+
+
+  <div id="file-metadata">
+    <nav id="file-list-section" class="section">
+  <h3 class="section-header">Defined In</h3>
+  <ul>
+    <li>lib/chore/strategies/worker/forked_worker_strategy.rb
+  </ul>
+</nav>
+
+    
+  </div>
+
+  <div id="class-metadata">
+    
+    <nav id="parent-class-section" class="section">
+  <h3 class="section-header">Parent</h3>
+  
+  <p class="link"><a href="../Object.html">Object</a>
+  
+</nav>
+
+    
+    <!-- Method Quickref -->
+<nav id="method-list-section" class="section">
+  <h3 class="section-header">Methods</h3>
+
+  <ul class="link-list">
+    
+    <li><a href="#method-c-new">::new</a>
+    
+    <li><a href="#method-i-assign">#assign</a>
+    
+    <li><a href="#method-i-start">#start</a>
+    
+    <li><a href="#method-i-stop-21">#stop!</a>
+    
+    <li><a href="#method-i-workers_available-3F">#workers_available?</a>
+    
+  </ul>
+</nav>
+
+  </div>
+
+  <div id="project-metadata">
+    
+    <nav id="classindex-section" class="section project-section">
+  <h3 class="section-header">Class and Module Index</h3>
+
+  <ul class="link-list">
+  
+    <li><a href="../Chore.html">Chore</a>
+  
+    <li><a href="../Chore/CLI.html">Chore::CLI</a>
+  
+    <li><a href="../Chore/Configuration.html">Chore::Configuration</a>
+  
+    <li><a href="../Chore/Consumer.html">Chore::Consumer</a>
+  
+    <li><a href="../Chore/DuplicateDetector.html">Chore::DuplicateDetector</a>
+  
+    <li><a href="../Chore/FilesystemConsumer.html">Chore::FilesystemConsumer</a>
+  
+    <li><a href="../Chore/FilesystemPublisher.html">Chore::FilesystemPublisher</a>
+  
+    <li><a href="../Chore/FilesystemQueue.html">Chore::FilesystemQueue</a>
+  
+    <li><a href="../Chore/ForkedWorkerStrategy.html">Chore::ForkedWorkerStrategy</a>
+  
+    <li><a href="../Chore/Hooks.html">Chore::Hooks</a>
+  
+    <li><a href="../Chore/Job.html">Chore::Job</a>
+  
+    <li><a href="../Chore/Job/ClassMethods.html">Chore::Job::ClassMethods</a>
+  
+    <li><a href="../Chore/Job/RejectMessageException.html">Chore::Job::RejectMessageException</a>
+  
+    <li><a href="../Chore/JsonEncoder.html">Chore::JsonEncoder</a>
+  
+    <li><a href="../Chore/Lease.html">Chore::Lease</a>
+  
+    <li><a href="../Chore/LockingSQSConsumer.html">Chore::LockingSQSConsumer</a>
+  
+    <li><a href="../Chore/Manager.html">Chore::Manager</a>
+  
+    <li><a href="../Chore/Pipe.html">Chore::Pipe</a>
+  
+    <li><a href="../Chore/PipeListener.html">Chore::PipeListener</a>
+  
+    <li><a href="../Chore/PipedStats.html">Chore::PipedStats</a>
+  
+    <li><a href="../Chore/Publisher.html">Chore::Publisher</a>
+  
+    <li><a href="../Chore/SQSConsumer.html">Chore::SQSConsumer</a>
+  
+    <li><a href="../Chore/SQSPublisher.html">Chore::SQSPublisher</a>
+  
+    <li><a href="../Chore/Semaphore.html">Chore::Semaphore</a>
+  
+    <li><a href="../Chore/SingleConsumerStrategy.html">Chore::SingleConsumerStrategy</a>
+  
+    <li><a href="../Chore/SingleWorkerStrategy.html">Chore::SingleWorkerStrategy</a>
+  
+    <li><a href="../Chore/Stats.html">Chore::Stats</a>
+  
+    <li><a href="../Chore/Tapjoy.html">Chore::Tapjoy</a>
+  
+    <li><a href="../Chore/ThreadedConsumerStrategy.html">Chore::ThreadedConsumerStrategy</a>
+  
+    <li><a href="../Chore/UnitOfWork.html">Chore::UnitOfWork</a>
+  
+    <li><a href="../Chore/Util.html">Chore::Util</a>
+  
+    <li><a href="../Chore/Version.html">Chore::Version</a>
+  
+    <li><a href="../Chore/Worker.html">Chore::Worker</a>
+  
+    <li><a href="../Chore/WorkerListener.html">Chore::WorkerListener</a>
+  
+    <li><a href="../NewRelic.html">NewRelic</a>
+  
+    <li><a href="../NewRelic/Agent.html">NewRelic::Agent</a>
+  
+    <li><a href="../NewRelic/Agent/Instrumentation.html">NewRelic::Agent::Instrumentation</a>
+  
+    <li><a href="../NewRelic/Agent/Instrumentation/ChoreInstrumentHook.html">NewRelic::Agent::Instrumentation::ChoreInstrumentHook</a>
+  
+    <li><a href="../Object.html">Object</a>
+  
+  </ul>
+</nav>
+
+  </div>
+</nav>
+
+<div id="documentation">
+  <h1 class="class">class Chore::ForkedWorkerStrategy</h1>
+
+  <div id="description" class="description">
+    
+  </div><!-- description -->
+
+  
+  
+  
+  <section id="5Buntitled-5D" class="documentation-section">
+    
+
+    
+
+    
+
+    
+    <!-- Attributes -->
+    <section id="attribute-method-details" class="method-section section">
+      <h3 class="section-header">Attributes</h3>
+
+      
+      <div id="attribute-i-workers" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">workers</span><span
+            class="attribute-access-type">[RW]</span>
+        </div>
+
+        <div class="method-description">
+        
+        
+        
+        </div>
+      </div>
+      
+    </section><!-- attribute-method-details -->
+    
+
+    <!-- Methods -->
+    
+     <section id="public-class-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Class Methods</h3>
+
+    
+      <div id="method-c-new" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">new</span><span
+            class="method-args">(manager)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="new-source">
+            <pre><span class="ruby-comment"># File lib/chore/strategies/worker/forked_worker_strategy.rb, line 56</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">manager</span>)
+  <span class="ruby-ivar">@manager</span> = <span class="ruby-identifier">manager</span>
+  <span class="ruby-ivar">@workers</span> = {}
+  <span class="ruby-ivar">@listener</span> = <span class="ruby-constant">WorkerListener</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword">self</span>,<span class="ruby-value">60</span>)
+
+  <span class="ruby-identifier">trap_master_signals</span>
+
+  <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">run_hooks_for</span>(<span class="ruby-value">:before_first_fork</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- new-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- new-method -->
+
+    
+    </section><!-- public-class-method-details -->
+  
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Instance Methods</h3>
+
+    
+      <div id="method-i-assign" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">assign</span><span
+            class="method-args">(work)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Take a <a href="UnitOfWork.html">UnitOfWork</a> (or an Array of <a
+href="UnitOfWork.html">UnitOfWork</a>) and assign it to a <a
+href="Worker.html">Worker</a>. We only assign work if there are
+<code>workers_available?</code>.</p>
+          
+
+          
+          <div class="method-source-code" id="assign-source">
+            <pre><span class="ruby-comment"># File lib/chore/strategies/worker/forked_worker_strategy.rb, line 94</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">assign</span>(<span class="ruby-identifier">work</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">workers_available?</span>
+    <span class="ruby-identifier">w</span> = <span class="ruby-constant">Worker</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">work</span>)
+    <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">run_hooks_for</span>(<span class="ruby-value">:before_fork</span>,<span class="ruby-identifier">w</span>)
+    <span class="ruby-ivar">@listener</span>.<span class="ruby-identifier">add_pipe</span>(<span class="ruby-identifier">w</span>.<span class="ruby-identifier">object_id</span>)
+    <span class="ruby-identifier">pid</span> = <span class="ruby-identifier">fork</span> <span class="ruby-keyword">do</span>
+      <span class="ruby-identifier">after_fork</span>(<span class="ruby-identifier">w</span>)
+
+      <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">run_hooks_for</span>(<span class="ruby-value">:after_fork</span>,<span class="ruby-identifier">w</span>)
+      <span class="ruby-identifier">procline</span>(<span class="ruby-node">&quot;Started:#{Time.now}&quot;</span>)
+      <span class="ruby-identifier">w</span>.<span class="ruby-identifier">start</span>
+      <span class="ruby-ivar">@listener</span>.<span class="ruby-identifier">end_pipe</span>(<span class="ruby-identifier">w</span>.<span class="ruby-identifier">object_id</span>)
+      <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span>(<span class="ruby-node">&quot;Finished:#{Time.now}&quot;</span>)
+    <span class="ruby-keyword">end</span>
+    <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> { <span class="ruby-node">&quot;Forked worker #{pid}&quot;</span>}
+    <span class="ruby-identifier">workers</span>[<span class="ruby-identifier">pid</span>] = <span class="ruby-identifier">w</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- assign-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- assign-method -->
+
+    
+      <div id="method-i-start" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">start</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Start up the worker strategy. In this particular case, what we’re doing is
+starting up a <a href="WorkerListener.html">WorkerListener</a>, so we can
+talk to the children.</p>
+          
+
+          
+          <div class="method-source-code" id="start-source">
+            <pre><span class="ruby-comment"># File lib/chore/strategies/worker/forked_worker_strategy.rb, line 68</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">start</span>
+  <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Starting up worker strategy: #{self.class.name}&quot;</span>
+  <span class="ruby-ivar">@listener</span>.<span class="ruby-identifier">start</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- start-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- start-method -->
+
+    
+      <div id="method-i-stop-21" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">stop!</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Stop the workers. The particulars of the implementation here are that we
+send a QUIT signal to each child, wait one minute for it to finish the last
+job it was working on. If it times out, then we send KILL. In an ideal
+world this means that <code>stop!</code> is non-destructive in that it
+allow each worker to complete it’s current job before dying.</p>
+          
+
+          
+          <div class="method-source-code" id="stop-21-source">
+            <pre><span class="ruby-comment"># File lib/chore/strategies/worker/forked_worker_strategy.rb, line 78</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">stop!</span>
+  <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> { <span class="ruby-node">&quot;Worker #{Process.pid} stopping&quot;</span> }
+  <span class="ruby-keyword">begin</span>
+    <span class="ruby-identifier">signal_children</span>(<span class="ruby-string">&quot;QUIT&quot;</span>)
+    <span class="ruby-constant">Timeout</span><span class="ruby-operator">::</span><span class="ruby-identifier">timeout</span>(<span class="ruby-value">60</span>) <span class="ruby-keyword">do</span>
+      <span class="ruby-constant">Process</span>.<span class="ruby-identifier">waitall</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">rescue</span> <span class="ruby-constant">Timeout</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>
+    <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-string">&quot;Timed out waiting for children to terminate. Terminating with prejudice.&quot;</span>
+    <span class="ruby-identifier">signal_children</span>(<span class="ruby-string">&quot;KILL&quot;</span>)
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-ivar">@listener</span>.<span class="ruby-identifier">close_all</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- stop-21-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- stop-21-method -->
+
+    
+      <div id="method-i-workers_available-3F" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">workers_available?</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="workers_available-3F-source">
+            <pre><span class="ruby-comment"># File lib/chore/strategies/worker/forked_worker_strategy.rb, line 114</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">workers_available?</span>
+  <span class="ruby-identifier">workers</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">config</span>.<span class="ruby-identifier">num_workers</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- workers_available-3F-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- workers_available-3F-method -->
+
+    
+    </section><!-- public-instance-method-details -->
+  
+  </section><!-- 5Buntitled-5D -->
+
+</div><!-- documentation -->
+
+
+<footer id="validator-badges">
+  <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
+  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.
+  <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
+</footer>
+

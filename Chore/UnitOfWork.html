@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+
+<title>class Chore::UnitOfWork - chore </title>
+
+<link type="text/css" media="screen" href="../rdoc.css" rel="stylesheet">
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "../";
+</script>
+
+<script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+<script type="text/javascript" charset="utf-8" src="../js/navigation.js"></script>
+<script type="text/javascript" charset="utf-8" src="../js/search_index.js"></script>
+<script type="text/javascript" charset="utf-8" src="../js/search.js"></script>
+<script type="text/javascript" charset="utf-8" src="../js/searcher.js"></script>
+<script type="text/javascript" charset="utf-8" src="../js/darkfish.js"></script>
+
+
+<body id="top" class="class">
+<nav id="metadata">
+  <nav id="home-section" class="section">
+  <h3 class="section-header">
+    <a href="../index.html">Home</a>
+    <a href="../table_of_contents.html#classes">Classes</a>
+    <a href="../table_of_contents.html#methods">Methods</a>
+  </h3>
+</nav>
+
+
+  <nav id="search-section" class="section project-section" class="initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <h3 class="section-header">
+      <input type="text" name="search" placeholder="Search" id="search-field"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </h3>
+  </form>
+
+  <ul id="search-results" class="initially-hidden"></ul>
+</nav>
+
+
+  <div id="file-metadata">
+    <nav id="file-list-section" class="section">
+  <h3 class="section-header">Defined In</h3>
+  <ul>
+    <li>lib/chore.rb
+  </ul>
+</nav>
+
+    
+  </div>
+
+  <div id="class-metadata">
+    
+    <nav id="parent-class-section" class="section">
+  <h3 class="section-header">Parent</h3>
+  
+  <p class="link">Struct.new(:id,:message,:consumer);
+  
+</nav>
+
+    
+    
+  </div>
+
+  <div id="project-metadata">
+    
+    <nav id="classindex-section" class="section project-section">
+  <h3 class="section-header">Class and Module Index</h3>
+
+  <ul class="link-list">
+  
+    <li><a href="../Chore.html">Chore</a>
+  
+    <li><a href="../Chore/CLI.html">Chore::CLI</a>
+  
+    <li><a href="../Chore/Configuration.html">Chore::Configuration</a>
+  
+    <li><a href="../Chore/Consumer.html">Chore::Consumer</a>
+  
+    <li><a href="../Chore/DuplicateDetector.html">Chore::DuplicateDetector</a>
+  
+    <li><a href="../Chore/FilesystemConsumer.html">Chore::FilesystemConsumer</a>
+  
+    <li><a href="../Chore/FilesystemPublisher.html">Chore::FilesystemPublisher</a>
+  
+    <li><a href="../Chore/FilesystemQueue.html">Chore::FilesystemQueue</a>
+  
+    <li><a href="../Chore/ForkedWorkerStrategy.html">Chore::ForkedWorkerStrategy</a>
+  
+    <li><a href="../Chore/Hooks.html">Chore::Hooks</a>
+  
+    <li><a href="../Chore/Job.html">Chore::Job</a>
+  
+    <li><a href="../Chore/Job/ClassMethods.html">Chore::Job::ClassMethods</a>
+  
+    <li><a href="../Chore/Job/RejectMessageException.html">Chore::Job::RejectMessageException</a>
+  
+    <li><a href="../Chore/JsonEncoder.html">Chore::JsonEncoder</a>
+  
+    <li><a href="../Chore/Lease.html">Chore::Lease</a>
+  
+    <li><a href="../Chore/LockingSQSConsumer.html">Chore::LockingSQSConsumer</a>
+  
+    <li><a href="../Chore/Manager.html">Chore::Manager</a>
+  
+    <li><a href="../Chore/Pipe.html">Chore::Pipe</a>
+  
+    <li><a href="../Chore/PipeListener.html">Chore::PipeListener</a>
+  
+    <li><a href="../Chore/PipedStats.html">Chore::PipedStats</a>
+  
+    <li><a href="../Chore/Publisher.html">Chore::Publisher</a>
+  
+    <li><a href="../Chore/SQSConsumer.html">Chore::SQSConsumer</a>
+  
+    <li><a href="../Chore/SQSPublisher.html">Chore::SQSPublisher</a>
+  
+    <li><a href="../Chore/Semaphore.html">Chore::Semaphore</a>
+  
+    <li><a href="../Chore/SingleConsumerStrategy.html">Chore::SingleConsumerStrategy</a>
+  
+    <li><a href="../Chore/SingleWorkerStrategy.html">Chore::SingleWorkerStrategy</a>
+  
+    <li><a href="../Chore/Stats.html">Chore::Stats</a>
+  
+    <li><a href="../Chore/Tapjoy.html">Chore::Tapjoy</a>
+  
+    <li><a href="../Chore/ThreadedConsumerStrategy.html">Chore::ThreadedConsumerStrategy</a>
+  
+    <li><a href="../Chore/UnitOfWork.html">Chore::UnitOfWork</a>
+  
+    <li><a href="../Chore/Util.html">Chore::Util</a>
+  
+    <li><a href="../Chore/Version.html">Chore::Version</a>
+  
+    <li><a href="../Chore/Worker.html">Chore::Worker</a>
+  
+    <li><a href="../Chore/WorkerListener.html">Chore::WorkerListener</a>
+  
+    <li><a href="../NewRelic.html">NewRelic</a>
+  
+    <li><a href="../NewRelic/Agent.html">NewRelic::Agent</a>
+  
+    <li><a href="../NewRelic/Agent/Instrumentation.html">NewRelic::Agent::Instrumentation</a>
+  
+    <li><a href="../NewRelic/Agent/Instrumentation/ChoreInstrumentHook.html">NewRelic::Agent::Instrumentation::ChoreInstrumentHook</a>
+  
+    <li><a href="../Object.html">Object</a>
+  
+  </ul>
+</nav>
+
+  </div>
+</nav>
+
+<div id="documentation">
+  <h1 class="class">class Chore::UnitOfWork</h1>
+
+  <div id="description" class="description">
+    
+<p>Simple class to hold job processing information. Has only three attributes:</p>
+<ul><li>
+<p><code>:id</code> The queue implementation specific identifier for this
+message.</p>
+</li><li>
+<p><code>:message</code> The actual data of the message.</p>
+</li><li>
+<p><code>:consumer</code> The consumer instance used to fetch this message.
+Most queue implementations won't need access to this, but some (RabbitMQ)
+will. So we</p>
+</li></ul>
+
+<p>make sure to pass it along with each message. This instance will be used by
+the <a href="Worker.html">Worker</a> for things like <code>complete</code>
+and &lt;/tt&gt;reject&lt;/tt&gt;.</p>
+
+  </div><!-- description -->
+
+  
+  
+  
+  <section id="5Buntitled-5D" class="documentation-section">
+    
+
+    
+
+    
+
+    
+
+    <!-- Methods -->
+    
+  </section><!-- 5Buntitled-5D -->
+
+</div><!-- documentation -->
+
+
+<footer id="validator-badges">
+  <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
+  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.
+  <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
+</footer>
+

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+
+<title>class Chore::FilesystemConsumer - chore </title>
+
+<link type="text/css" media="screen" href="../rdoc.css" rel="stylesheet">
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "../";
+</script>
+
+<script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+<script type="text/javascript" charset="utf-8" src="../js/navigation.js"></script>
+<script type="text/javascript" charset="utf-8" src="../js/search_index.js"></script>
+<script type="text/javascript" charset="utf-8" src="../js/search.js"></script>
+<script type="text/javascript" charset="utf-8" src="../js/searcher.js"></script>
+<script type="text/javascript" charset="utf-8" src="../js/darkfish.js"></script>
+
+
+<body id="top" class="class">
+<nav id="metadata">
+  <nav id="home-section" class="section">
+  <h3 class="section-header">
+    <a href="../index.html">Home</a>
+    <a href="../table_of_contents.html#classes">Classes</a>
+    <a href="../table_of_contents.html#methods">Methods</a>
+  </h3>
+</nav>
+
+
+  <nav id="search-section" class="section project-section" class="initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <h3 class="section-header">
+      <input type="text" name="search" placeholder="Search" id="search-field"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </h3>
+  </form>
+
+  <ul id="search-results" class="initially-hidden"></ul>
+</nav>
+
+
+  <div id="file-metadata">
+    <nav id="file-list-section" class="section">
+  <h3 class="section-header">Defined In</h3>
+  <ul>
+    <li>lib/chore/consumers/filesystem_consumer.rb
+  </ul>
+</nav>
+
+    
+  </div>
+
+  <div id="class-metadata">
+    
+    <nav id="parent-class-section" class="section">
+  <h3 class="section-header">Parent</h3>
+  
+  <p class="link"><a href="Consumer.html">Chore::Consumer</a>
+  
+</nav>
+
+    <!-- Included Modules -->
+<nav id="includes-section" class="section">
+  <h3 class="section-header">Included Modules</h3>
+
+  <ul class="link-list">
+  
+  
+    <li><a class="include" href="FilesystemQueue.html">Chore::FilesystemQueue</a>
+  
+  
+  </ul>
+</nav>
+
+    <!-- Method Quickref -->
+<nav id="method-list-section" class="section">
+  <h3 class="section-header">Methods</h3>
+
+  <ul class="link-list">
+    
+    <li><a href="#method-c-new">::new</a>
+    
+    <li><a href="#method-i-complete">#complete</a>
+    
+    <li><a href="#method-i-consume">#consume</a>
+    
+    <li><a href="#method-i-reject">#reject</a>
+    
+  </ul>
+</nav>
+
+  </div>
+
+  <div id="project-metadata">
+    
+    <nav id="classindex-section" class="section project-section">
+  <h3 class="section-header">Class and Module Index</h3>
+
+  <ul class="link-list">
+  
+    <li><a href="../Chore.html">Chore</a>
+  
+    <li><a href="../Chore/CLI.html">Chore::CLI</a>
+  
+    <li><a href="../Chore/Configuration.html">Chore::Configuration</a>
+  
+    <li><a href="../Chore/Consumer.html">Chore::Consumer</a>
+  
+    <li><a href="../Chore/DuplicateDetector.html">Chore::DuplicateDetector</a>
+  
+    <li><a href="../Chore/FilesystemConsumer.html">Chore::FilesystemConsumer</a>
+  
+    <li><a href="../Chore/FilesystemPublisher.html">Chore::FilesystemPublisher</a>
+  
+    <li><a href="../Chore/FilesystemQueue.html">Chore::FilesystemQueue</a>
+  
+    <li><a href="../Chore/ForkedWorkerStrategy.html">Chore::ForkedWorkerStrategy</a>
+  
+    <li><a href="../Chore/Hooks.html">Chore::Hooks</a>
+  
+    <li><a href="../Chore/Job.html">Chore::Job</a>
+  
+    <li><a href="../Chore/Job/ClassMethods.html">Chore::Job::ClassMethods</a>
+  
+    <li><a href="../Chore/Job/RejectMessageException.html">Chore::Job::RejectMessageException</a>
+  
+    <li><a href="../Chore/JsonEncoder.html">Chore::JsonEncoder</a>
+  
+    <li><a href="../Chore/Lease.html">Chore::Lease</a>
+  
+    <li><a href="../Chore/LockingSQSConsumer.html">Chore::LockingSQSConsumer</a>
+  
+    <li><a href="../Chore/Manager.html">Chore::Manager</a>
+  
+    <li><a href="../Chore/Pipe.html">Chore::Pipe</a>
+  
+    <li><a href="../Chore/PipeListener.html">Chore::PipeListener</a>
+  
+    <li><a href="../Chore/PipedStats.html">Chore::PipedStats</a>
+  
+    <li><a href="../Chore/Publisher.html">Chore::Publisher</a>
+  
+    <li><a href="../Chore/SQSConsumer.html">Chore::SQSConsumer</a>
+  
+    <li><a href="../Chore/SQSPublisher.html">Chore::SQSPublisher</a>
+  
+    <li><a href="../Chore/Semaphore.html">Chore::Semaphore</a>
+  
+    <li><a href="../Chore/SingleConsumerStrategy.html">Chore::SingleConsumerStrategy</a>
+  
+    <li><a href="../Chore/SingleWorkerStrategy.html">Chore::SingleWorkerStrategy</a>
+  
+    <li><a href="../Chore/Stats.html">Chore::Stats</a>
+  
+    <li><a href="../Chore/Tapjoy.html">Chore::Tapjoy</a>
+  
+    <li><a href="../Chore/ThreadedConsumerStrategy.html">Chore::ThreadedConsumerStrategy</a>
+  
+    <li><a href="../Chore/UnitOfWork.html">Chore::UnitOfWork</a>
+  
+    <li><a href="../Chore/Util.html">Chore::Util</a>
+  
+    <li><a href="../Chore/Version.html">Chore::Version</a>
+  
+    <li><a href="../Chore/Worker.html">Chore::Worker</a>
+  
+    <li><a href="../Chore/WorkerListener.html">Chore::WorkerListener</a>
+  
+    <li><a href="../NewRelic.html">NewRelic</a>
+  
+    <li><a href="../NewRelic/Agent.html">NewRelic::Agent</a>
+  
+    <li><a href="../NewRelic/Agent/Instrumentation.html">NewRelic::Agent::Instrumentation</a>
+  
+    <li><a href="../NewRelic/Agent/Instrumentation/ChoreInstrumentHook.html">NewRelic::Agent::Instrumentation::ChoreInstrumentHook</a>
+  
+    <li><a href="../Object.html">Object</a>
+  
+  </ul>
+</nav>
+
+  </div>
+</nav>
+
+<div id="documentation">
+  <h1 class="class">class Chore::FilesystemConsumer</h1>
+
+  <div id="description" class="description">
+    
+<p>This is the consuming side of the file system queue. This class consumes
+jobs created by <a
+href="FilesystemPublisher.html#method-i-publish">Chore::FilesystemPublisher#publish</a>.
+The root of the file system queue is configured in <a
+href="../Chore.html#method-c-config">Chore.config</a>.fs_queue_root. In
+there a directory will be created for each queue name. Each queue directory
+contains a directory called “new” and one called “inprogress”. <a
+href="FilesystemPublisher.html#method-i-publish">Chore::FilesystemPublisher#publish</a>
+creates new job files in the “new” directory. This consumer polls that
+directory every 5 seconds for new jobs which are moved to “inprogress”.</p>
+
+<p>Once complete job files are deleted. If rejected they are moved back into
+new and will be processed again.  This may not be the desired behavior long
+term and we may want to add configuration to this class to allow more
+creating failure handling and retrying.</p>
+
+  </div><!-- description -->
+
+  
+  
+  
+  <section id="5Buntitled-5D" class="documentation-section">
+    
+
+    
+
+    
+    <!-- Constants -->
+    <section id="constants-list" class="section">
+      <h3 class="section-header">Constants</h3>
+      <dl>
+      
+        <dt id="FILE_QUEUE_MUTEXES">FILE_QUEUE_MUTEXES
+        
+        <dd class="description">
+        
+      
+      </dl>
+    </section>
+    
+
+    
+
+    <!-- Methods -->
+    
+     <section id="public-class-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Class Methods</h3>
+
+    
+      <div id="method-c-new" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">new</span><span
+            class="method-args">(queue_name, opts={})</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="new-source">
+            <pre><span class="ruby-comment"># File lib/chore/consumers/filesystem_consumer.rb, line 22</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">queue_name</span>, <span class="ruby-identifier">opts</span>={})
+  <span class="ruby-keyword">super</span>(<span class="ruby-identifier">queue_name</span>, <span class="ruby-identifier">opts</span>)
+
+  <span class="ruby-comment"># Even though putting these Mutexes in this hash is, by itself, not particularly threadsafe</span>
+  <span class="ruby-comment"># as long as some Mutex ends up in the queue after all consumers are created we're good</span>
+  <span class="ruby-comment"># as they are pulled from the queue and synchronized for file operations below</span>
+  <span class="ruby-constant">FILE_QUEUE_MUTEXES</span>[<span class="ruby-ivar">@queue_name</span>] <span class="ruby-operator">||=</span> <span class="ruby-constant">Mutex</span>.<span class="ruby-identifier">new</span>
+
+  <span class="ruby-ivar">@in_progress_dir</span> = <span class="ruby-identifier">in_progress_dir</span>(<span class="ruby-identifier">queue_name</span>)
+  <span class="ruby-ivar">@new_dir</span> = <span class="ruby-identifier">new_dir</span>(<span class="ruby-identifier">queue_name</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- new-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- new-method -->
+
+    
+    </section><!-- public-class-method-details -->
+  
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Instance Methods</h3>
+
+    
+      <div id="method-i-complete" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">complete</span><span
+            class="method-args">(id)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="complete-source">
+            <pre><span class="ruby-comment"># File lib/chore/consumers/filesystem_consumer.rb, line 53</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">complete</span>(<span class="ruby-identifier">id</span>)
+  <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Completing (deleting): #{id}&quot;</span>
+  <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">rm</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-ivar">@in_progress_dir</span>, <span class="ruby-identifier">id</span>))
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- complete-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- complete-method -->
+
+    
+      <div id="method-i-consume" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">consume</span><span
+            class="method-args">(&handler)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="consume-source">
+            <pre><span class="ruby-comment"># File lib/chore/consumers/filesystem_consumer.rb, line 34</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">consume</span>(&amp;<span class="ruby-identifier">handler</span>)
+  <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-node">&quot;Starting consuming file system queue #{@queue_name} in #{queue_dir(queue_name)}&quot;</span>
+  <span class="ruby-keyword">while</span> <span class="ruby-identifier">running?</span>
+    <span class="ruby-keyword">begin</span>
+      <span class="ruby-comment">#TODO move expired job files to new directory?</span>
+      <span class="ruby-identifier">handle_jobs</span>(&amp;<span class="ruby-identifier">handler</span>)
+    <span class="ruby-keyword">rescue</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+      <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> { <span class="ruby-node">&quot;#{self.class}#consume: #{e} #{e.backtrace * &quot;\n&quot;}&quot;</span> }
+    <span class="ruby-keyword">ensure</span>
+      <span class="ruby-identifier">sleep</span> <span class="ruby-value">5</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- consume-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- consume-method -->
+
+    
+      <div id="method-i-reject" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">reject</span><span
+            class="method-args">(id)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="reject-source">
+            <pre><span class="ruby-comment"># File lib/chore/consumers/filesystem_consumer.rb, line 48</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">reject</span>(<span class="ruby-identifier">id</span>)
+  <span class="ruby-constant">Chore</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Rejecting: #{id}&quot;</span>
+  <span class="ruby-identifier">make_new_again</span>(<span class="ruby-identifier">id</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- reject-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- reject-method -->
+
+    
+    </section><!-- public-instance-method-details -->
+  
+  </section><!-- 5Buntitled-5D -->
+
+</div><!-- documentation -->
+
+
+<footer id="validator-badges">
+  <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
+  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.
+  <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
+</footer>
+
