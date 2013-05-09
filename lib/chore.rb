@@ -47,10 +47,10 @@ module Chore
   DEFAULT_OPTIONS = {
     :num_workers => 4,
     :threads_per_queue => 1,
-    :worker_strategy => ForkedWorkerStrategy,
+    :worker_strategy => Strategy::ForkedWorkerStrategy,
     :consumer => Queues::SQS::Consumer,
     :fetcher => Fetcher,
-    :fetcher_strategy => ThreadedConsumerStrategy,
+    :fetcher_strategy => Strategy::ThreadedConsumerStrategy,
     :batch_size => 50
   }
 
