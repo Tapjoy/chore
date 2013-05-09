@@ -1,12 +1,12 @@
 require 'spec_helper'
 
-describe Chore::LockingSQSConsumer do
+describe Chore::Queues::SQS::LockingConsumer do
   let(:sqs) { double("sqs") }
   let(:queue_name) { "test" }
   let(:queues) { double("queues") }
   let(:queue) { double("test_queue") }
   let(:options) { {} }
-  let(:consumer) { Chore::LockingSQSConsumer.new(queue_name) }
+  let(:consumer) { Chore::Queues::SQS::LockingConsumer.new(queue_name) }
   let(:message) { TestMessage.new("handle","message body") }
   let(:zk) { double('zk') }
   let(:semaphore) { double("semaphore") }
@@ -26,11 +26,11 @@ describe Chore::LockingSQSConsumer do
   end
 
   before(:each) do
-    Chore::LockingSQSConsumer.class_variable_set(:@@zk, zk)
+    Chore::Queues::SQS::LockingConsumer.class_variable_set(:@@zk, zk)
   end
 
   after(:each) do 
-    Chore::LockingSQSConsumer.class_variable_set(:@@zk, nil)
+    Chore::Queues::SQS::LockingConsumer.class_variable_set(:@@zk, nil)
   end
 
   describe "has free leases" do

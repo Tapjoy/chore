@@ -1,20 +1,26 @@
+require 'chore/publisher'
+
 module Chore
-  class SQSPublisher < Publisher
+  module Queues
+    module SQS
+      class Publisher < Chore::Publisher
 
-    def initialize(opts={})
-      super
-      @sqs = AWS::SQS.new(
-          :access_key_id => Chore.config.aws_access_key,
-          :secret_access_key => Chore.config.aws_secret_key)
-    end
+        def initialize(opts={})
+          super
+          @sqs = AWS::SQS.new(
+              :access_key_id => Chore.config.aws_access_key,
+              :secret_access_key => Chore.config.aws_secret_key)
+        end
 
-    def publish(queue_name,job)
-      queue = ensure_queue! queue_name
-      queue.send_message(encode_job(job))
-    end
+        def publish(queue_name,job)
+          queue = ensure_queue! queue_name
+          queue.send_message(encode_job(job))
+        end
 
-    def ensure_queue!(name)
-      @sqs.queues.create(name)
+        def ensure_queue!(name)
+          @sqs.queues.create(name)
+        end
+      end
     end
   end
 end
