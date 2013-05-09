@@ -109,7 +109,7 @@ module Chore
   #   Chore.configure({:worker_strategy => Chore::ForkedWorkerStrategy})
   #
   #   Chore.configure do |c|
-  #     c.consumer = Chore::SQSConsumer
+  #     c.consumer = Chore::Queues::SQS::Consumer
   #     c.batch_size = 50
   #   end
   def self.configure(opts={})
