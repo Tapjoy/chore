@@ -15,7 +15,7 @@ require 'chore/worker'
 require 'chore/publisher'
 
 # We have a number of things that can live here. I don't want to track
-['consumers','publishers','strategies/**'].each do |p|
+['queues/**','strategies/**'].each do |p|
   Dir[File.join(File.dirname(__FILE__),'chore',p,'*.rb')].each {|f| require f}
 end
 
@@ -47,10 +47,10 @@ module Chore
   DEFAULT_OPTIONS = {
     :num_workers => 4,
     :threads_per_queue => 1,
-    :worker_strategy => ForkedWorkerStrategy,
-    :consumer => SQSConsumer,
+    :worker_strategy => Strategy::ForkedWorkerStrategy,
+    :consumer => Queues::SQS::Consumer,
     :fetcher => Fetcher,
-    :fetcher_strategy => ThreadedConsumerStrategy,
+    :fetcher_strategy => Strategy::ThreadedConsumerStrategy,
     :batch_size => 50
   }
 
@@ -109,7 +109,7 @@ module Chore
   #   Chore.configure({:worker_strategy => Chore::ForkedWorkerStrategy})
   #
   #   Chore.configure do |c|
-  #     c.consumer = Chore::SQSConsumer
+  #     c.consumer = Chore::Queues::SQS::Consumer
   #     c.batch_size = 50
   #   end
   def self.configure(opts={})

@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-describe Chore::SQSConsumer do
+describe Chore::Queues::SQS::Consumer do
   let(:queue_name) { "test" }
   let(:queues) { double("queues") }
   let(:queue) { double("test_queue") }
   let(:options) { {} }
-  let(:consumer) { Chore::SQSConsumer.new(queue_name) }
+  let(:consumer) { Chore::Queues::SQS::Consumer.new(queue_name) }
   let(:message) { TestMessage.new("handle","message body") }
 
   before do

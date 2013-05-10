@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-describe Chore::SingleConsumerStrategy do
+describe Chore::Strategy::SingleConsumerStrategy do
   let(:fetcher) { double("fetcher") }
   let(:manager) { double("manager") }
   let(:consumer) { double("consumer") }
   let(:test_queues) { ["test-queue"] }
-  let(:strategy) { Chore::SingleConsumerStrategy.new(fetcher) }
+  let(:strategy) { Chore::Strategy::SingleConsumerStrategy.new(fetcher) }
 
   before do
     fetcher.stub(:manager) { manager }

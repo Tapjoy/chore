@@ -21,7 +21,7 @@ GIT
 PATH
   remote: .
   specs:
-    chore (0.7.0)
+    chore (0.8.0)
       aws-sdk (~> 1.8.5)
       json
       rack

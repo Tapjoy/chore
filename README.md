@@ -37,7 +37,7 @@ Other options include:
     --stats-port 9090 # port to run the stats HTTP server on
     --concurrency 16 # number of concurrent worker processes, if using forked worker strategy
     --worker-strategy Chore::ForkedWorkerStrategy # which worker strategy class to use
-    --consumer Chore::SQSConsumer # which consumer class to use
+    --consumer Chore::Queues::SQS::Consumer # which consumer class to use
     --dedupe-servers # if using SQS and your memcache is running on something other than localhost
     --fetcher-strategy Chore::ThreadedConsumerStrategy # fetching strategy class, are you seeing a theme here?
     --batch-size 50 # how many messages are batched together before handing them to a worker
@@ -80,7 +80,7 @@ A Chore::Job is any class that includes `Chore::Job` and implements `perform(*ar
 ```ruby
 class TestJob 
   include Chore::Job
-  queue_options :name => 'test_queue', :publisher => Chore::SQSPublisher, :timeout => 120
+  queue_options :name => 'test_queue', :publisher => Chore::Queues::SQS::Publisher, :timeout => 120
 
   def perform(*args)
     Chore.logger.debug "My first async job"
@@ -89,7 +89,7 @@ class TestJob
 end
 ```
 
-This job uses the included `Chore::SQSPublisher` to remove the message from the queue once the job is completed.
+This job uses the included `Chore::Queues::SQS::Publisher` to remove the message from the queue once the job is completed.
 It also declares that the name of the queue it uses is `test_queue` and that it has a timeout of 120 seconds.
 
 ## Hooks
@@ -127,7 +127,7 @@ Hooks can be added to a job class as so:
 ```ruby
 class TestJob 
   include Chore::Job
-  queue_options :name => 'test_queue', :publisher => Chore::SQSPublisher, :timeout => 120
+  queue_options :name => 'test_queue', :publisher => Chore::Queues::SQS::Publisher, :timeout => 120
 
   def perform(*args)
     Chore.logger.debug "My first sync job"

@@ -1,11 +1,11 @@
 require 'spec_helper'
 
 module Chore
-  describe SQSPublisher do
+  describe Queues::SQS::Publisher do
     let(:job) { {'class' => 'TestJob', 'args'=>[1,2,'3']}}
     let(:queue_name) { 'test_queue' }
     let(:queue) { double('queue') }
-    let(:publisher) { SQSPublisher.new }
+    let(:publisher) { Queues::SQS::Publisher.new }
 
     before(:each) do
       AWS::SQS.stub(:new)

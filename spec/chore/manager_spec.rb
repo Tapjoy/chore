@@ -7,7 +7,7 @@ describe Chore::Manager do
   let(:opts) { { :num_workers => 4, :other_opt => 'hi', :fetcher => fetcher } }
 
   before(:each) do
-    Chore.configure {|c| c.fetcher = fetcher; c.worker_strategy = Chore::SingleWorkerStrategy }
+    Chore.configure {|c| c.fetcher = fetcher; c.worker_strategy = Chore::Strategy::SingleWorkerStrategy }
     fetcher.should_receive(:new).and_return(fetcher)
   end
 
@@ -27,7 +27,7 @@ describe Chore::Manager do
 
     describe 'assigning messages' do
       it 'should block if no workers are available' do
-        Chore::SingleWorkerStrategy.any_instance.should_receive(:assign).at_least(:once).and_return(false)
+        Chore::Strategy::SingleWorkerStrategy.any_instance.should_receive(:assign).at_least(:once).and_return(false)
         expect { 
           Timeout::timeout(0.3) do
             manager.assign(work)

@@ -3,9 +3,9 @@ require 'spec_helper'
 # This test is actually testing both the publisher and the consumer behavior but what we
 # really want to validate is that they can pass messages off to each other. Hard coding in
 # the behavior of each in two separate tests was becoming a mess and would be hard to maintain.
-describe Chore::FilesystemConsumer do
-  let(:consumer) { Chore::FilesystemConsumer.new(test_queue) }
-  let(:publisher) { Chore::FilesystemPublisher.new }
+describe Chore::Queues::Filesystem::Consumer do
+  let(:consumer) { Chore::Queues::Filesystem::Consumer.new(test_queue) }
+  let(:publisher) { Chore::Queues::Filesystem::Publisher.new }
   let(:test_queues_dir) { "test-queues" }
   let(:test_queue) { "test-queue" }
 

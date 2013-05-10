@@ -11,11 +11,11 @@ class TestConsumer < Chore::Consumer
   end
 end
 
-describe Chore::ThreadedConsumerStrategy do
+describe Chore::Strategy::ThreadedConsumerStrategy do
   let(:fetcher) { double("fetcher") }
   let(:manager) { double("manager") }
   let(:consumer) { TestConsumer }
-  let(:strategy) { Chore::ThreadedConsumerStrategy.new(fetcher) }
+  let(:strategy) { Chore::Strategy::ThreadedConsumerStrategy.new(fetcher) }
 
   before(:each) do
     fetcher.stub(:consumers) { [consumer] }
