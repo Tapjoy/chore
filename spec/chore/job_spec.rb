@@ -46,4 +46,24 @@ describe Chore::Job do
       TestJob.perform_async(*args)
     end
   end
+
+  describe 'publisher configured via config file' do
+    before do
+      Chore.configure do |c|
+        c.publisher = Chore::Publisher
+      end
+
+      class NoPublisherJob
+        include Chore::Job
+        queue_options :name => "test_queue"
+
+        def perform
+        end
+      end
+    end
+
+    it 'should have the default publisher' do
+      NoPublisherJob.options[:publisher].should == Chore::Publisher
+    end
+  end
 end

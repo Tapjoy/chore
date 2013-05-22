@@ -2,6 +2,8 @@ require 'chore/hooks'
 
 module Chore
   module Job
+    Chore::CLI.register_option 'publisher', '--publisher PUBLISHER', 'Set a global publisher to be used for all jobs'
+
     class RejectMessageException < Exception
       # Throw a RejectMessageException from your job to signal that the message should be rejected.
       # The semantics of +reject+ are queue implementation dependent.
@@ -24,11 +26,10 @@ module Chore
       
       #
       # Pass a hash of options to queue_options the included class's use of Chore::Job
-      # +opts+ has a couple of required options. 
+      # +opts+ has just the one required option. 
       # * +:name+: which should map to the name of the queue this job should be published to.
-      # * +:publisher+: the publisher to use for this job.
       def queue_options(opts = {})
-        @chore_options = (@chore_options || DEFAULT_OPTIONS).merge(opts)
+        @chore_options = (@chore_options || DEFAULT_OPTIONS).merge(opts_from_cli).merge(opts)
         required_options.each do |k|
           raise ArgumentError.new("#{self.to_s} :#{k} is a required option for Chore::Job") unless @chore_options[k]
         end
@@ -39,11 +40,15 @@ module Chore
       # queue_options params.
       #
       def required_options
-        [:name,:publisher]
+        [:name, :publisher]
       end
 
       def options #:nodoc:
         @chore_options ||= queue_options
+      end
+
+      def opts_from_cli
+        @from_cli ||= (Chore.config.marshal_dump.select {|k,v| required_options.include? k } || {})
       end
 
       #
