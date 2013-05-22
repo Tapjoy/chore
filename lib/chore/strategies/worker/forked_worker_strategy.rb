@@ -77,7 +77,7 @@ module Chore
       # that <tt>stop!</tt> is non-destructive in that it allow each worker to complete it's
       # current job before dying.
       def stop!
-        Chore.logger.info { "Worker #{Process.pid} stopping" }
+        Chore.logger.info { "Manager #{Process.pid} stopping" }
         begin
           signal_children("QUIT")
           Timeout::timeout(60) do

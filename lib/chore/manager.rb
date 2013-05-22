@@ -32,8 +32,8 @@ module Chore
         Chore.logger.info "Manager shutting down"
         @stopping = true
         Chore.run_hooks_for(:before_shutdown)
-        @worker_strategy.stop!
         @fetcher.stop!
+        @worker_strategy.stop!
       end
     end
 

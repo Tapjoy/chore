@@ -12,12 +12,13 @@ module Chore
         @mutex = Monitor.new
         @last_message = nil
         @callback = nil
+        @running = true
       end
 
       def schedule(batch_timeout=20)
-        Thread.new(batch_timeout) do |timeout|
+        @thread = Thread.new(batch_timeout) do |timeout|
           Chore.logger.info "Batching timeout thread starting"
-          loop do
+          while @running do
             begin 
               Chore.logger.debug "Last message added to batch: #{@last_message}: #{@batch.size}"
               if @last_message && Time.now > (@last_message + timeout)
@@ -49,6 +50,10 @@ module Chore
           @batch.clear
         end
       end
+
+      def stop
+        @running = false
+      end
     end
 
     class ThreadedConsumerStrategy
@@ -79,6 +84,7 @@ module Chore
       
       def stop!
         Chore.logger.info "Shutting down fetcher: #{self.class.name.to_s}"
+        @batcher.stop
         @running = false
       end
 
