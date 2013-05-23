@@ -2,8 +2,6 @@ require 'chore/hooks'
 
 module Chore
   module Job
-    Chore::CLI.register_option 'publisher', '--publisher PUBLISHER', 'Set a global publisher to be used for all jobs'
-
     class RejectMessageException < Exception
       # Throw a RejectMessageException from your job to signal that the message should be rejected.
       # The semantics of +reject+ are queue implementation dependent.

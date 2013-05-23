@@ -47,7 +47,7 @@ describe Chore::Job do
     end
   end
 
-  describe 'publisher configured via config file' do
+  describe 'publisher configured via Chore.configure' do
     before do
       Chore.configure do |c|
         c.publisher = Chore::Publisher
@@ -64,6 +64,17 @@ describe Chore::Job do
 
     it 'should have the default publisher' do
       NoPublisherJob.options[:publisher].should == Chore::Publisher
+    end
+
+    describe 'global publisher can be overridden' do
+      before do
+        TestJob.queue_options config.merge(:publisher => FakePublisher)
+      end
+
+      it 'should override publisher' do
+        TestJob.options[:publisher].should == FakePublisher
+        TestJob.options[:publisher].should_not == Chore::Publisher
+      end
     end
   end
 end
