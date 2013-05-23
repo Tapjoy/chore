@@ -92,6 +92,20 @@ end
 This job uses the included `Chore::Queues::SQS::Publisher` to remove the message from the queue once the job is completed.
 It also declares that the name of the queue it uses is `test_queue` and that it has a timeout of 120 seconds.
 
+
+If you wish to specify a global publisher for all of your job classes, you can add a configuration block to an initializer like so:
+
+```ruby
+Chore.configure do |c|
+  c.publisher = Some::Other::Publisher
+end
+```
+
+It is worth noting that any option that can be set via config file or command-line args can also be set in a configure block.
+
+If a global publisher is set, it can be overridden on a per-job basis by specifying the publisher in `queue_options`.
+
+
 ## Hooks
 
 A number of hooks, both global and per-job, exist in Chore for your convenience.

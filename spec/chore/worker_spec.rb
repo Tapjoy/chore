@@ -89,7 +89,7 @@ describe Chore::Worker do
   it 'should process after message hooks with success or failure' do
     Watcher::Publisher::Statsd.stub(:new)
     Chore.config.statsd = {}
-    Chore::Tapjoy::register_tapjoy_handlers!
+    Chore::Tapjoy::Monitoring.register_tapjoy_handlers!
     work = []
     work << Chore::UnitOfWork.new('1', Chore::JsonEncoder.encode(job), consumer)
     work << Chore::UnitOfWork.new('2', Chore::JsonEncoder.encode(breaking_job), consumer) 

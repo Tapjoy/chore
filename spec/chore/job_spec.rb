@@ -46,4 +46,35 @@ describe Chore::Job do
       TestJob.perform_async(*args)
     end
   end
+
+  describe 'publisher configured via Chore.configure' do
+    before do
+      Chore.configure do |c|
+        c.publisher = Chore::Publisher
+      end
+
+      class NoPublisherJob
+        include Chore::Job
+        queue_options :name => "test_queue"
+
+        def perform
+        end
+      end
+    end
+
+    it 'should have the default publisher' do
+      NoPublisherJob.options[:publisher].should == Chore::Publisher
+    end
+
+    describe 'global publisher can be overridden' do
+      before do
+        TestJob.queue_options config.merge(:publisher => FakePublisher)
+      end
+
+      it 'should override publisher' do
+        TestJob.options[:publisher].should == FakePublisher
+        TestJob.options[:publisher].should_not == Chore::Publisher
+      end
+    end
+  end
 end
