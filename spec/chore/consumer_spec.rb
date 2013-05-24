@@ -18,6 +18,10 @@ describe Chore::Consumer do
     consumer.should respond_to :complete
   end
 
+  it 'should have a class level reset_connection method' do
+    Chore::Consumer.should respond_to :reset_connection!
+  end
+
   it 'should not have an implemented consume method' do
     expect { consumer.consume }.to raise_error(NotImplementedError)
   end

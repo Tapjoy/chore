@@ -14,8 +14,8 @@ describe Chore::Queues::SQS::LockingConsumer do
   let(:enabled) { true }
 
   before do
-    AWS::SQS.should_receive(:new) { sqs }
-    sqs.should_receive(:queues).and_return { queues }
+    AWS::SQS.stub(:new) { sqs }
+    sqs.stub(:queues).and_return { queues }
     queues.stub(:named) { queue }
     queue.stub(:receive_message) { message }
     queue.stub(:visibility_timeout) { 10 }
