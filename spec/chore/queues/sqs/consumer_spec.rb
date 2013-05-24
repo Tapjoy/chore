@@ -9,7 +9,7 @@ describe Chore::Queues::SQS::Consumer do
   let(:message) { TestMessage.new("handle","message body") }
 
   before do
-    AWS::SQS.any_instance.should_receive(:queues).and_return { queues }
+    AWS::SQS.any_instance.stub(:queues).and_return { queues }
     queues.stub(:named) { queue }
     queue.stub(:receive_message) { message }
     queue.stub(:visibility_timeout) { 10 }
@@ -39,4 +39,5 @@ describe Chore::Queues::SQS::Consumer do
       expect {|b| consumer.consume(&b) }.not_to yield_control
     end
   end
+
 end
