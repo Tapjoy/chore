@@ -40,4 +40,16 @@ describe Chore::Queues::SQS::Consumer do
     end
   end
 
+  describe '#reset_connection!' do
+    it 'should reset the connection after a call to reset_connection!' do
+      sqs = consumer.send(:sqs)
+      Chore::Queues::SQS::Consumer.reset_connection!
+      sqs.should_not be consumer.send(:sqs)
+    end
+
+    it 'should not reset the connection between calls' do
+      sqs = consumer.send(:sqs)
+      sqs.should be consumer.send(:sqs)
+    end
+  end
 end

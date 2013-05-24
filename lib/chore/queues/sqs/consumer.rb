@@ -7,6 +7,9 @@ module Chore
   module Queues
     module SQS
       class Consumer < Chore::Consumer
+        # Initialize the reset at on class load
+        @@reset_at = Time.now
+
         Chore::CLI.register_option 'dedupe_servers', '--dedupe-servers SERVERS', 'List of mememcache compatible server(s) to use for storing SQS Message Dedupe cache'
 
         def initialize(queue_name, opts={})
