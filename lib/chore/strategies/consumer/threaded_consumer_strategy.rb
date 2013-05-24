@@ -46,7 +46,7 @@ module Chore
 
       def execute
         @mutex.synchronize do
-          @callback.call(@batch)
+          @callback.call(@batch) if @batch.size > 0 # this wouldn't seem to be necessary. but due to timing issues, this case can occur.
           @batch.clear
         end
       end
