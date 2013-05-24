@@ -141,6 +141,10 @@ module Chore
       def after_fork(worker)
         clear_child_signals
         trap_child_signals(worker)
+        
+        # When we fork, the consumer's need their connections reset. The specifics of this
+        # are queue dependent, and may result in a noop.
+        Chore.config.consumer.reset_connection!
 
         # Replace the stats instance in the child with one that can handle talking over
         # the pipe

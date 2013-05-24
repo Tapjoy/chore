@@ -11,11 +11,10 @@ module Chore
 
         def initialize(queue_name, opts={})
           super(queue_name, opts)
-          @sqs = AWS::SQS.new(
-            :access_key_id => Chore.config.aws_access_key,
-            :secret_access_key => Chore.config.aws_secret_key)
-          @queue = @sqs.queues.named(@queue_name)
-          @dupes = DuplicateDetector.new(Chore.config.dedupe_servers || nil)
+        end
+
+        def self.reset_connection!
+          @@reset_at = Time.now
         end
 
         def consume(&handler)
@@ -34,13 +33,13 @@ module Chore
 
         def complete(id)
           Chore.logger.debug "Completing (deleting): #{id}"
-          @queue.batch_delete([id])
+          queue.batch_delete([id])
         end
 
         private
 
         def handle_messages(&block)
-          msg = @queue.receive_messages(:limit => 10)
+          msg = queue.receive_messages(:limit => 10)
 
           messages = *msg
           messages.each do |message|
@@ -50,8 +49,28 @@ module Chore
         end
 
         def duplicate_message?(message)
-          @dupes.found_duplicate?(message)
+          dupe_detector.found_duplicate?(message)
         end
+
+        def dupe_detector
+          @dupes ||= DuplicateDetector.new(Chore.config.dedupe_servers || nil)
+        end
+
+        def queue
+          @queue ||= sqs.queues.named(@queue_name)
+        end
+
+        def sqs
+          if !@sqs_last_connected || (@@reset_at && @@reset_at >= @sqs_last_connected)
+            @sqs = AWS::SQS.new(
+              :access_key_id => Chore.config.aws_access_key,
+              :secret_access_key => Chore.config.aws_secret_key)
+            @sqs_last_connected = Time.now
+            @queue = nil
+          end
+          @sqs
+        end
+
       end
     end
   end
