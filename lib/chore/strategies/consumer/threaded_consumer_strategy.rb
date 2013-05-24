@@ -75,7 +75,9 @@ module Chore
         threads = []
         Chore.config.queues.each do |queue|
           Chore.config.threads_per_queue.times do 
-            threads << start_consumer_thread(queue)
+            if running?
+              threads << start_consumer_thread(queue)
+            end
           end
         end
 
@@ -107,6 +109,9 @@ module Chore
               work = UnitOfWork.new(id, body, consumer)
               @batcher.add(work)
             end
+          rescue AWS::SQS::Errors::NonExistentQueue => e
+            Chore.logger.error "You specified a queue that does not exist. You must create the queue before starting Chore. Shutting down..."
+            @fetcher.manager.shutdown!
           rescue => e
             Chore.logger.error "ThreadedConsumerStrategy#consumer thread raised an exception: #{e.inspect} at #{e.backtrace}"
           end

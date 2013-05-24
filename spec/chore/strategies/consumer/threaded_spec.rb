@@ -11,6 +11,15 @@ class TestConsumer < Chore::Consumer
   end
 end
 
+class NoQueueConsumer < Chore::Consumer
+  def initialize(queue_name, opts={})
+    raise AWS::SQS::Errors::NonExistentQueue
+  end
+
+  def consume
+  end
+end
+
 describe Chore::Strategy::ThreadedConsumerStrategy do
   let(:fetcher) { double("fetcher") }
   let(:manager) { double("manager") }
@@ -60,6 +69,28 @@ describe Chore::Strategy::ThreadedConsumerStrategy do
     it "should spawn two threads" do
       # two for threads per queue and one for batcher#schedule
       Thread.should_receive(:new).exactly(3).times { thread }
+      strategy.fetch
+    end
+  end
+
+  describe "non-existent queue" do
+    let(:bad_consumer) { NoQueueConsumer }
+    let(:fetcher) { double("fetcher") }
+    let(:strategy) { Chore::Strategy::ThreadedConsumerStrategy.new(fetcher) }
+    let(:batch_size) { 2 }
+
+    before do
+      fetcher.stub(:consumers) { [bad_consumer] }
+      Chore.configure do |c| 
+        c.queues = ['test'] 
+        c.consumer = bad_consumer
+        c.batch_size = batch_size
+        c.threads_per_queue = 1
+      end
+    end
+
+    it "should shut down when a queue doesn't exist" do
+      manager.should_receive(:shutdown!)
       strategy.fetch
     end
   end
