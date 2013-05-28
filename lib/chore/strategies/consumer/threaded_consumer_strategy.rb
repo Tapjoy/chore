@@ -111,6 +111,7 @@ module Chore
             end
           rescue AWS::SQS::Errors::NonExistentQueue => e
             Chore.logger.error "You specified a queue that does not exist. You must create the queue before starting Chore. Shutting down..."
+            self.stop!
             @fetcher.manager.shutdown!
           rescue => e
             Chore.logger.error "ThreadedConsumerStrategy#consumer thread raised an exception: #{e.inspect} at #{e.backtrace}"
