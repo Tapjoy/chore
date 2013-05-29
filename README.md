@@ -92,6 +92,11 @@ end
 This job uses the included `Chore::Queues::SQS::Publisher` to remove the message from the queue once the job is completed.
 It also declares that the name of the queue it uses is `test_queue` and that it has a timeout of 120 seconds.
 
+Now that you've got a test job, if you wanted to publish to that job it's as simple as:
+```ruby
+TestJob.perform_async("YES, DO THAT THING.")
+```
+
 
 If you wish to specify a global publisher for all of your job classes, you can add a configuration block to an initializer like so:
 
