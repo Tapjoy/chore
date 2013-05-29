@@ -1,4 +1,8 @@
 module Chore
+  class TerribleMistake < Exception
+    # You can raise this exception if your queue is in a terrible state and must shut down
+  end
+
   class Consumer
 
     attr_accessor :queue_name

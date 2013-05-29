@@ -24,6 +24,9 @@ module Chore
           while running?
             begin
               handle_messages(&handler)
+            rescue AWS::SQS::Errors::NonExistentQueue => e
+              Chore.logger.error "You specified a queue that does not exist. You must create the queue before starting Chore. Shutting down..."
+              raise Chore::TerribleMistake  
             rescue => e
               Chore.logger.error { "SQSConsumer#Consume: #{e.inspect}" }
             end

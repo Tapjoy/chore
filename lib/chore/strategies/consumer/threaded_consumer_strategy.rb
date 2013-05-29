@@ -85,9 +85,11 @@ module Chore
       end
       
       def stop!
-        Chore.logger.info "Shutting down fetcher: #{self.class.name.to_s}"
-        @batcher.stop
-        @running = false
+        if running?
+          Chore.logger.info "Shutting down fetcher: #{self.class.name.to_s}"
+          @batcher.stop
+          @running = false
+        end
       end
 
       def running?
@@ -109,8 +111,8 @@ module Chore
               work = UnitOfWork.new(id, body, consumer)
               @batcher.add(work)
             end
-          rescue AWS::SQS::Errors::NonExistentQueue => e
-            Chore.logger.error "You specified a queue that does not exist. You must create the queue before starting Chore. Shutting down..."
+          rescue Chore::TerribleMistake
+            Chore.logger.error "I've made a terrible mistake... shutting down Chore"
             self.stop!
             @fetcher.manager.shutdown!
           rescue => e
