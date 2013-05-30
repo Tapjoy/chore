@@ -75,7 +75,9 @@ module Chore
         threads = []
         Chore.config.queues.each do |queue|
           Chore.config.threads_per_queue.times do 
-            threads << start_consumer_thread(queue)
+            if running?
+              threads << start_consumer_thread(queue)
+            end
           end
         end
 
@@ -83,9 +85,11 @@ module Chore
       end
       
       def stop!
-        Chore.logger.info "Shutting down fetcher: #{self.class.name.to_s}"
-        @batcher.stop
-        @running = false
+        if running?
+          Chore.logger.info "Shutting down fetcher: #{self.class.name.to_s}"
+          @batcher.stop
+          @running = false
+        end
       end
 
       def running?
@@ -107,6 +111,10 @@ module Chore
               work = UnitOfWork.new(id, body, consumer)
               @batcher.add(work)
             end
+          rescue Chore::TerribleMistake
+            Chore.logger.error "I've made a terrible mistake... shutting down Chore"
+            self.stop!
+            @fetcher.manager.shutdown!
           rescue => e
             Chore.logger.error "ThreadedConsumerStrategy#consumer thread raised an exception: #{e.inspect} at #{e.backtrace}"
           end
