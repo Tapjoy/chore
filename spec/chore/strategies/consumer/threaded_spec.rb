@@ -13,7 +13,7 @@ end
 
 class NoQueueConsumer < Chore::Consumer
   def initialize(queue_name, opts={})
-    raise AWS::SQS::Errors::NonExistentQueue
+    raise Chore::TerribleMistake
   end
 
   def consume
