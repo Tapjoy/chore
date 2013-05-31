@@ -13,7 +13,7 @@ Chore can be integrated with any Ruby-based project by following these instructi
 
 Add the chore gem to your gemfile and run `bundle install` (at some point we'll have a proper gem release):
 
-    gem 'chore', :git => 'git://github.com/Tapjoy/chore.git'
+    gem 'chore', :git => 'git@github.com:Tapjoy/chore.git'
 
 If you also plan on using SQS, you must also bring in dalli to use for memcached:
 
