@@ -18,6 +18,8 @@ module Chore
       # creating failure handling and retrying. 
       class Consumer < Chore::Consumer
         include FilesystemQueue
+
+        Chore::CLI.register_option 'fs_queue_root', '--fs-queue-root DIRECTORY', 'Root directory for fs based queue'
         
         FILE_QUEUE_MUTEXES = {}
         

@@ -80,6 +80,10 @@ module Chore
       end
       validate!
       boot_system
+      parse_opts(args)
+      if @options[:config_file] 
+        parse_config_file(@options[:config_file])
+      end
       detect_queues
       Chore.configure(options)
     end
@@ -111,16 +115,6 @@ module Chore
 
       register_option 'stats_port', '-p', '--stats-port PORT', 'Port to run the stats HTTP server on'
 
-      register_option 'aws_access_key', '--aws-access-key KEY', 'Valid AWS Access Key'
-
-      register_option 'aws_secret_key', '--aws-secret-key KEY', 'Valid AWS Secret Key'
-
-      # TODO wanted to define this in Chore::FilesystemConsumer but since its not the default
-      # consumer its only loaded once we start parsing args and I think its too late to register
-      # more at that point.
-      # https://github.com/Tapjoy/chore/issues/31
-      register_option 'fs_queue_root', '--fs-queue-root DIRECTORY', 'Root directory for fs based queue'
-      
       register_option 'num_workers', '--concurrency NUM', Integer, 'Number of workers to run concurrently'
 
       register_option 'worker_strategy', '--worker-strategy CLASS_NAME', 'Name of a class to use as the worker strategy (default: ForkedWorkerStrategy' do |arg|
@@ -159,16 +153,10 @@ module Chore
       end
 
       @parser.parse!(argv)
-      env_overrides
 
       @options
     end
 
-
-    def env_overrides
-      @options[:aws_access_key] ||= ENV['AWS_ACCESS_KEY']
-      @options[:aws_secret_key] ||= ENV['AWS_SECRET_KEY']
-    end
 
     def detected_environment
       options[:environment] ||= ENV['RAILS_ENV'] || ENV['RACK_ENV'] || 'development'
@@ -213,8 +201,6 @@ module Chore
     def validate!
 
       missing_option!("--require [PATH|DIR]") unless options[:require]
-      missing_option!("--aws-access-key KEY") unless options[:aws_access_key]
-      missing_option!("--aws-secret-key KEY") unless options[:aws_secret_key]
 
       if !File.exist?(options[:require]) ||
          (File.directory?(options[:require]) && !File.exist?("#{options[:require]}/config/application.rb"))
