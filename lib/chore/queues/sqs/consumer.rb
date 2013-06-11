@@ -10,6 +10,8 @@ module Chore
         # Initialize the reset at on class load
         @@reset_at = Time.now
 
+        Chore::CLI.register_option 'aws_access_key', '--aws-access-key KEY', 'Valid AWS Access Key'
+        Chore::CLI.register_option 'aws_secret_key', '--aws-secret-key KEY', 'Valid AWS Secret Key'
         Chore::CLI.register_option 'dedupe_servers', '--dedupe-servers SERVERS', 'List of mememcache compatible server(s) to use for storing SQS Message Dedupe cache'
 
         def initialize(queue_name, opts={})
