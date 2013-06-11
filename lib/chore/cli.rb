@@ -74,16 +74,17 @@ module Chore
     def parse(args=ARGV) #:nodoc:#
       Chore.logger.level = Logger::WARN
       setup_options
+      
+      # parse once to load the config file & require options
       parse_opts(args)
-      if @options[:config_file] 
-        parse_config_file(@options[:config_file])
-      end
+      parse_config_file(@options[:config_file]) if @options[:config_file]
+
       validate!
       boot_system
+      
+      # parse again to pick up options required by loaded classes
       parse_opts(args)
-      if @options[:config_file] 
-        parse_config_file(@options[:config_file])
-      end
+      parse_config_file(@options[:config_file]) if @options[:config_file]
       detect_queues
       Chore.configure(options)
     end
