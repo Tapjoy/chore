@@ -11,15 +11,6 @@ class SimpleJob
   end
 end
 
-class TimeoutJob
-  include Chore::Job
-  queue_options :name => 'test', :publisher => FakePublisher, :timeout => 0.1
-
-  def perform(*args)
-    sleep(0.2)
-  end
-end
-
 class BreakingJob
   include Chore::Job
   queue_options :name => 'test', :publisher => FakePublisher
@@ -42,7 +33,6 @@ describe Chore::Worker do
   let(:consumer) { double('consumer') }
   let(:job_args) { [1,2,'3'] }
   let(:job) { SimpleJob.job_hash(job_args) }
-  let(:timeout_job) { TimeoutJob.job_hash(job_args) }
   let(:breaking_job) { BreakingJob.job_hash(job_args) }
   let(:rejected_job) { RejectedJob.job_hash(job_args) }
   let(:metric) { double('metric') }
@@ -78,14 +68,6 @@ describe Chore::Worker do
     Chore::Worker.start(work)
   end
 
-  it 'should timeout a job that runs too long' do
-    work = [Chore::UnitOfWork.new(1, Chore::JsonEncoder.encode(timeout_job), consumer)]
-    consumer.should_not_receive(:complete)
-    Chore.should_receive(:hooks_for).with(:before_perform) { [] }
-    Chore.should_receive(:hooks_for).with(:on_timeout) { [] }
-    Chore::Worker.start(work)
-  end
-
   it 'should process after message hooks with success or failure' do
     Watcher::Publisher::Statsd.stub(:new)
     Chore.config.statsd = {}
@@ -93,13 +75,11 @@ describe Chore::Worker do
     work = []
     work << Chore::UnitOfWork.new('1', Chore::JsonEncoder.encode(job), consumer)
     work << Chore::UnitOfWork.new('2', Chore::JsonEncoder.encode(breaking_job), consumer) 
-    work << Chore::UnitOfWork.new('3', Chore::JsonEncoder.encode(timeout_job), consumer) 
     work << Chore::UnitOfWork.new('4', Chore::JsonEncoder.encode(rejected_job), consumer) 
     consumer.should_receive(:complete).with('1')
     consumer.should_receive(:reject).with('4')
     Watcher::Metric.should_receive(:new).with("finished", attributes: { state: "completed", queue: "SimpleJob" }) { metric }
     Watcher::Metric.should_receive(:new).with("finished", attributes: { state: "failed", queue: "BreakingJob" }) { metric }
-    Watcher::Metric.should_receive(:new).with("finished", attributes: { state: "timeout", queue: "TimeoutJob" }) { metric }
     Watcher::Metric.should_receive(:new).with("finished", attributes: { state: "rejected", queue: "RejectedJob" }) { metric }
     Chore::Worker.start(work)
   end

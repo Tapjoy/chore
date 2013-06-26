@@ -19,8 +19,7 @@ module Chore
     end
 
     module ClassMethods
-      # Default options for all jobs. +:timeout+ => 120
-      DEFAULT_OPTIONS = { :timeout => 120 }
+      DEFAULT_OPTIONS = { }
       
       #
       # Pass a hash of options to queue_options the included class's use of Chore::Job

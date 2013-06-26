@@ -80,7 +80,7 @@ A Chore::Job is any class that includes `Chore::Job` and implements `perform(*ar
 ```ruby
 class TestJob 
   include Chore::Job
-  queue_options :name => 'test_queue', :publisher => Chore::Queues::SQS::Publisher, :timeout => 120
+  queue_options :name => 'test_queue', :publisher => Chore::Queues::SQS::Publisher
 
   def perform(*args)
     Chore.logger.debug "My first async job"
@@ -90,7 +90,7 @@ end
 ```
 
 This job uses the included `Chore::Queues::SQS::Publisher` to remove the message from the queue once the job is completed.
-It also declares that the name of the queue it uses is `test_queue` and that it has a timeout of 120 seconds.
+It also declares that the name of the queue it uses is `test_queue` seconds.
 
 Now that you've got a test job, if you wanted to publish to that job it's as simple as:
 ```ruby
@@ -136,7 +136,6 @@ Per Job:
 * before_perform(message)
 * after_perform(message)
 * on_rejected(message)
-* on_timeout(message)
 * on_failure(message, error)
 
 All per-job hooks can also be global hooks.
@@ -146,16 +145,11 @@ Hooks can be added to a job class as so:
 ```ruby
 class TestJob 
   include Chore::Job
-  queue_options :name => 'test_queue', :publisher => Chore::Queues::SQS::Publisher, :timeout => 120
+  queue_options :name => 'test_queue', :publisher => Chore::Queues::SQS::Publisher
 
   def perform(*args)
     Chore.logger.debug "My first sync job"
   end
-
-  def on_timeout(msg)
-    # your special timeout code here
-  end
-
 end
 ```
 Global hooks can also be registered like so:
