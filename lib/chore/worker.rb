@@ -74,9 +74,7 @@ module Chore
 
   private
     def perform_job(item,klass, message)
-      Timeout::timeout(klass.options[:timeout]) do
-        klass.perform(*message['args'])
-      end
+      klass.perform(*message['args'])
       item.consumer.complete(item.id)
       klass.run_hooks_for(:after_perform,message)
       Chore.stats.add(:completed,message['class'])
@@ -85,10 +83,6 @@ module Chore
       Chore.logger.error { "Failed to run job #{item.inspect} with error: Job raised a RejectMessageException" }
       klass.run_hooks_for(:on_rejected, message)
       Chore.stats.add(:rejected,message['class'])
-    rescue Timeout::Error
-      Chore.logger.error { "Failed to run job #{item.inspect} with error: Job Timeout reached" }
-      klass.run_hooks_for(:on_timeout, message)
-      Chore.stats.add(:timeout,message['class'])
     rescue => e
       Chore.logger.error { "Failed to run job #{item.inspect} with error: #{e.message} at #{e.backtrace * "\n"}" }
       klass.run_hooks_for(:on_failure,message,e)

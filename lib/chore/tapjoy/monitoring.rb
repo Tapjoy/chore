@@ -16,9 +16,6 @@ module Chore
         Chore.add_hook :on_failure do |message|
           after_message.call "failed", message['class']
         end
-        Chore.add_hook :on_timeout do |message|
-          after_message.call "timeout", message['class']
-        end
         Chore.add_hook :on_rejected do |message| 
           after_message.call "rejected", message['class']
         end
