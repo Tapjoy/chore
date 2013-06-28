@@ -141,6 +141,10 @@ module Chore
       def after_fork(worker)
         clear_child_signals
         trap_child_signals(worker)
+
+        # We need to reset the logger after fork. This fixes a longstanding bug
+        # where workers would hang around and never die
+        Chore.logger = Logger.new(STDOUT)
         
         # When we fork, the consumer's need their connections reset. The specifics of this
         # are queue dependent, and may result in a noop.
