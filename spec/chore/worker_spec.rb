@@ -68,20 +68,36 @@ describe Chore::Worker do
     Chore::Worker.start(work)
   end
 
-  it 'should process after message hooks with success or failure' do
-    Watcher::Publisher::Statsd.stub(:new)
-    Chore.config.statsd = {}
-    Chore::Tapjoy::Monitoring.register_tapjoy_handlers!
-    work = []
-    work << Chore::UnitOfWork.new('1', Chore::JsonEncoder.encode(job), consumer)
-    work << Chore::UnitOfWork.new('2', Chore::JsonEncoder.encode(breaking_job), consumer) 
-    work << Chore::UnitOfWork.new('4', Chore::JsonEncoder.encode(rejected_job), consumer) 
-    consumer.should_receive(:complete).with('1')
-    consumer.should_receive(:reject).with('4')
-    Watcher::Metric.should_receive(:new).with("finished", attributes: hash_including( state: "completed", queue: "SimpleJob" )) { metric }
-    Watcher::Metric.should_receive(:new).with("finished", attributes: hash_including( state: "failed", queue: "BreakingJob" )) { metric }
-    Watcher::Metric.should_receive(:new).with("finished", attributes: hash_including( state: "rejected", queue: "RejectedJob" )) { metric }
-    Chore::Worker.start(work)
+  context 'when configured for Watcher integration' do
+    before :all do
+      Watcher::Publisher::Statsd.stub(:new)
+      Chore.config.statsd = {:defaults => {:bloo=>"blah"}}
+    end
+
+    before :each do
+      Chore::Tapjoy::Monitoring.register_tapjoy_handlers!
+    end
+
+    it 'should add default metric values to metrics' do
+      work = []
+      work << Chore::UnitOfWork.new('1', Chore::JsonEncoder.encode(job), consumer)
+      consumer.should_receive(:complete).with('1')
+      Watcher::Metric.should_receive(:new).with("finished", attributes: hash_including( bloo: "blah", state: "completed", queue: "SimpleJob" )) { metric }
+      Chore::Worker.start(work)
+    end
+
+    it 'should process after message hooks with success or failure' do
+      work = []
+      work << Chore::UnitOfWork.new('1', Chore::JsonEncoder.encode(job), consumer)
+      work << Chore::UnitOfWork.new('2', Chore::JsonEncoder.encode(breaking_job), consumer) 
+      work << Chore::UnitOfWork.new('4', Chore::JsonEncoder.encode(rejected_job), consumer) 
+      consumer.should_receive(:complete).with('1')
+      consumer.should_receive(:reject).with('4')
+      Watcher::Metric.should_receive(:new).with("finished", attributes: hash_including( state: "completed", queue: "SimpleJob" )) { metric }
+      Watcher::Metric.should_receive(:new).with("finished", attributes: hash_including( state: "failed", queue: "BreakingJob" )) { metric }
+      Watcher::Metric.should_receive(:new).with("finished", attributes: hash_including( state: "rejected", queue: "RejectedJob" )) { metric }
+      Chore::Worker.start(work)
+    end
   end
 
   it 'should set the status to the current running job' do
