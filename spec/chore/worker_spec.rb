@@ -71,7 +71,7 @@ describe Chore::Worker do
   context 'when configured for Watcher integration' do
     before :all do
       Watcher::Publisher::Statsd.stub(:new)
-      Chore.config.statsd = {:defaults => {:bloo=>"blah"}}
+      Chore.config.statsd = {:default_attributes => {:bloo=>"blah"}}
     end
 
     before :each do

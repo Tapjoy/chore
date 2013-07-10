@@ -7,10 +7,10 @@ module Chore
       def self.register_tapjoy_handlers!
         Watcher::Metric.publisher = Watcher::Publisher::Statsd.new(Chore.config.statsd[:host], Chore.config.statsd[:port])
         Watcher::Metric.default_scope = "stats"
-        metric_defaults = Chore.config.statsd[:defaults] || {}
+        default_attributes = Chore.config.statsd[:default_attributes] || {}
 
         after_message = Proc.new do |state, queue|
-          metric = Watcher::Metric.new("finished", attributes: metric_defaults.merge({ state: state, queue: queue }))
+          metric = Watcher::Metric.new("finished", attributes: default_attributes.merge({ state: state, queue: queue }))
           metric.increment
         end
 
@@ -25,7 +25,7 @@ module Chore
         end
 
         Chore.add_hook :on_fetch do |handle, body| 
-          metric = Watcher::Metric.new("fetch", attributes: metric_defaults.merge({ state: "fetched", queue: body['class'] }))
+          metric = Watcher::Metric.new("fetch", attributes: default_attributes.merge({ state: "fetched", queue: body['class'] }))
           metric.increment
         end
       end
