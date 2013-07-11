@@ -1,7 +1,8 @@
 require 'aws/sqs'
 require 'chore/duplicate_detector'
 
-AWS.eager_autoload!
+AWS.eager_autoload! AWS::Core
+AWS.eager_autoload! AWS::SQS
 
 module Chore
   module Queues
