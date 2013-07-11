@@ -6,14 +6,15 @@ module Chore
     class Monitoring
       def self.register_tapjoy_handlers!
         Watcher::Metric.publisher = Watcher::Publisher::Statsd.new(Chore.config.statsd[:host], Chore.config.statsd[:port])
-        Watcher::Metric.default_scope = "jobs"
+        Watcher::Metric.default_scope = "stats"
+        default_attributes = Chore.config.statsd[:default_attributes] || {}
 
         after_message = Proc.new do |state, queue|
-          metric = Watcher::Metric.new("finished", attributes: { :state => state, :queue => queue })
+          metric = Watcher::Metric.new("finished", attributes: default_attributes.merge({ stat: "chore", state: state, queue: queue }))
           metric.increment
         end
 
-        Chore.add_hook :on_failure do |message|
+        Chore.add_hook :on_failure do |message, error|
           after_message.call "failed", message['class']
         end
         Chore.add_hook :on_rejected do |message| 
@@ -24,7 +25,7 @@ module Chore
         end
 
         Chore.add_hook :on_fetch do |handle, body| 
-          metric = Watcher::Metric.new("fetch")
+          metric = Watcher::Metric.new("fetch", attributes: default_attributes.merge({ stat: "chore", state: "fetched", queue: body['class'] }))
           metric.increment
         end
       end
