@@ -42,6 +42,7 @@ Other options include:
     --fetcher-strategy Chore::ThreadedConsumerStrategy # fetching strategy class, are you seeing a theme here?
     --batch-size 50 # how many messages are batched together before handing them to a worker
     --threads-per-queue 4 # number of threads per queue for fetching from queue
+    --queue_prefix prefixy # A prefix to prepend to queue names, mainly for development and qa testing purposes
 
 By default, Chore will run over all queues it detects among the required files. If you wish to change this behavior, you can use:
 
