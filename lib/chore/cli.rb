@@ -72,6 +72,7 @@ module Chore
     end
 
     def parse(args=ARGV) #:nodoc:#
+      Chore.configuring = true
       Chore.logger.level = Logger::WARN
       setup_options
       
@@ -87,6 +88,7 @@ module Chore
       parse_config_file(@options[:config_file]) if @options[:config_file]
       detect_queues
       Chore.configure(options)
+      Chore.configuring = false
     end
 
 
