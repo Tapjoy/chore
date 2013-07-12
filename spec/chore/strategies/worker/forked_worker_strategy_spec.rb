@@ -65,7 +65,6 @@ module Chore
 
       context '#after_fork' do
         let(:worker) { double('worker') }
-        before(:all) { @stats = Chore.stats }
 
         it 'should clear signals' do
           forker.should_receive(:clear_child_signals)
@@ -73,46 +72,6 @@ module Chore
           forker.send(:after_fork,worker)
         end
 
-        it 'should reset Chore.stats' do
-          forker.send(:after_fork,worker)
-          Chore.stats.should be_kind_of(PipedStats)
-        end
-
-        it "should replace the worker's status= method" do
-          worker.methods.find {|m| m.to_s == 'status='}.should be_nil
-          forker.send(:after_fork,worker)
-          worker.methods.find {|m| m.to_s == 'status='}.should_not be_nil
-        end
-
-        after(:all) { Chore.stats = @stats }
-      end
-    end
-
-    describe WorkerListener do
-      let(:parent) { double('parent').as_null_object }
-      let(:worker) { double('worker').as_null_object }
-      let(:listener) { WorkerListener.new(parent,1) }
-
-      context 'stat payloads' do
-        let(:entry) { StatEntry.new(:test,nil) }
-        let(:event) { :completed }
-        let(:payload) { Marshal.dump({'type'=>'stat','value'=>[event,entry]}) }
-
-        it 'should add to the stats when given a valid payload' do
-          Chore.stats.should_receive(:add).with(event,kind_of(StatEntry))
-          listener.handle_payload(payload)
-        end
-      end
-
-      context 'status payloads' do
-        let(:id) { Random.rand(2048) }
-        let(:status) { 'some-status'}
-        let(:payload) { Marshal.dump({'type'=>'status','value'=>{'id'=>id,'status'=>status }})}
-        it 'should attempt to set the status on the parent when receiving a status object' do
-          worker.should_receive(:status=).with(status)
-          parent.workers.should_receive(:[]).with(id).and_return(worker)
-          listener.handle_payload(payload)
-        end
       end
     end
   end

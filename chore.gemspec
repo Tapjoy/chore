@@ -38,7 +38,6 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency(%q<json>, [">= 0"])
   s.add_runtime_dependency(%q<aws-sdk>, ["~> 1.11.1"])
-  s.add_runtime_dependency(%q<rack>, [">= 0"])
   s.add_runtime_dependency(%q<zk>, [">= 0"])
   s.add_development_dependency(%q<rspec>, ["~> 2.12.0"])
   s.add_development_dependency(%q<rdoc>, ["~> 3.12"])
