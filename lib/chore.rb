@@ -127,4 +127,14 @@ module Chore
     @config ||= self.configure
   end
 
+  #
+  # Helper flag for rails/web app chore initializers to use so that chore does not re-load itself during requirement loading
+  #
+  def self.configuring?
+    @configuring ||= false
+  end
+
+  def self.configuring=(value)
+    @configuring = value
+  end
 end
