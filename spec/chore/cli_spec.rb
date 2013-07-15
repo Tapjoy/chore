@@ -5,6 +5,13 @@ class TestJob2
 end
 
 describe Chore::CLI do
+
+  after :all do
+    #This is here because the CLI specs mess with config and cause problems for some of the job specs...
+    #Proper solution incoming
+    Chore::CLI.instance.parse([])
+  end
+
   it 'should allow configuration options to be registered externally' do
     args = ['some','args']
     Chore::CLI.register_option('option_name',*args)
@@ -53,6 +60,11 @@ describe Chore::CLI do
     it 'should honor --except when processing all queues' do
       cli.parse(['--except=test_queue'])
       Chore.config.queues.should_not include('test_queue')
+    end
+
+    it 'should honor --queue-prefix when processing all queues' do
+      cli.parse(['--queue-prefix=prefixey'])
+      Chore.config.queues.should include('prefixey_test')
     end
 
     it 'should raise an exception if both --queues and --except are specified' do
