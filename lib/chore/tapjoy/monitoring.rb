@@ -9,24 +9,27 @@ module Chore
         Watcher::Metric.default_scope = "stats"
         default_attributes = Chore.config.statsd[:default_attributes] || {}
 
-        after_message = Proc.new do |state, queue|
-          metric = Watcher::Metric.new("finished", attributes: default_attributes.merge({ stat: "chore", state: state, queue: queue }))
+        on_message = Proc.new do |name, state, queue|
+          metric = Watcher::Metric.new(name, attributes: default_attributes.merge({ stat: "chore", state: state, queue: queue }))
           metric.increment
         end
 
         Chore.add_hook :on_failure do |message, error|
-          after_message.call "failed", message['class']
+          on_message.call "finish", "failed", message['class']
         end
         Chore.add_hook :on_rejected do |message| 
-          after_message.call "rejected", message['class']
+          on_message.call "finish", "rejected", message['class']
         end
         Chore.add_hook :after_perform do |message|
-          after_message.call "completed", message['class']
+          on_message.call "finish", "completed", message['class']
         end
 
         Chore.add_hook :on_fetch do |handle, body| 
-          metric = Watcher::Metric.new("fetch", attributes: default_attributes.merge({ stat: "chore", state: "fetched", queue: body['class'] }))
-          metric.increment
+          on_message.call "fetch", "fetched", body['class']
+        end
+
+        Chore.add_hook :before_perform do |message|
+          on_message.call "start", "started", message['class']
         end
       end
     end
