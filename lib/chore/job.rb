@@ -74,6 +74,10 @@ module Chore
       def job_hash(job_params)
         {:class => self.to_s, :args => job_params}
       end
+
+      def prefixed_queue_name
+        "#{Chore.config.queue_prefix}#{self.options[:name]}"
+      end
     end #ClassMethods
 
     # This is handy to override in an included job to be able to do job setup that requires
@@ -95,7 +99,7 @@ module Chore
     def perform_async(*args)
       self.class.run_hooks_for(:before_publish,*args)
       @chore_publisher ||= self.class.options[:publisher]
-      @chore_publisher.publish(self.class.options[:name],self.class.job_hash(args))
+      @chore_publisher.publish(self.class.prefixed_queue_name,self.class.job_hash(args))
       self.class.run_hooks_for(:after_publish,*args)
     end
 

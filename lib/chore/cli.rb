@@ -113,6 +113,10 @@ module Chore
 
       register_option 'num_workers', '--concurrency NUM', Integer, 'Number of workers to run concurrently'
 
+      register_option 'queue_prefix', '--queue-prefix PREFIX', "Prefix to use on Queue names to prevent non-determinism in testing environments" do |arg|
+        options[:queue_prefix] = arg.downcase << "_"
+      end
+
       register_option 'worker_strategy', '--worker-strategy CLASS_NAME', 'Name of a class to use as the worker strategy (default: ForkedWorkerStrategy' do |arg|
         options[:worker_strategy] = constantize(arg)
       end
@@ -181,8 +185,8 @@ module Chore
         options[:queues] = Set.new
         Chore::Job.job_classes.each do |j|
           klazz = constantize(j)
-          options[:queues] << klazz.options[:name] if klazz.options[:name]
-          options[:queues] -= (options[:except_queues] || [])
+          options[:queues] << "#{options[:queue_prefix]}#{klazz.options[:name]}" if klazz.options[:name]
+          options[:queues] -= ((options[:except_queues] || []).map {|entry| "#{options[:queue_prefix]}#{entry}"} || [])
         end
       end
 
