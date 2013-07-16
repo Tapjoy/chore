@@ -10,7 +10,10 @@ module Chore
         default_attributes = Chore.config.statsd[:default_attributes] || {}
 
         on_message = Proc.new do |name, state, queue|
-          metric = Watcher::Metric.new(name, attributes: default_attributes.merge({ stat: "chore", state: state, queue: queue }))
+          attributes = default_attributes.merge({ stat: "chore", state: state }).tap do |hsh|
+            hsh[:queue] = queue if queue
+          end
+          metric = Watcher::Metric.new(name, attributes: attributes)
           metric.increment
         end
 
@@ -25,7 +28,8 @@ module Chore
         end
 
         Chore.add_hook :on_fetch do |handle, body| 
-          on_message.call "fetch", "fetched", body['class']
+          #We currently cannot / do not report queue name on fetch
+          on_message.call "fetch", "fetched", nil
         end
 
         Chore.add_hook :before_perform do |message|
