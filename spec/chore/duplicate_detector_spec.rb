@@ -34,4 +34,10 @@ describe Chore::DuplicateDetector do
     dedupe.found_duplicate?(message).should be_false
   end
 
+  it "should call #visibility_timeout once and only once" do
+    queue.should_receive(:visibility_timeout).once
+    memcache.should_receive(:add).at_least(3).times.and_return(true)
+    3.times { dedupe.found_duplicate?(message) }
+  end
+
 end
