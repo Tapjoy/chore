@@ -6,12 +6,6 @@ end
 
 describe Chore::CLI do
 
-  after :all do
-    #This is here because the CLI specs mess with config and cause problems for some of the job specs...
-    #Proper solution incoming
-    Chore::CLI.instance.parse([])
-  end
-
   it 'should allow configuration options to be registered externally' do
     args = ['some','args']
     Chore::CLI.register_option('option_name',*args)
@@ -50,6 +44,11 @@ describe Chore::CLI do
       cli.send(:options).delete(:queues) 
       cli.stub(:validate!)
       cli.stub(:boot_system)
+    end
+
+    after :all do
+      #Removing the prefix due to spec idempotency issues in job spec
+      Chore.config.queue_prefix = nil
     end
 
     it 'should detect queues based on included jobs' do
