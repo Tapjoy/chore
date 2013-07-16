@@ -6,7 +6,8 @@ describe Chore::DuplicateDetector do
   let(:dedupe) { Chore::DuplicateDetector.new(nil,memcache)}
   let(:message) { double('message') }
   let(:timeout) { 2 }
-  let(:queue) { (q = double('queue')).stub(:visibility_timeout).and_return(timeout); q }
+  let(:queue_url) {"queue://bogus/url"}
+  let(:queue) { (q = double('queue')).stub(:visibility_timeout).and_return(timeout); q.stub(:url).and_return(queue_url); q }
   let(:id) { SecureRandom.uuid }
 
   before(:each) do
