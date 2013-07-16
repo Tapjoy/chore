@@ -9,6 +9,9 @@ module Chore
         :socket_max_failures => 5,
         :socket_timeout => 2
       }
+
+      @timeouts = {}
+
       # make it optional. Only required when we use it
       begin
         require 'dalli' 
@@ -24,7 +27,7 @@ module Chore
 
     def found_duplicate?(msg)
       return false unless msg && msg.respond_to?(:queue) && msg.queue
-      timeout = msg.queue.visibility_timeout || @timeout
+      timeout = self.queue_timeout(msg.queue)
       begin
         !@memcached_client.add(msg.id, "1",timeout)
       rescue StandardError => e
@@ -32,5 +35,10 @@ module Chore
         false
       end
     end
+
+    def queue_timeout(queue)
+      @timeouts[queue.url] ||= queue.visibility_timeout || @timeout
+    end
+
   end
 end

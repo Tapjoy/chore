@@ -6,7 +6,8 @@ describe Chore::DuplicateDetector do
   let(:dedupe) { Chore::DuplicateDetector.new(nil,memcache)}
   let(:message) { double('message') }
   let(:timeout) { 2 }
-  let(:queue) { (q = double('queue')).stub(:visibility_timeout).and_return(timeout); q }
+  let(:queue_url) {"queue://bogus/url"}
+  let(:queue) { (q = double('queue')).stub(:visibility_timeout).and_return(timeout); q.stub(:url).and_return(queue_url); q }
   let(:id) { SecureRandom.uuid }
 
   before(:each) do
@@ -31,6 +32,12 @@ describe Chore::DuplicateDetector do
   it "should set the timeout to be the queue's " do
     memcache.should_receive(:add).with(id,"1",timeout).and_return(true)
     dedupe.found_duplicate?(message).should be_false
+  end
+
+  it "should call #visibility_timeout once and only once" do
+    queue.should_receive(:visibility_timeout).once
+    memcache.should_receive(:add).at_least(3).times.and_return(true)
+    3.times { dedupe.found_duplicate?(message) }
   end
 
 end
