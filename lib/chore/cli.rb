@@ -2,7 +2,6 @@ require 'pp'
 require 'singleton'
 require 'optparse'
 require 'chore'
-require 'rack'
 require 'erb'
 require 'set'
 
@@ -45,21 +44,17 @@ module Chore
     end
 
     #
-    # Start up the consuming side of the application. This calls both Chore::Manager#start and the internal stats server.
-    # The stat server is served up on either the configured port or 9090. It is simply  a background Thread calling 
-    # Chore::Manager#report.
+    # Start up the consuming side of the application. This calls Chore::Manager#start.
     #
     def run!(args=ARGV)
       parse(args)
       @manager = Chore::Manager.new
-      start_stat_server(@manager)
       @manager.start
     end
 
     def shutdown
       unless @stopping
         @stopping = true
-        @stat_server.shutdown if @stat_server
         @manager.shutdown! if @manager
         exit(0)
       end
@@ -75,14 +70,14 @@ module Chore
       Chore.configuring = true
       Chore.logger.level = Logger::WARN
       setup_options
-      
+
       # parse once to load the config file & require options
       parse_opts(args)
       parse_config_file(@options[:config_file]) if @options[:config_file]
 
       validate!
       boot_system
-      
+
       # parse again to pick up options required by loaded classes
       parse_opts(args)
       parse_config_file(@options[:config_file]) if @options[:config_file]
@@ -115,8 +110,6 @@ module Chore
       register_option "config_file", '-c', '--config-file FILE', "Location of a file specifying additional chore configuration"
 
       register_option 'require', '-r', '--require [PATH|DIR]', "Location of Rails application with workers or file to require"
-
-      register_option 'stats_port', '-p', '--stats-port PORT', 'Port to run the stats HTTP server on'
 
       register_option 'num_workers', '--concurrency NUM', Integer, 'Number of workers to run concurrently'
 
@@ -184,7 +177,7 @@ module Chore
         raise ArgumentError, "Cannot specify both --except and --queues"
       end
 
-      if !options[:queues] 
+      if !options[:queues]
         options[:queues] = Set.new
         Chore::Job.job_classes.each do |j|
           klazz = constantize(j)
@@ -215,12 +208,6 @@ module Chore
         exit(1)
       end
 
-    end
-
-    def start_stat_server(manager)
-      Thread.new do
-        @stat_server = Rack::Handler::WEBrick.run(lambda { |env| [200, {"Content-Type" => "application/json"}, [manager.report]] }, :Port => options[:stats_port] || 9090)
-      end
     end
   end
 end

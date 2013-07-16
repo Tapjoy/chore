@@ -9,7 +9,6 @@ require 'chore/job'
 require 'chore/json_encoder'
 require 'chore/manager'
 require 'chore/publisher'
-require 'chore/stats'
 require 'chore/util'
 require 'chore/worker'
 require 'chore/publisher'
@@ -19,10 +18,10 @@ require 'chore/publisher'
   Dir[File.join(File.dirname(__FILE__),'chore',p,'*.rb')].each {|f| require f}
 end
 
-module Chore 
+module Chore
   VERSION = Chore::Version::STRING #:nodoc:
   # = Chore
-  
+
   # Simple class to hold job processing information.
   # Has only three attributes:
   # * +:id+ The queue implementation specific identifier for this message.
@@ -56,7 +55,7 @@ module Chore
   }
 
   class << self
-    attr_accessor :logger, :stats
+    attr_accessor :logger
   end
 
   # Access Chore's logger in a memoized fashion. Will create an instance of the logger if
@@ -68,15 +67,11 @@ module Chore
     end
   end
 
-  def self.stats
-    @stats ||= Stats.new
-  end
-
-  # Add a global hook for +name+. Will run +&blk+ when the hook is executed. 
+  # Add a global hook for +name+. Will run +&blk+ when the hook is executed.
   # Global hooks are any hooks that don't have access to an instance of a job.
   # See the docs on Hooks for a full list of global hooks.
   #
-  # === Examples 
+  # === Examples
   #   Chore.add_hook_for(:after_fork) do
   #     SomeDB.reset_connection!
   #   end

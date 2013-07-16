@@ -11,7 +11,6 @@ module Chore
 
     DEFAULT_OPTIONS = { :encoder => JsonEncoder }
     attr_accessor :options
-    attr_accessor :status
 
     def self.start(work) #:nodoc:
       self.new(work).start
@@ -43,13 +42,11 @@ module Chore
         begin
           message = decode_job(item.message)
           klass = payload_class(message)
-          self.status = {'started_at'=>Time.now,'class' => klass.name,'args'=>message['args']}
           next unless klass.run_hooks_for(:before_perform,message)
           perform_job(item,klass,message)
         rescue => e
           Chore.logger.error { "Failed to run job #{item.inspect} with error: #{e.message} #{e.backtrace * "\n"}" }
           Chore.run_hooks_for(:on_failure,item.message,e)
-          Chore.stats.add(:failed,:unknown)
         end
       end
     end
@@ -59,14 +56,6 @@ module Chore
       @stopping = true
     end
 
-    # This is used as part of the internal stat server. It let's us track the starting timestamp, and current status
-    # (what work is being performed) of each worker.
-    def to_json(*args)
-      {
-        :started_at => @started_at,
-        :status => @status
-      }.to_json(*args)
-    end
   protected
     def payload_class(message)
       constantize(message['class'])
@@ -77,16 +66,13 @@ module Chore
       klass.perform(*message['args'])
       item.consumer.complete(item.id)
       klass.run_hooks_for(:after_perform,message)
-      Chore.stats.add(:completed,message['class'])
     rescue Job::RejectMessageException
       item.consumer.reject(item.id)
       Chore.logger.error { "Failed to run job #{item.inspect} with error: Job raised a RejectMessageException" }
       klass.run_hooks_for(:on_rejected, message)
-      Chore.stats.add(:rejected,message['class'])
     rescue => e
       Chore.logger.error { "Failed to run job #{item.inspect} with error: #{e.message} at #{e.backtrace * "\n"}" }
       klass.run_hooks_for(:on_failure,message,e)
-      Chore.stats.add(:failed,message['class'])
     end
 
     def decode_job(data)
