@@ -19,7 +19,7 @@ If you also plan on using SQS, you must also bring in dalli to use for memcached
 
     gem 'dalli'
 
-Create a `chore.config` file in a suitable place, e.g. `./config`. This file controls how the consumer end of chore will operate. 
+Create a `chore.config` file in a suitable place, e.g. `./config`. This file controls how the consumer end of chore will operate.
 
     --require=./<FILE_TO_LOAD>
     --verbose
@@ -34,7 +34,6 @@ If you're using SQS, you'll want to add AWS keys so that Chore can authenticate 
 
 Other options include:
 
-    --stats-port 9090 # port to run the stats HTTP server on
     --concurrency 16 # number of concurrent worker processes, if using forked worker strategy
     --worker-strategy Chore::ForkedWorkerStrategy # which worker strategy class to use
     --consumer Chore::Queues::SQS::Consumer # which consumer class to use
@@ -79,7 +78,7 @@ Finally, start foreman as usual
 A Chore::Job is any class that includes `Chore::Job` and implements `perform(*args)` Here is an example job class:
 
 ```ruby
-class TestJob 
+class TestJob
   include Chore::Job
   queue_options :name => 'test_queue', :publisher => Chore::Queues::SQS::Publisher
 
@@ -144,7 +143,7 @@ All per-job hooks can also be global hooks.
 Hooks can be added to a job class as so:
 
 ```ruby
-class TestJob 
+class TestJob
   include Chore::Job
   queue_options :name => 'test_queue', :publisher => Chore::Queues::SQS::Publisher
 
@@ -162,7 +161,7 @@ end
 ```
 
 ## Contributing to chore
- 
+
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet.
 * Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it.
 * Fork the project.
