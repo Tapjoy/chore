@@ -41,7 +41,7 @@ describe Chore::CLI do
     before(:each) do
       TestJob.queue_options :name => 'test_queue', :publisher => Chore::Publisher
       TestJob2.queue_options :name => 'test2', :publisher => Chore::Publisher
-      cli.send(:options).delete(:queues) 
+      cli.send(:options).delete(:queues)
       cli.stub(:validate!)
       cli.stub(:boot_system)
     end
@@ -63,7 +63,7 @@ describe Chore::CLI do
 
     it 'should honor --queue-prefix when processing all queues' do
       cli.parse(['--queue-prefix=prefixey'])
-      Chore.config.queues.should include('prefixey_test')
+      Chore.config.queues.should include('prefixey_test2')
     end
 
     it 'should raise an exception if both --queues and --except are specified' do
@@ -73,6 +73,27 @@ describe Chore::CLI do
     it 'should raise an exception if no queues are found' do
       Chore::Job.job_classes.clear
       expect { cli.parse([]) }.to raise_error(ArgumentError)
+    end
+  end
+
+  describe "#parse" do
+    let(:cli) do
+      Chore::CLI.instance.tap do |cli|
+        cli.send(:options).clear
+        cli.stub(:validate!)
+        cli.stub(:boot_system)
+        cli.stub(:detect_queues)
+      end
+    end
+
+    let(:config) { cli.parse(command); Chore.config }
+
+    context "--consumer-strategy" do
+      let(:command) { ["--consumer-strategy=Chore::Strategy::SingleConsumerStrategy"] }
+
+      it "should set the consumer class" do
+        config.consumer_strategy.should == Chore::Strategy::SingleConsumerStrategy
+      end
     end
   end
 end
