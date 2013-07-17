@@ -1,12 +1,13 @@
 module Chore
   module Strategy
-    class SingleWorkerStrategy 
+    class SingleWorkerStrategy
       def initialize(manager)
         @manager = manager
         @worker = nil
       end
 
       def start;end
+      def stop!;end
 
       def assign(work)
         if workers_available?
