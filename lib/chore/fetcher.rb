@@ -5,7 +5,7 @@ module Chore
     def initialize(manager)
       @stopping = false
       @manager = manager
-      @strategy = Chore.config.fetcher_strategy.new(self)
+      @strategy = Chore.config.consumer_strategy.new(self)
     end
 
     def start

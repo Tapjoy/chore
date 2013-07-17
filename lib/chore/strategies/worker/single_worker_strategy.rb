@@ -11,9 +11,7 @@ module Chore
 
       def assign(work)
         if workers_available?
-          @worker = Worker.new
-          @worker.start(work)
-          @worker = nil
+          @worker = Worker.start(work)
           true
         end
       end
