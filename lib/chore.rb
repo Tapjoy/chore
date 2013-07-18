@@ -50,7 +50,7 @@ module Chore
     :worker_strategy => Strategy::ForkedWorkerStrategy,
     :consumer => Queues::SQS::Consumer,
     :fetcher => Fetcher,
-    :fetcher_strategy => Strategy::ThreadedConsumerStrategy,
+    :consumer_strategy => Strategy::ThreadedConsumerStrategy,
     :batch_size => 50
   }
 
@@ -97,7 +97,7 @@ module Chore
   end
 
   # Configure global chore options. Takes a hash for +opts+.
-  # This includes things like the current Worker Strategy (+:worker_strategy+), the default Consumer (+:consumer+), and the default Fetcher Strategy(+:fetcher_strategy).
+  # This includes things like the current Worker Strategy (+:worker_strategy+), the default Consumer (+:consumer+), and the default Consumer Strategy(+:consumer_strategy).
   # It's safe to call multiple times (will merge the new config, into the old)
   # This is used by the command line parsing code to setup Chore.
   # If a +block+ is given, <tt>configure</tt> will yield the config object, so you can set options directly.

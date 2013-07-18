@@ -125,8 +125,8 @@ module Chore
         options[:consumer] = constantize(arg)
       end
 
-      register_option 'fetcher_strategy', '--fetcher-strategy CLASS_NAME', 'Name of a class to use as the fetching strategy (default: ThreadedConsumerStrategy' do |arg|
-        options[:fetcher_strategy] = constantize(arg)
+      register_option 'consumer_strategy', '--consumer-strategy CLASS_NAME', 'Name of a class to use as the consumer strategy (default: Chore::Strategy::ThreadedConsumerStrategy' do |arg|
+        options[:consumer_strategy] = constantize(arg)
       end
 
     end
