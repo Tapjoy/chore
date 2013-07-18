@@ -43,6 +43,12 @@ RSpec.configure do |config|
       c.aws_secret_key = ""
     end
     Chore.logger = double('logger').as_null_object
+
+    # Reset CLI singleton
+    Singleton.send(:__init__, Chore::CLI)
+
+    # Reset configuration
+    Chore.instance_eval { @config = nil }
   end
 
   config.after(:each) do
