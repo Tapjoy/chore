@@ -66,22 +66,22 @@ module Chore
         end
 
         def queue
+          if !@sqs_last_connected || (@@reset_at && @@reset_at >= @sqs_last_connected)
+            AWS::Core::Http::ConnectionPool.pools.each do |p|
+              p.empty!
+            end
+            @sqs_last_connected = Time.now
+            @queue = nil
+          end
           @queue ||= sqs.queues.named(@queue_name)
         end
 
         def sqs
-          if !@sqs_last_connected || (@@reset_at && @@reset_at >= @sqs_last_connected)
-            @sqs = AWS::SQS.new(
-              :access_key_id => Chore.config.aws_access_key,
-              :secret_access_key => Chore.config.aws_secret_key)
-            @sqs_last_connected = Time.now
-            @queue = nil
-          end
-          @sqs
+          @sqs ||= AWS::SQS.new(
+            :access_key_id => Chore.config.aws_access_key,
+            :secret_access_key => Chore.config.aws_secret_key)
         end
-
       end
     end
   end
 end
-
