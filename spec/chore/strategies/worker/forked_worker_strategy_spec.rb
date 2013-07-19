@@ -24,6 +24,9 @@ module Chore
           forker.stub(:after_fork)
           worker #can't let this resolve lazily
         end
+        after(:each) do
+          Chore.clear_hooks!
+        end
 
         it 'should not start working if there are no workers available' do
           forker.workers.should_receive(:length).and_return(Chore.config.num_workers)
@@ -61,6 +64,29 @@ module Chore
           forker.workers.should_not include(pid)
         end
 
+        [:before_fork, :after_fork, :before_fork_shutdown].each do |hook|
+          it "should run #{hook} hooks" do
+            hook_called = false
+            Chore.add_hook(hook) { hook_called = true }
+            forker.assign(job)
+            hook_called.should be_true
+          end
+        end
+
+        it 'should run before_fork_shutdown hooks even if job errors' do
+          Worker.stub(:new).and_return(worker)
+          worker.stub(:start).and_raise(ArgumentError)
+
+          hook_called = false
+          Chore.add_hook(:before_fork_shutdown) { hook_called = true }
+          
+          begin
+            forker.assign(job)
+          rescue ArgumentError => ex
+          end
+
+          hook_called.should be_true
+        end
       end
 
       context '#after_fork' do
