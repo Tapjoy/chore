@@ -64,9 +64,8 @@ DependencyDetection.defer do
       ::Chore.add_hook(:before_first_fork) do
         NewRelic::Agent.manual_start(:dispatcher   => :resque, # We look close enough to resque for this to work
                                      :sync_startup => true,
-                                     :start_channel_listener => true, # This lets us control which workers report where.
+                                     :start_channel_listener => true) # This lets us control which workers report where.
                                                                       # We could get fancy, but we won't really need it.
-                                     :report_instance_busy => false)  # No idea, honestly, but the docs recommend it.
       end
 
       ## In the parent, setup a report channel (pipe) tied to this worker's id. Since we have the worker before we fork
@@ -77,7 +76,7 @@ DependencyDetection.defer do
       end
 
       ::Chore.add_hook(:after_fork) do |worker|
-        NewRelic::Agent.after_fork(:report_to_channel => worker.object_id)
+        NewRelic::Agent.after_fork(:report_to_channel => worker.object_id, :report_instance_busy => false)
       end
 
       ## Before Chore worker shuts itself down, tell NewRelic to do the same.
