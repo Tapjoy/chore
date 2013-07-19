@@ -80,10 +80,15 @@ DependencyDetection.defer do
         NewRelic::Agent.after_fork(:report_to_channel => worker.object_id)
       end
 
-      ## Before Chore shuts itself down, tell NewRelic to do the same.
-      ::Chore.add_hook(:before_shutdown) do
-        NewRelic::Agent.shutdown if NewRelic::LanguageSupport.can_fork?
+      ## Before Chore worker shuts itself down, tell NewRelic to do the same.
+      ::Chore.add_hook(:before_fork_shutdown) do
+        NewRelic::Agent.shutdown
       end
+    end
+
+    ## Before Chore shuts itself down, tell NewRelic to do the same.
+    ::Chore.add_hook(:before_shutdown) do
+      NewRelic::Agent.shutdown
     end
   end
 end
