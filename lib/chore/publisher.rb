@@ -12,7 +12,7 @@ module Chore
       self.new.publish(queue_name,job)
     end
 
-    def publish(job)
+    def publish(queue_name,job)
       raise NotImplementedError
     end
   protected
