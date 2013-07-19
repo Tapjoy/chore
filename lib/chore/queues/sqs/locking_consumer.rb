@@ -15,6 +15,7 @@ module Chore
           @@zk ||= ZK.new(Chore.config.zookeeper_hosts)
           @last_updated = Time.now - UPDATE_TIMEOUT
           @max_leases = 0
+          @semaphore = Semaphore.new(queue_name, @@zk)
         end
 
         def consume(&handler)
@@ -22,8 +23,7 @@ module Chore
             begin
               if enabled?
                 if requires_lock?
-                  semaphore = Semaphore.new(@queue_name, @@zk)
-                  semaphore.acquire do
+                  @semaphore.acquire do
                     handle_messages(&handler)
                   end
                 else
