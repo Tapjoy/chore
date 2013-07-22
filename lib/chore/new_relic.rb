@@ -1,5 +1,6 @@
 require 'new_relic/agent/instrumentation/controller_instrumentation'
 
+# Reference implementation: https://github.com/newrelic/rpm/blob/master/lib/new_relic/agent/instrumentation/resque.rb
 DependencyDetection.defer do
   @name = :chore
 
@@ -64,9 +65,8 @@ DependencyDetection.defer do
       ::Chore.add_hook(:before_first_fork) do
         NewRelic::Agent.manual_start(:dispatcher   => :resque, # We look close enough to resque for this to work
                                      :sync_startup => true,
-                                     :start_channel_listener => true, # This lets us control which workers report where.
+                                     :start_channel_listener => true) # This lets us control which workers report where.
                                                                       # We could get fancy, but we won't really need it.
-                                     :report_instance_busy => false)  # No idea, honestly, but the docs recommend it.
       end
 
       ## In the parent, setup a report channel (pipe) tied to this worker's id. Since we have the worker before we fork
@@ -77,13 +77,20 @@ DependencyDetection.defer do
       end
 
       ::Chore.add_hook(:after_fork) do |worker|
-        NewRelic::Agent.after_fork(:report_to_channel => worker.object_id)
+        # Only suppress reporting Instance/Busy for forked children
+        # Traced errors UI relies on having the parent process report that metric
+        NewRelic::Agent.after_fork(:report_to_channel => worker.object_id, :report_instance_busy => false)
       end
 
-      ## Before Chore shuts itself down, tell NewRelic to do the same.
-      ::Chore.add_hook(:before_shutdown) do
-        NewRelic::Agent.shutdown if NewRelic::LanguageSupport.can_fork?
+      ## Before Chore worker shuts itself down, tell NewRelic to do the same.
+      ::Chore.add_hook(:before_fork_shutdown) do
+        NewRelic::Agent.shutdown
       end
+    end
+
+    ## Before Chore shuts itself down, tell NewRelic to do the same.
+    ::Chore.add_hook(:before_shutdown) do
+      NewRelic::Agent.shutdown
     end
   end
 end
