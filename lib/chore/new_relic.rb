@@ -1,5 +1,6 @@
 require 'new_relic/agent/instrumentation/controller_instrumentation'
 
+# Reference implementation: https://github.com/newrelic/rpm/blob/master/lib/new_relic/agent/instrumentation/resque.rb
 DependencyDetection.defer do
   @name = :chore
 
@@ -76,6 +77,8 @@ DependencyDetection.defer do
       end
 
       ::Chore.add_hook(:after_fork) do |worker|
+        # Only suppress reporting Instance/Busy for forked children
+        # Traced errors UI relies on having the parent process report that metric
         NewRelic::Agent.after_fork(:report_to_channel => worker.object_id, :report_instance_busy => false)
       end
 
