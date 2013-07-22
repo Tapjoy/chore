@@ -40,10 +40,7 @@ module Chore
         return if @stopping
         Chore.logger.debug { "Doing: #{item.inspect}" }
         begin
-          message = decode_job(item.message)
-          klass = payload_class(message)
-          next unless klass.run_hooks_for(:before_perform,message)
-          perform_job(item,klass,message)
+          start_item(item)
         rescue => e
           Chore.logger.error { "Failed to run job #{item.inspect} with error: #{e.message} #{e.backtrace * "\n"}" }
           Chore.run_hooks_for(:on_failure,item.message,e)
@@ -62,17 +59,27 @@ module Chore
     end
 
   private
-    def perform_job(item,klass, message)
+    def start_item(item)
+      message = decode_job(item.message)
+      klass = payload_class(message)
+      return unless klass.run_hooks_for(:before_perform,message)
+
+      begin
+        perform_job(klass,message)
+        item.consumer.complete(item.id)
+        klass.run_hooks_for(:after_perform,message)
+      rescue Job::RejectMessageException
+        item.consumer.reject(item.id)
+        Chore.logger.error { "Failed to run job #{item.inspect} with error: Job raised a RejectMessageException" }
+        klass.run_hooks_for(:on_rejected, message)
+      rescue => e
+        Chore.logger.error { "Failed to run job #{item.inspect} with error: #{e.message} at #{e.backtrace * "\n"}" }
+        klass.run_hooks_for(:on_failure,message,e)
+      end
+    end
+
+    def perform_job(klass, message)
       klass.perform(*message['args'])
-      item.consumer.complete(item.id)
-      klass.run_hooks_for(:after_perform,message)
-    rescue Job::RejectMessageException
-      item.consumer.reject(item.id)
-      Chore.logger.error { "Failed to run job #{item.inspect} with error: Job raised a RejectMessageException" }
-      klass.run_hooks_for(:on_rejected, message)
-    rescue => e
-      Chore.logger.error { "Failed to run job #{item.inspect} with error: #{e.message} at #{e.backtrace * "\n"}" }
-      klass.run_hooks_for(:on_failure,message,e)
     end
 
     def decode_job(data)
