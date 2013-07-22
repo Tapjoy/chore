@@ -14,52 +14,27 @@ DependencyDetection.defer do
   end
 
   executes do
+    # Track consumption performance
+    Chore::Queues::SQS::Consumer.class_eval do
+      include NewRelic::Agent::Instrumentation::ControllerInstrumentation
 
-    module Chore
-      module NewRelicInstrumentation #:nodoc:
-        ## Override perform to add NewRelic tracing. Call the super perform todo the actual work
-        include NewRelic::Agent::Instrumentation::ControllerInstrumentation
-
-        def perform(*args)
-          Chore.logger.debug "Logging #{self.name}#perform to NewRelic"
-          perform_action_with_newrelic_trace(:name => 'perform',
-                               :class_name => self.name,
-                               :category => 'OtherTransaction/ChoreJob') do
-            super(*args)
-          end
-        end
-      end
+      add_transaction_tracer :handle_messages, :name => 'consume', :class_name => 'SQSConsumer', :category => 'OtherTransaction/Chore'
     end
 
-    module NewRelic #:nodoc:
-      module Agent
-        module Instrumentation
-          module ChoreInstrumentHook
-            ## Override `payload_class` to take the new job class instance, and extend the above instrumentation
-            ## into it. This makes sure we're only messing with classes that are actually being processed.
-            def payload_class(message)
-              klass = super
-              klass.instance_eval do
-                extend ::Chore::NewRelicInstrumentation
-              end
-              klass
-            end
-          end
-        end
-      end
+    Chore::Queues::SQS::LockingConsumer.class_eval do
+      include NewRelic::Agent::Instrumentation::ControllerInstrumentation
+
+      add_transaction_tracer :handle_messages, :name => 'consume', :class_name => 'LockingSQSConsumer', :category => 'OtherTransaction/Chore'
     end
 
-    ## A bit naughty, but override the constructor on `Chore::Worker` to inject the `payload_class` override into
-    ## each newly constructed worker. The advantage to this over slightly more dynamic methods is that module injection
-    ## gives us a class heirarchy so we get access to `super` in the hooked methods.
-    ::Chore::Worker.class_eval do
-      def self.new(*args)
-        super(*args).extend NewRelic::Agent::Instrumentation::ChoreInstrumentHook
-      end
+    # Track processing done in the worker
+    Chore::Worker.class_eval do
+      include NewRelic::Agent::Instrumentation::ControllerInstrumentation
+
+      add_transaction_tracer :start_item, :name => 'process', :class_name => 'Worker', :category => 'OtherTransaction/ChoreJob'
+      add_transaction_tracer :perform_job, :name => 'perform', :class_name => '#{args[0].name}', :category => 'OtherTransaction/ChoreJob'
     end
 
-    ## TODO: Make this smart enough to work with non-forking workers. Right now it assumes a forking worker
-    ##      because that's the only one we have. But it just plain won't work with non-forking workers.
     if NewRelic::LanguageSupport.can_fork?
       ## Start the NewRelic agent in the parent process so we only have one agent thread sending data.
       ::Chore.add_hook(:before_first_fork) do
