@@ -13,6 +13,5 @@ group :development do
   gem 'yard'
 end
 
-gem 'worqer', git: 'git@github.com:Tapjoy/worqer.git'
 gem 'statsd-ruby', '~> 1.0.0'
-gem 'watcher-client', git: 'git@github.com:Tapjoy/watcher-client.git'
+gem 'watcher-client', git: 'git@github.com:Tapjoy/watcher-client.git', tag: 'v0.2.0'
