@@ -61,7 +61,7 @@ describe Chore::Queues::SQS::LockingConsumer do
 
     it "should not do anything" do
       consumer.should_not_receive(:requires_lock?)
-      consumer.should_not_receive(:handle_messages)
+      queue.should_not_receive(:receive_messages)
       consumer.consume
     end
   end

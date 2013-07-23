@@ -18,27 +18,24 @@ module Chore
           @semaphore = Semaphore.new(queue_name, @@zk)
         end
 
-        def consume(&handler)
-          while running?
-            begin
-              if enabled?
-                if requires_lock?
-                  @semaphore.acquire do
-                    handle_messages(&handler)
-                  end
-                else
-                  handle_messages(&handler)
-                end
-              end
-            rescue => e
-              Chore.logger.error { "LockingSQSConsumer#Consume: #{e.inspect}" }
-            end
-          end
+        def consume
+          super
         ensure
           @@zk.close!
         end
 
         private
+        def handle_messages
+          if enabled?
+            if requires_lock?
+              @semaphore.acquire do
+                super
+              end
+            else
+              super
+            end
+          end
+        end
 
         def requires_lock?
           max_leases > 0
