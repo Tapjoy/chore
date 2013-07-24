@@ -70,7 +70,7 @@ module Chore
           yield block
           true
         ensure
-          @queue.enq(:acquired)
+          @queue.enq(:acquired) if @subscription
           @zk.delete(lease_path)
           Chore.logger.debug "Releasing lease at #{lease_path}"
         end
