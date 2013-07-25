@@ -51,7 +51,8 @@ module Chore
     :consumer => Queues::SQS::Consumer,
     :fetcher => Fetcher,
     :consumer_strategy => Strategy::ThreadedConsumerStrategy,
-    :batch_size => 50
+    :batch_size => 50,
+    :log_level => Logger::WARN
   }
 
   class << self
@@ -63,7 +64,7 @@ module Chore
   def self.logger
     @logger ||= begin
       STDOUT.sync = true
-      Logger.new(STDOUT)
+      Logger.new(STDOUT).tap { |l| l.level = config.log_level }
     end
   end
 
