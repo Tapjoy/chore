@@ -29,6 +29,11 @@ describe Chore::DuplicateDetector do
     dedupe.found_duplicate?(double()).should be_false
   end
 
+  it "should return false when identity store errors" do
+    memcache.should_receive(:add).and_raise("no")
+    dedupe.found_duplicate?(message).should be_false
+  end
+
   it "should set the timeout to be the queue's " do
     memcache.should_receive(:add).with(id,"1",timeout).and_return(true)
     dedupe.found_duplicate?(message).should be_false

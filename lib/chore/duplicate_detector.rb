@@ -14,7 +14,7 @@ module Chore
 
       # make it optional. Only required when we use it
       begin
-        require 'dalli' 
+        require 'dalli'
       rescue LoadError => e
         Chore.logger.error "Unable to load dalli gem. It is required if duplicate \
   detection is enabled.  Install it with 'gem install dalli'."
@@ -31,7 +31,7 @@ module Chore
       begin
         !@memcached_client.add(msg.id, "1",timeout)
       rescue StandardError => e
-        Chore.logger.error "Error accessing duplicate cache server: #{@memcached_client.servers}. Assuming message is not a duplicate. #{e}\n#{e.backtrace * "\n"}"
+        Chore.logger.error "Error accessing duplicate cache server. Assuming message is not a duplicate. #{e}\n#{e.backtrace * "\n"}"
         false
       end
     end
