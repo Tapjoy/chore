@@ -68,7 +68,6 @@ module Chore
 
     def parse(args=ARGV) #:nodoc:#
       Chore.configuring = true
-      Chore.logger.level = Logger::WARN
       setup_options
 
       # parse once to load the config file & require options
@@ -98,11 +97,8 @@ module Chore
       end
 
       register_option "verbose", "-v", "--verbose", "Print more verbose output. Use twice to increase." do
-        if Chore.logger.level > Logger::INFO
-          Chore.logger.level = Logger::INFO
-        elsif Chore.logger.level > Logger::DEBUG
-          Chore.logger.level = Logger::DEBUG
-        end
+        options[:log_level] ||= Logger::WARN
+        options[:log_level] = options[:log_level] - 1 if options[:log_level] > 0
       end
 
       register_option "environment", '-e', '--environment ENV', "Application environment"

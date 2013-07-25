@@ -59,7 +59,7 @@ module Chore
         end
       end
 
-      
+
       def workers_available?
         workers.length < Chore.config.num_workers
       end
@@ -92,8 +92,8 @@ module Chore
 
         # We need to reset the logger after fork. This fixes a longstanding bug
         # where workers would hang around and never die
-        Chore.logger = Logger.new(STDOUT)
-        
+        Chore.logger = nil
+
         # When we fork, the consumer's need their connections reset. The specifics of this
         # are queue dependent, and may result in a noop.
         Chore.config.consumer.reset_connection!
