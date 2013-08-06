@@ -27,7 +27,7 @@ module Chore
         Chore.logger.info { "Manager #{Process.pid} stopping" }
         begin
           signal_children("QUIT")
-          Timeout::timeout(60) do
+          Timeout::timeout(Chore.config.shutdown_timeout) do
             Process.waitall
           end
         rescue Timeout::Error
