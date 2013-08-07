@@ -97,5 +97,26 @@ describe Chore::CLI do
         config.consumer_strategy.should == Chore::Strategy::SingleConsumerStrategy
       end
     end
+
+    describe '--shutdown-timeout' do
+      let(:command) { ["--shutdown-timeout=#{amount}"] }
+      subject { config.shutdown_timeout }
+
+      context 'given a numeric value' do
+        let(:amount)  { '10.0' }
+
+        it 'is that amount' do
+          subject.should == amount.to_f
+        end
+      end
+
+      context 'given no value' do
+        let(:command) { [] }
+        it 'is the default value, 120 seconds' do
+          subject.should == 120.0
+        end
+      end
+    end
   end
+
 end
