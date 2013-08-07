@@ -1,13 +1,18 @@
 module Chore
   module Strategy
     class SingleWorkerStrategy
+
+      attr_reader :worker
+
       def initialize(manager)
         @manager = manager
         @worker = nil
       end
 
       def start;end
-      def stop!;end
+      def stop!
+        worker.stop! if worker
+      end
 
       def assign(work)
         if workers_available?
