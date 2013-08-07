@@ -125,6 +125,8 @@ module Chore
         options[:consumer_strategy] = constantize(arg)
       end
 
+      register_option 'shutdown_timeout', '--shutdown-timeout SECONDS', Float, "Upon shutdown, the number of seconds to wait before force killing worker strategies (default: #{Chore::DEFAULT_OPTIONS[:shutdown_timeout]})"
+
     end
 
     def parse_opts(argv)

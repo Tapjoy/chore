@@ -52,7 +52,8 @@ module Chore
     :fetcher => Fetcher,
     :consumer_strategy => Strategy::ThreadedConsumerStrategy,
     :batch_size => 50,
-    :log_level => Logger::WARN
+    :log_level => Logger::WARN,
+    :shutdown_timeout => (2 * 60)
   }
 
   class << self
