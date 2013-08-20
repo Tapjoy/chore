@@ -70,6 +70,7 @@ module Chore
             AWS::Core::Http::ConnectionPool.pools.each do |p|
               p.empty!
             end
+            @sqs = nil
             @sqs_last_connected = Time.now
             @queue = nil
           end
@@ -79,7 +80,9 @@ module Chore
         def sqs
           @sqs ||= AWS::SQS.new(
             :access_key_id => Chore.config.aws_access_key,
-            :secret_access_key => Chore.config.aws_secret_key)
+            :secret_access_key => Chore.config.aws_secret_key,
+            :logger => Chore.logger,
+            :log_level => :debug)
         end
       end
     end

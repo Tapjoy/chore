@@ -14,6 +14,19 @@ module Chore
       AWS::SQS.stub(:new).and_return(sqs)
     end
 
+    it 'should configure sqs' do
+      Chore.config.stub(:aws_access_key).and_return('key')
+      Chore.config.stub(:aws_secret_key).and_return('secret')
+
+      AWS::SQS.should_receive(:new).with(
+        :access_key_id => 'key',
+        :secret_access_key => 'secret',
+        :logger => Chore.logger,
+        :log_level => :debug
+      )
+      publisher.publish(queue_name,job)
+    end
+
     it 'should create send an encoded message to the specified queue' do
       queue.should_receive(:send_message).with(job.to_json)
       publisher.publish(queue_name,job)

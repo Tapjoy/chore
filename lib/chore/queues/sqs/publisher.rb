@@ -9,7 +9,9 @@ module Chore
           super
           @sqs = AWS::SQS.new(
               :access_key_id => Chore.config.aws_access_key,
-              :secret_access_key => Chore.config.aws_secret_key)
+              :secret_access_key => Chore.config.aws_secret_key,
+              :logger => Chore.logger,
+              :log_level => :debug)
           @sqs_queues = {}
         end
 
