@@ -53,6 +53,7 @@ module Chore
     :consumer_strategy => Strategy::ThreadedConsumerStrategy,
     :batch_size => 50,
     :log_level => Logger::WARN,
+    :log_path => STDOUT,
     :shutdown_timeout => (2 * 60)
   }
 
@@ -63,9 +64,11 @@ module Chore
   # Access Chore's logger in a memoized fashion. Will create an instance of the logger if
   # one doesn't already exist.
   def self.logger
-    @logger ||= begin
-      STDOUT.sync = true
-      Logger.new(STDOUT).tap { |l| l.level = config.log_level }
+    @logger ||= Logger.new(config.log_path).tap do |l|
+      l.level = config.log_level
+      l.formatter = lambda do |severity, datetime, progname, msg|
+         "[#{datetime} (#{Process.pid})] #{severity} : #{msg}\n"
+      end
     end
   end
 
