@@ -6,6 +6,7 @@ module Chore
       def initialize(manager)
         @manager = manager
         @workers = {}
+        @reap_mutex = Mutex.new
 
         trap_master_signals
 
@@ -103,13 +104,22 @@ module Chore
       end
 
       def reap_terminated_workers!
-        # Avoid a SIGCHLD race condition by reaping all available child processes
-        while pid = Process.wait(-1, Process::WNOHANG)
-          workers.delete(pid)
-          Chore.logger.debug { "Removed finished worker #{pid}"}
+        # If a second CHLD signal comes in while a lock is held in a logger,
+        # this will deadlock since the method will basically get called recursively.
+        # To avoid deadlock, this logic can only get run once.
+        if @reap_mutex.try_lock
+          begin
+            # Avoid a SIGCHLD race condition by reaping all available child processes
+            while pid = Process.wait(-1, Process::WNOHANG)
+              workers.delete(pid)
+              Chore.logger.debug { "Removed finished worker #{pid}"}
+            end
+          rescue Errno::ECHILD => ex
+            # Child processes have already terminated
+          ensure
+            @reap_mutex.unlock
+          end
         end
-      rescue Errno::ECHILD
-        # Child processes have already terminated
       end
 
       # Wrapper around fork for specs.
