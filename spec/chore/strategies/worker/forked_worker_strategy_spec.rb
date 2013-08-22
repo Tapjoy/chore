@@ -73,6 +73,13 @@ module Chore
           end
         end
 
+        it 'should run around_fork hooks' do
+          hook_called = false
+          Chore.add_hook(:around_fork) {|&blk| hook_called = true; blk.call }
+          forker.assign(job)
+          hook_called.should be_true
+        end
+
         it 'should run before_fork_shutdown hooks even if job errors' do
           Worker.stub(:new).and_return(worker)
           worker.stub(:start).and_raise(ArgumentError)

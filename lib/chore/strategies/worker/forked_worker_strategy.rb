@@ -42,16 +42,19 @@ module Chore
         if workers_available?
           w = Worker.new(work)
           Chore.run_hooks_for(:before_fork,w)
-          pid = fork do
-            after_fork(w)
+          pid = nil
+          Chore.run_hooks_for(:around_fork,w) do
+            pid = fork do
+              after_fork(w)
 
-            Chore.run_hooks_for(:after_fork,w)
-            procline("Started:#{Time.now}")
-            begin
-              w.start
-              Chore.logger.info("Finished:#{Time.now}")
-            ensure
-              Chore.run_hooks_for(:before_fork_shutdown)
+              Chore.run_hooks_for(:after_fork,w)
+              procline("Started:#{Time.now}")
+              begin
+                w.start
+                Chore.logger.info("Finished:#{Time.now}")
+              ensure
+                Chore.run_hooks_for(:before_fork_shutdown)
+              end
             end
           end
           Chore.logger.debug { "Forked worker #{pid}"}

@@ -93,9 +93,80 @@ module Chore
   end
 
   # Run the global hooks associated with a particular +name+ passing all +args+ to the registered block.
-  def self.run_hooks_for(name,*args)
-    hooks = self.hooks_for(name)
-    hooks.each {|h| h.call(*args)} unless hooks.nil? || hooks.empty?
+  #
+  # == Before / After hooks
+  #
+  # If this is invoked for before / after hooks (i.e. no block is passed), then the
+  # hooks will be invoked in the order in which they're defined.
+  #
+  # For example:
+  #
+  #   add_hook(:before_fork) {|worker| puts 1 }
+  #   add_hook(:before_fork) {|worker| puts 2 }
+  #   add_hook(:before_fork) {|worker| puts 3 }
+  #   
+  #   run_hooks_for(:before_fork, worker)
+  #   
+  #   # ...will produce the following output
+  #   => 1
+  #   => 2
+  #   => 3
+  #
+  # == Around hooks
+  #
+  # If this is invoked for around hooks (i.e. a block is passed), then the hooks
+  # will be invoked in the order in which they're defined, with the passed block
+  # being invoked last after the hooks yield.
+  #
+  # For example:
+  #
+  #   add_hook(:around_fork) {|worker, &block| puts 'before 1'; block.call; puts 'after 1'}
+  #   add_hook(:around_fork) {|worker, &block| puts 'before 2'; block.call; puts 'after 2'}
+  #   add_hook(:around_fork) {|worker, &block| puts 'before 3'; block.call; puts 'after 3'}
+  #   
+  #   run_hooks_for(:around_fork, worker) { puts 'block' }
+  #   
+  #   # ...will produce the following output
+  #   => before 1
+  #   => before 2
+  #   => before 3
+  #   => block
+  #   => after 3
+  #   => after 2
+  #   => after 1
+  #
+  # You can imagine the callback order to be U shaped where logic *prior* to yielding
+  # is called in the order it's defined and logic *after* yielding is called in
+  # reverse order.  At the bottom of the U is when the block passed into +run_hooks_for+
+  # gets invoked.
+  def self.run_hooks_for(name,*args,&block)
+    if block
+      run_around_hooks_for(name, args, &block)
+    else
+      hooks = self.hooks_for(name)
+      hooks.each {|h| h.call(*args, &block)} unless hooks.nil? || hooks.empty?
+    end
+  end
+
+  class << self
+    private
+    # Runs the global *around* hooks.  This is similar to +run_hooks_for+ except it
+    # passing a block into each hook.
+    def run_around_hooks_for(name, args, index = 0, &block)
+      hooks = self.hooks_for(name)
+
+      if hook = hooks[index]
+        hook.call(*args) do
+          # Once the hook yields, call the next one
+          run_around_hooks_for(name, args, index + 1, &block)
+        end
+      else
+        # There are no more hooks: call the black passed into +run_hooks_for+.
+        # After this is called, the hooks will then execute their logic after the
+        # yield in reverse order.
+        block.call
+      end
+    end
   end
 
   # Configure global chore options. Takes a hash for +opts+.

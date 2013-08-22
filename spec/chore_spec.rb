@@ -37,6 +37,34 @@ describe Chore do
     Chore.run_hooks_for(:before_perform)
   end
 
+  it 'should support passing blocks' do
+    runner = proc { }
+
+    blk = proc { true }
+    blk.should_receive(:call) do |&arg1|
+      arg1.should_not be_nil
+    end
+    Chore.add_hook(:around_perform,&blk)
+
+    Chore.run_hooks_for(:around_perform, &runner)
+  end
+
+  it 'should call passed block' do
+    Chore.add_hook(:around_perform) do |&blk|
+      blk.call
+    end
+
+    run = false
+    Chore.run_hooks_for(:around_perform) { run = true }
+    run.should be_true
+  end
+
+  it 'should call passed blocks even if there are no hooks' do
+    run = false
+    Chore.run_hooks_for(:around_perform) { run = true }
+    run.should be_true
+  end
+
   it 'should set configuration' do
     Chore.configure {|c| c.test_config_option = 'howdy' }
     Chore.config.test_config_option.should == 'howdy'
