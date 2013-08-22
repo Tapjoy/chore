@@ -84,6 +84,9 @@ DependencyDetection.defer do
       end
 
       ::Chore.add_hook(:after_fork) do |worker|
+        # Reset the logger to avoid deadlocks
+        NewRelic::Agent.logger = NewRelic::Agent::AgentLogger.new(NewRelic::Agent.config, NewRelic::Control.instance.root, nil)
+
         # Only suppress reporting Instance/Busy for forked children
         # Traced errors UI relies on having the parent process report that metric
         NewRelic::Agent.after_fork(:report_to_channel => worker.object_id, :report_instance_busy => false)
