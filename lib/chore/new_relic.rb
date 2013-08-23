@@ -98,7 +98,16 @@ DependencyDetection.defer do
 
       ## Before Chore worker shuts itself down, tell NewRelic to do the same.
       ::Chore.add_hook(:before_fork_shutdown) do
-        NewRelic::Agent.shutdown
+        # FIXME: For some reason, NewRelic hangs writing to the pipe that transmits
+        # data to the parent process.  We're putting off solving this problem for now
+        # by just timing out calls to NewRelic.
+        begin
+          Timeout.timeout(5) do
+            NewRelic::Agent.shutdown
+          end
+        rescue Timeout::Error => ex
+          Chore.logger.info("Failed to shut down NewRelic: Timeout exceeded")
+        end
       end
     end
 
