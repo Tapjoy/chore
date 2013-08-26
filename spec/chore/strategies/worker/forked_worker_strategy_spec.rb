@@ -64,6 +64,28 @@ module Chore
           forker.workers.should_not include(pid)
         end
 
+        it 'should not allow more than one thread to reap terminated workers' do
+          forker.assign(job)
+
+          Process.should_receive(:wait).and_return do
+            Process.should_not_receive(:wait)
+            forker.send(:reap_terminated_workers!)
+
+            nil
+          end
+          forker.send(:reap_terminated_workers!)
+        end
+
+        it 'should continue to allow reaping after an exception occurs' do
+          forker.assign(job)
+
+          Process.stub(:wait).and_raise(Errno::ECHILD)
+          forker.send(:reap_terminated_workers!)
+
+          Process.should_receive(:wait).and_return(pid, nil)
+          forker.send(:reap_terminated_workers!)
+        end
+
         [:before_fork, :after_fork, :before_fork_shutdown].each do |hook|
           it "should run #{hook} hooks" do
             hook_called = false
@@ -71,6 +93,13 @@ module Chore
             forker.assign(job)
             hook_called.should be_true
           end
+        end
+
+        it 'should run around_fork hooks' do
+          hook_called = false
+          Chore.add_hook(:around_fork) {|&blk| hook_called = true; blk.call }
+          forker.assign(job)
+          hook_called.should be_true
         end
 
         it 'should run before_fork_shutdown hooks even if job errors' do

@@ -167,6 +167,7 @@ module Chore
 
       if File.directory?(options[:require])
         require 'rails'
+        require 'chore/railtie'
         require File.expand_path("#{options[:require]}/config/environment.rb")
         ::Rails.application.eager_load!
       else

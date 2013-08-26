@@ -14,6 +14,38 @@ DependencyDetection.defer do
   end
 
   executes do
+    # Patch NewRelic for forked processes
+    # * Issue described @ https://github.com/resque/resque/issues/1101
+    # * Fix @ https://github.com/newrelic/rpm/commit/d703271ff2638c4fa2b3edbee478a3e5c945dfd9
+    NewRelic::Agent::Agent.class_eval do
+      def synchronize_with_harvest
+        if @worker_loop.nil? || @worker_loop.lock.nil?
+          yield
+        else
+          @worker_loop.lock.synchronize do
+            yield
+          end
+        end
+      end
+
+      # Some forking cases (like Resque) end up with harvest lock held
+      # across the fork into the child. Let it go before we proceed
+      def unlock_for_harvest
+        return if @worker_loop.nil? || @worker_loop.lock.nil?
+
+        @worker_loop.lock.unlock if @worker_loop.lock.locked?
+      end
+
+      def reset_objects_with_locks_with_harvest
+        reset_objects_with_locks_without_harvest
+        unlock_for_harvest
+      end
+      alias_method :reset_objects_with_locks_without_harvest, :reset_objects_with_locks
+      alias_method :reset_objects_with_locks, :reset_objects_with_locks_with_harvest
+    end
+  end
+
+  executes do
     # Track consumption performance
     Chore::Queues::SQS::Consumer.class_eval do
       include NewRelic::Agent::Instrumentation::ControllerInstrumentation
@@ -52,14 +84,30 @@ DependencyDetection.defer do
       end
 
       ::Chore.add_hook(:after_fork) do |worker|
+        # Reset the logger to avoid deadlocks
+        NewRelic::Agent.logger = NewRelic::Agent::AgentLogger.new(NewRelic::Agent.config, NewRelic::Control.instance.root, nil)
+
         # Only suppress reporting Instance/Busy for forked children
         # Traced errors UI relies on having the parent process report that metric
         NewRelic::Agent.after_fork(:report_to_channel => worker.object_id, :report_instance_busy => false)
       end
 
+      ::Chore.add_hook(:around_fork) do |worker, &block|
+        NewRelic::Agent.instance.synchronize_with_harvest(&block)
+      end
+
       ## Before Chore worker shuts itself down, tell NewRelic to do the same.
       ::Chore.add_hook(:before_fork_shutdown) do
-        NewRelic::Agent.shutdown
+        # FIXME: For some reason, NewRelic hangs writing to the pipe that transmits
+        # data to the parent process.  We're putting off solving this problem for now
+        # by just timing out calls to NewRelic.
+        begin
+          Timeout.timeout(5) do
+            NewRelic::Agent.shutdown
+          end
+        rescue Timeout::Error => ex
+          Chore.logger.info("Failed to shut down NewRelic: Timeout exceeded")
+        end
       end
     end
 

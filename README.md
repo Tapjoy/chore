@@ -120,6 +120,7 @@ Global Hooks:
 * before_first_fork
 * before_fork
 * after_fork
+* around_fork
 
 Filesystem Consumer/Publisher
 
