@@ -1,3 +1,4 @@
+gem 'newrelic_rpm', '>= 3.6.6.147'
 require 'new_relic/agent/instrumentation/controller_instrumentation'
 
 # Reference implementation: https://github.com/newrelic/rpm/blob/master/lib/new_relic/agent/instrumentation/resque.rb

@@ -1,3 +1,4 @@
+gem 'airbrake', '>= 3.1.3'
 require 'airbrake'
 require 'chore'
 
