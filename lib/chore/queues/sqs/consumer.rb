@@ -26,7 +26,8 @@ module Chore
         def consume(&handler)
           while running?
             begin
-              handle_messages(&handler)
+              messages = handle_messages(&handler)
+              sleep 1 if messages.empty?
             rescue AWS::SQS::Errors::NonExistentQueue => e
               Chore.logger.error "You specified a queue that does not exist. You must create the queue before starting Chore. Shutting down..."
               raise Chore::TerribleMistake  
@@ -55,6 +56,7 @@ module Chore
             block.call(message.handle, message.body) unless duplicate_message?(message)
             Chore.run_hooks_for(:on_fetch, message.handle, message.body)
           end
+          messages
         end
 
         def duplicate_message?(message)

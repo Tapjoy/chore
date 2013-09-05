@@ -60,6 +60,26 @@ describe Chore::Queues::SQS::Consumer do
       Chore::DuplicateDetector.any_instance.should_receive(:found_duplicate?).with(message).and_return(true)
       expect {|b| consumer.consume(&b) }.not_to yield_control
     end
+
+    context 'with no messages' do
+      let!(:consumer_run_for_one_message) { consumer.stub(:running?).and_return(true, true, false) }
+      let!(:queue_contain_messages) { queue.stub(:receive_messages).and_return(message, nil) }
+
+      it 'should sleep' do
+        consumer.should_receive(:sleep).with(1)
+        consumer.consume
+      end
+    end
+
+    context 'with messages' do
+      let!(:consumer_run_for_one_message) { consumer.stub(:running?).and_return(true, true, false) }
+      let!(:queue_contain_messages) { queue.stub(:receive_messages).and_return(message, message) }
+
+      it 'should not sleep' do
+        consumer.should_not_receive(:sleep)
+        consumer.consume
+      end
+    end
   end
 
   describe '#reset_connection!' do
