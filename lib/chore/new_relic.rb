@@ -108,6 +108,7 @@ DependencyDetection.defer do
           end
         rescue Timeout::Error => ex
           Chore.logger.info("Failed to shut down NewRelic: Timeout exceeded")
+          Process.exit!
         end
       end
     end
