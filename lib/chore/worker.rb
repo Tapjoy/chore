@@ -34,6 +34,8 @@ module Chore
     # * Call Job#perform on each job.
     # * If successful it will call Consumer#complete (using the consumer in the UnitOfWork).
     # * If unsuccessful it will call the appropriate Hooks based on the type of failure.
+    # * If unsuccessful *and* the maximum number of attempts for the job has been surpassed, it will call
+    #   the permanent failure hooks and Consumer#complete.
     # * Log the results via the Chore.logger
     def start
       @work.each do |item|
@@ -43,7 +45,12 @@ module Chore
           start_item(item)
         rescue => e
           Chore.logger.error { "Failed to run job #{item.inspect} with error: #{e.message} #{e.backtrace * "\n"}" }
-          Chore.run_hooks_for(:on_failure,item.message,e)
+          if item.current_attempt >= Chore.config.max_attempts
+            Chore.run_hooks_for(:on_permanent_failure,item.message,e)
+            item.consumer.complete(item.id)
+          else
+            Chore.run_hooks_for(:on_failure,item.message,e)
+          end
         end
       end
     end
@@ -74,7 +81,12 @@ module Chore
         klass.run_hooks_for(:on_rejected, message)
       rescue => e
         Chore.logger.error { "Failed to run job #{item.inspect} with error: #{e.message} at #{e.backtrace * "\n"}" }
-        klass.run_hooks_for(:on_failure,message,e)
+        if item.current_attempt >= klass.options[:max_attempts]
+          klass.run_hooks_for(:on_permanent_failure,message,e)
+          item.consumer.complete(item.id)
+        else
+          klass.run_hooks_for(:on_failure,message,e)
+        end
       end
     end
 

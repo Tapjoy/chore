@@ -34,10 +34,11 @@ module Chore
 
       #
       # This is a method so it can be overriden to create additional required
-      # queue_options params.
+      # queue_options params.  This also determines what options get pulled
+      # from the global Chore.config.
       #
       def required_options
-        [:name, :publisher]
+        [:name, :publisher, :max_attempts]
       end
 
       def options #:nodoc:

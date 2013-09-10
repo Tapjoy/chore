@@ -23,12 +23,18 @@ module Chore
   # = Chore
 
   # Simple class to hold job processing information.
-  # Has only three attributes:
+  # Has only four attributes:
   # * +:id+ The queue implementation specific identifier for this message.
   # * +:message+ The actual data of the message.
+  # * +:previous_attempts+ The number of times the work has been attempted previously.
   # * +:consumer+ The consumer instance used to fetch this message. Most queue implementations won't need access to this, but some (RabbitMQ) will. So we
   # make sure to pass it along with each message. This instance will be used by the Worker for things like <tt>complete</tt> and </tt>reject</tt>.
-  class UnitOfWork < Struct.new(:id,:message,:consumer);end;
+  class UnitOfWork < Struct.new(:id,:message,:previous_attempts,:consumer)
+    # The current attempt number for the worker processing this message.
+    def current_attempt
+      previous_attempts + 1
+    end
+  end
 
   # Wrapper around an OpenStruct to define configuration data
   # (TODO): Add required opts, and validate that they're set
@@ -54,7 +60,8 @@ module Chore
     :batch_size => 50,
     :log_level => Logger::WARN,
     :log_path => STDOUT,
-    :shutdown_timeout => (2 * 60)
+    :shutdown_timeout => (2 * 60),
+    :max_attempts => 1.0 / 0.0 # Infinity
   }
 
   class << self

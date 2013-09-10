@@ -49,11 +49,11 @@ module Chore
         private
 
         def handle_messages(&block)
-          msg = queue.receive_messages(:limit => 10)
+          msg = queue.receive_messages(:limit => 10, :attributes => [:receive_count])
 
           messages = *msg
           messages.each do |message|
-            block.call(message.handle, message.body) unless duplicate_message?(message)
+            block.call(message.handle, message.body, message.receive_count - 1) unless duplicate_message?(message)
             Chore.run_hooks_for(:on_fetch, message.handle, message.body)
           end
           messages

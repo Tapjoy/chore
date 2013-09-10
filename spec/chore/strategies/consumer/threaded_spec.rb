@@ -40,9 +40,15 @@ describe Chore::Strategy::ThreadedConsumerStrategy do
     let(:batch_size) { 2 }
 
     it "should queue but not assign the message" do
-      consumer.any_instance.should_receive(:consume).and_yield(1, "test")
+      consumer.any_instance.should_receive(:consume).and_yield(1, "test", 0)
       strategy.fetch
-      strategy.batcher.batch.size.should == 1 
+      strategy.batcher.batch.size.should == 1
+
+      work = strategy.batcher.batch[0]
+      work.id.should == 1
+      work.message.should == "test"
+      work.previous_attempts.should == 0
+      work.current_attempt.should == 1
     end
   end
 
@@ -51,7 +57,7 @@ describe Chore::Strategy::ThreadedConsumerStrategy do
 
     it "should assign the batch" do
       manager.should_receive(:assign)
-      consumer.any_instance.should_receive(:consume).and_yield(1, "test")
+      consumer.any_instance.should_receive(:consume).and_yield(1, "test", 0)
       strategy.fetch
       strategy.batcher.batch.size.should == 0
     end

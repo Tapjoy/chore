@@ -117,6 +117,26 @@ describe Chore::CLI do
         end
       end
     end
+
+    describe '--max-attempts' do
+      let(:command) { ["--max-attempts=#{amount}"] }
+      subject { config.max_attempts }
+
+      context 'given a numeric value' do
+        let(:amount)  { '10' }
+
+        it 'is that amount' do
+          subject.should == amount.to_i
+        end
+      end
+
+      context 'given no value' do
+        let(:command) { [] }
+        it 'is the default value, infinity' do
+          subject.should == 1.0 / 0.0
+        end
+      end
+    end
   end
 
 end

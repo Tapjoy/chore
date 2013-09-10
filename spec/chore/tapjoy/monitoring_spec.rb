@@ -52,7 +52,7 @@ describe Chore::Tapjoy::Monitoring do
 
   it 'should add default metric values to metrics' do
     work = []
-    work << Chore::UnitOfWork.new('1', Chore::JsonEncoder.encode(job), consumer)
+    work << Chore::UnitOfWork.new('1', Chore::JsonEncoder.encode(job), 0, consumer)
     consumer.should_receive(:complete).with('1')
     Watcher::Metric.should_receive(:new).with("start", attributes: hash_including( bloo: "blah", stat: "chore", state: "started", queue: "SimpleJob" )) { metric }
     Watcher::Metric.should_receive(:new).with("finish", attributes: hash_including( bloo: "blah", stat: "chore", state: "completed", queue: "SimpleJob" )) { metric }
@@ -61,9 +61,9 @@ describe Chore::Tapjoy::Monitoring do
 
   it 'should process after message hooks with success or failure' do
     work = []
-    work << Chore::UnitOfWork.new('1', Chore::JsonEncoder.encode(job), consumer)
-    work << Chore::UnitOfWork.new('2', Chore::JsonEncoder.encode(breaking_job), consumer)
-    work << Chore::UnitOfWork.new('4', Chore::JsonEncoder.encode(rejected_job), consumer)
+    work << Chore::UnitOfWork.new('1', Chore::JsonEncoder.encode(job), 0, consumer)
+    work << Chore::UnitOfWork.new('2', Chore::JsonEncoder.encode(breaking_job), 0, consumer)
+    work << Chore::UnitOfWork.new('4', Chore::JsonEncoder.encode(rejected_job), 0, consumer)
     consumer.should_receive(:complete).with('1')
     consumer.should_receive(:reject).with('4')
 
