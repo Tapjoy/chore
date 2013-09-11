@@ -77,7 +77,7 @@ module Chore
               basename, previous_attempts = file_info(job_file)
 
               # job_file is just the name which is the job id
-              block.call(job_file, job_json, previous_attempts)
+              block.call(job_file, queue_name, job_json, previous_attempts)
               Chore.run_hooks_for(:on_fetch, job_file, job_json)
             end
           end

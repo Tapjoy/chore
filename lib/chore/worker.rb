@@ -46,7 +46,7 @@ module Chore
         rescue => e
           Chore.logger.error { "Failed to run job #{item.inspect} with error: #{e.message} #{e.backtrace * "\n"}" }
           if item.current_attempt >= Chore.config.max_attempts
-            Chore.run_hooks_for(:on_permanent_failure,item.message,e)
+            Chore.run_hooks_for(:on_permanent_failure,item.queue_name,item.message,e)
             item.consumer.complete(item.id)
           else
             Chore.run_hooks_for(:on_failure,item.message,e)
@@ -82,7 +82,7 @@ module Chore
       rescue => e
         Chore.logger.error { "Failed to run job #{item.inspect} with error: #{e.message} at #{e.backtrace * "\n"}" }
         if item.current_attempt >= klass.options[:max_attempts]
-          klass.run_hooks_for(:on_permanent_failure,message,e)
+          klass.run_hooks_for(:on_permanent_failure,item.queue_name,message,e)
           item.consumer.complete(item.id)
         else
           klass.run_hooks_for(:on_failure,message,e)
