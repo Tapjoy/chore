@@ -101,14 +101,14 @@ module Chore
         t = Thread.new(queue) do |tQueue|
           begin
             consumer = Chore.config.consumer.new(tQueue)
-            consumer.consume do |id, body|
+            consumer.consume do |id, queue_name, body, previous_attempts|
               # Quick hack to force this thread to end it's work
               # if we're shutting down. Could be delayed due to the
               # weird sometimes-blocking nature of SQS.
               consumer.stop if !running?
               Chore.logger.debug { "Got message: #{id}"}
 
-              work = UnitOfWork.new(id, body, consumer)
+              work = UnitOfWork.new(id, queue_name, body, previous_attempts, consumer)
               @batcher.add(work)
             end
           rescue Chore::TerribleMistake

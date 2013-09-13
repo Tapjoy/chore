@@ -74,25 +74,27 @@ module Chore
               Chore.logger.debug "Found a new job #{job_file}"
               
               job_json = File.read(make_in_progress(job_file))
+              basename, previous_attempts = file_info(job_file)
 
               # job_file is just the name which is the job id
-              block.call(job_file, job_json)
+              block.call(job_file, queue_name, job_json, previous_attempts)
               Chore.run_hooks_for(:on_fetch, job_file, job_json)
             end
           end
         end
 
         def make_in_progress(job)
-          move_job(job, @new_dir, @in_progress_dir)
+          move_job(File.join(@new_dir, job), File.join(@in_progress_dir, job))
         end
 
         def make_new_again(job)
-          move_job(job, @in_progress_dir, @new_dir)
+          basename, previous_attempts = file_info(job)
+          move_job(File.join(@in_progress_dir, job), File.join(@new_dir, "#{basename}.#{previous_attempts + 1}.job"))
         end
         
         # moves job file to inprogress directory and returns the full path
-        def move_job(job, from, to)
-          f = File.open(File.join(from, job), "r")
+        def move_job(from, to)
+          f = File.open(from, "r")
           # wait on the lock a publisher in another process might have.
           # Once we get the lock the file is ours to move to mark it in progress
           f.flock(File::LOCK_EX)
@@ -101,11 +103,18 @@ module Chore
           ensure
             f.flock(File::LOCK_UN) # yes we can unlock it after its been moved, I checked
           end
-          File.join(to, job)
+          to
         end
 
         def job_files
           Dir.entries(@new_dir).select{|e| ! e.start_with?(".")}
+        end
+
+        # Grabs the unique identifier for the job filename and the number of times
+        # it's been attempted (also based on the filename)
+        def file_info(job_file)
+          id, previous_attempts = File.basename(job_file, '.job').split('.')
+          [id, previous_attempts.to_i]
         end
       end
     end

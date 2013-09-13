@@ -32,7 +32,8 @@ module Chore
         # create a unique filename for a job in a queue based on queue name, job name and date
         def filename(queue_name, job_name)
           now = Time.now.strftime "%Y%m%d-%H%M%S-%6N"
-          File.join(new_dir(queue_name), "#{queue_name}-#{job_name}-#{now}.job")
+          previous_attempts = 0
+          File.join(new_dir(queue_name), "#{queue_name}-#{job_name}-#{now}.#{previous_attempts}.job")
         end
       end
     end

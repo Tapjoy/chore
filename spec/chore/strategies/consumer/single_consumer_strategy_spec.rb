@@ -16,8 +16,8 @@ describe Chore::Strategy::SingleConsumerStrategy do
 
   it "should consume and then assign a message" do
     consumer.should_receive(:new).with(test_queues.first).and_return(consumer)
-    consumer.should_receive(:consume).and_yield(1, "test")
-    manager.should_receive(:assign)
+    consumer.should_receive(:consume).and_yield(1, 'test-queue', "test", 0)
+    manager.should_receive(:assign).with(Chore::UnitOfWork.new(1, 'test-queue', "test", 0, consumer))
     strategy.fetch
   end
 end

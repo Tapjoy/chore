@@ -25,7 +25,7 @@ class FakePublisher < Chore::Publisher
   end
 end
 
-TestMessage = Struct.new(:handle,:body) do
+TestMessage = Struct.new(:handle,:queue_name,:body,:receive_count) do
   def empty?
     false
   end

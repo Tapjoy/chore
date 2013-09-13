@@ -42,6 +42,7 @@ Other options include:
     --batch-size 50 # how many messages are batched together before handing them to a worker
     --threads-per-queue 4 # number of threads per queue for fetching from queue
     --queue_prefix prefixy # A prefix to prepend to queue names, mainly for development and qa testing purposes
+    --max-attempts 100 # The maximum number of times a job can be attempted
 
 By default, Chore will run over all queues it detects among the required files. If you wish to change this behavior, you can use:
 
@@ -80,7 +81,7 @@ A Chore::Job is any class that includes `Chore::Job` and implements `perform(*ar
 ```ruby
 class TestJob
   include Chore::Job
-  queue_options :name => 'test_queue', :publisher => Chore::Queues::SQS::Publisher
+  queue_options :name => 'test_queue', :publisher => Chore::Queues::SQS::Publisher, :max_attempts => 100
 
   def perform(*args)
     Chore.logger.debug "My first async job"
@@ -138,6 +139,7 @@ Per Job:
 * after_perform(message)
 * on_rejected(message)
 * on_failure(message, error)
+* on_permanent_failure(queue_name, message, error)
 
 All per-job hooks can also be global hooks.
 

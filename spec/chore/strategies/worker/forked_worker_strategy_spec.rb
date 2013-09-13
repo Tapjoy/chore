@@ -6,7 +6,7 @@ module Chore
     describe ForkedWorkerStrategy do
       let(:manager) { double('manager') }
       let(:forker) { ForkedWorkerStrategy.new(manager) }
-      let(:job) { UnitOfWork.new(SecureRandom.uuid, JsonEncoder.encode(TestJob.job_hash([1,2,"3"]))) }
+      let(:job) { UnitOfWork.new(SecureRandom.uuid, 'test', JsonEncoder.encode(TestJob.job_hash([1,2,"3"])), 0) }
       let(:worker) { Worker.new(job) }
       let(:pid) { Random.rand(2048) }
 

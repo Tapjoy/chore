@@ -113,6 +113,8 @@ module Chore
         options[:queue_prefix] = arg.downcase << "_"
       end
 
+      register_option 'max_attempts', '--max-attempts NUM', Integer, 'Number of times to attempt failed jobs'
+
       register_option 'worker_strategy', '--worker-strategy CLASS_NAME', 'Name of a class to use as the worker strategy (default: ForkedWorkerStrategy' do |arg|
         options[:worker_strategy] = constantize(arg)
       end

@@ -27,7 +27,7 @@ describe Chore::Queues::Filesystem::Consumer do
     end
 
     it "should consume a published job and yield the job to the handler block" do
-      expect { |b| consumer.consume(&b) }.to yield_with_args(anything, test_job_hash.to_json)
+      expect { |b| consumer.consume(&b) }.to yield_with_args(anything, 'test-queue', test_job_hash.to_json, 0)
     end
 
     context "rejecting a job" do
@@ -35,13 +35,13 @@ describe Chore::Queues::Filesystem::Consumer do
     
       it "should requeue a job that gets rejected" do
         rejected = false
-        consumer.consume do |job_id, job_hash|
+        consumer.consume do |job_id, queue_name, job_hash|
           consumer.reject(job_id)
           rejected = true
         end
         rejected.should be_true
 
-        expect { |b| consumer.consume(&b) }.to yield_with_args(anything, test_job_hash.to_json)
+        expect { |b| consumer.consume(&b) }.to yield_with_args(anything, 'test-queue', test_job_hash.to_json, 1)
       end
     end
     
@@ -50,7 +50,7 @@ describe Chore::Queues::Filesystem::Consumer do
     
       it "should remove job on completion" do
         completed = false
-        consumer.consume do |job_id, job_hash|
+        consumer.consume do |job_id, queue_name, job_hash|
           consumer.complete(job_id)
           completed = true
         end

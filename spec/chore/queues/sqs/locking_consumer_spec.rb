@@ -7,7 +7,7 @@ describe Chore::Queues::SQS::LockingConsumer do
   let(:queue) { double("test_queue") }
   let(:options) { {} }
   let(:consumer) { Chore::Queues::SQS::LockingConsumer.new(queue_name) }
-  let(:message) { TestMessage.new("handle","message body") }
+  let(:message) { TestMessage.new("handle",queue_name,"message body",1) }
   let(:zk) { double('zk') }
   let(:semaphore) { double("semaphore") }
   let(:max_leases) { 1 }

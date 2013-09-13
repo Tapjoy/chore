@@ -6,7 +6,7 @@ describe Chore::Queues::SQS::Consumer do
   let(:queue) { double("test_queue") }
   let(:options) { {} }
   let(:consumer) { Chore::Queues::SQS::Consumer.new(queue_name) }
-  let(:message) { TestMessage.new("handle","message body") }
+  let(:message) { TestMessage.new("handle",queue_name,"message body", 1) }
   let(:pool) { double("pool") }
 
   before do
@@ -43,7 +43,7 @@ describe Chore::Queues::SQS::Consumer do
     end
 
     it "should receive a message from the queue" do
-      queue.should_receive(:receive_messages)
+      queue.should_receive(:receive_messages).with(:limit => 10, :attributes => [:receive_count])
       consumer.consume
     end
 
@@ -53,7 +53,7 @@ describe Chore::Queues::SQS::Consumer do
     end
 
     it "should yield the message to the handler block" do
-      expect { |b| consumer.consume(&b).to yield_control(message) }
+      expect { |b| consumer.consume(&b) }.to yield_with_args('handle', queue_name, 'message body', 0)
     end
 
     it 'should not yield for a dupe message' do
