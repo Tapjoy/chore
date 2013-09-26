@@ -65,7 +65,7 @@ DependencyDetection.defer do
       include NewRelic::Agent::Instrumentation::ControllerInstrumentation
 
       add_transaction_tracer :start_item, :name => 'process', :class_name => 'Worker', :category => 'OtherTransaction/ChoreJob'
-      add_transaction_tracer :perform_job, :name => 'perform', :class_name => '#{args[0].name}', :category => 'OtherTransaction/ChoreJob'
+      add_transaction_tracer :perform_job, :name => 'perform', :class_name => '#{args[0].name}', :category => 'OtherTransaction/ChoreJob', :params => 'args[1]'
     end
 
     if NewRelic::LanguageSupport.can_fork?
