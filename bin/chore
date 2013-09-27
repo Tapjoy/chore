@@ -4,6 +4,12 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'chore'
 require 'chore/cli'
 
+# This is a pure-ruby patch of something that resolves hostnames when making external calls
+# Without it, we have a chance to fork while the lock is held, which results in dead forks
+# This is not included anywhere else because this is the only Chore-specific code that is not
+# included in other projects by requiring chore, where this patch may be undesirable.
+require 'resolv-replace'
+
 ["INT","TERM","QUIT"].each do |sig|
   trap sig do
     Chore::CLI.instance.shutdown
