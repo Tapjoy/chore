@@ -103,4 +103,40 @@ describe Chore do
       Chore.delete_queues!
     end
   end
+
+  describe 'reopen_logs' do
+    let(:open_files) do
+      [
+        mock('file', :closed? => false, :reopen => nil, :sync= => nil, :path => '/a'),
+        mock('file2', :closed? => false, :reopen => nil, :sync= => nil, :path => '/b')
+      ]
+    end
+    let(:closed_files) do
+      [mock('file3', :closed? => true)]
+    end
+    let(:files) { open_files + closed_files }
+
+    before(:each) do
+      ObjectSpace.stub(:each_object).and_yield(open_files[0]).and_yield(open_files[1])
+    end
+
+    it 'should look up all instances of files' do
+      ObjectSpace.should_receive(:each_object).with(File)
+      Chore.reopen_logs
+    end
+
+    it 'should reopen files that are not closed' do
+      open_files.each do |file|
+        file.should_receive(:reopen).with(file.path, 'a+')
+      end
+      Chore.reopen_logs
+    end
+
+    it 'should sync files' do
+      open_files.each do |file|
+        file.should_receive(:sync=).with(true)
+      end
+      Chore.reopen_logs
+    end
+  end
 end

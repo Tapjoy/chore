@@ -10,6 +10,10 @@ require 'chore/cli'
   end
 end
 
+trap "USR1" do
+  Chore.reopen_logs
+end
+
 begin
   cli = Chore::CLI.instance
   cli.run!(ARGV)
