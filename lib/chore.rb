@@ -79,6 +79,23 @@ module Chore
     end
   end
 
+  # Reopens any open files.  This will match any logfile that was opened by Chore,
+  # Rails, or any other library.
+  def self.reopen_logs
+    # Find any open file in the process
+    files = []
+    ObjectSpace.each_object(File) {|file| files << file unless file.closed?}
+
+    files.each do |file|
+      begin
+        file.reopen(file.path, 'a+')
+        file.sync = true
+      rescue
+        # Can't reopen -- ignore / skip the file
+      end
+    end
+  end
+
   # Add a global hook for +name+. Will run +&blk+ when the hook is executed.
   # Global hooks are any hooks that don't have access to an instance of a job.
   # See the docs on Hooks for a full list of global hooks.
