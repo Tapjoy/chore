@@ -5,7 +5,11 @@ module Chore
   module Strategy
     describe ForkedWorkerStrategy do
       let(:manager) { double('manager') }
-      let(:forker) { ForkedWorkerStrategy.new(manager) }
+      let(:forker) do
+        strategy = ForkedWorkerStrategy.new(manager)
+        strategy.stub(:exit!)
+        strategy
+      end
       let(:job) { UnitOfWork.new(SecureRandom.uuid, 'test', JsonEncoder.encode(TestJob.job_hash([1,2,"3"])), 0) }
       let(:worker) { Worker.new(job) }
       let(:pid) { Random.rand(2048) }
@@ -115,6 +119,11 @@ module Chore
           end
 
           hook_called.should be_true
+        end
+
+        it 'should exit the process without running at_exit handlers' do
+          forker.should_receive(:exit!).with(true)
+          forker.assign(job)
         end
       end
 

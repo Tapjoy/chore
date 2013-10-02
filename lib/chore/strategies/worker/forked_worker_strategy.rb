@@ -55,6 +55,7 @@ module Chore
                 Chore.logger.info("Finished:#{Time.now}")
               ensure
                 Chore.run_hooks_for(:before_fork_shutdown)
+                exit!(true)
               end
             end
           end
