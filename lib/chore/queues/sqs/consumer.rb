@@ -76,7 +76,8 @@ module Chore
             @sqs_last_connected = Time.now
             @queue = nil
           end
-          @queue ||= sqs.queues.named(@queue_name)
+          @queue_url ||= sqs.queues.url_for(@queue_name)
+          @queue ||= sqs.queues[@queue_url]
         end
 
         def sqs
