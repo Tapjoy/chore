@@ -26,15 +26,6 @@ describe Chore::Manager do
     end
 
     describe 'assigning messages' do
-      it 'should block if no workers are available' do
-        Chore::Strategy::SingleWorkerStrategy.any_instance.should_receive(:assign).at_least(:once).and_return(false)
-        expect {
-          Timeout::timeout(0.3) do
-            manager.assign(work)
-          end
-        }.to raise_error(Timeout::Error)
-      end
-
       it 'should create a worker if one is available' do
         worker = mock()
         Chore::Worker.should_receive(:new).with(work).and_return(worker)

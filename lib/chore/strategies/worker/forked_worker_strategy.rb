@@ -7,6 +7,8 @@ module Chore
         @manager = manager
         @workers = {}
         @reap_mutex = Mutex.new
+        @queue = Queue.new
+        Chore.config.num_workers.times { @queue << :worker }
 
         trap_master_signals
 
@@ -40,33 +42,28 @@ module Chore
       # Take a UnitOfWork (or an Array of UnitOfWork) and assign it to a Worker. We only
       # assign work if there are <tt>workers_available?</tt>.
       def assign(work)
-        if workers_available?
-          w = Worker.new(work)
-          Chore.run_hooks_for(:before_fork,w)
-          pid = nil
-          Chore.run_hooks_for(:around_fork,w) do
-            pid = fork do
-              after_fork(w)
+        acquire_worker
 
-              Chore.run_hooks_for(:after_fork,w)
-              procline("Started:#{Time.now}")
-              begin
-                w.start
-                Chore.logger.info("Finished:#{Time.now}")
-              ensure
-                Chore.run_hooks_for(:before_fork_shutdown)
-                exit!(true)
-              end
+        w = Worker.new(work)
+        Chore.run_hooks_for(:before_fork,w)
+        pid = nil
+        Chore.run_hooks_for(:around_fork,w) do
+          pid = fork do
+            after_fork(w)
+
+            Chore.run_hooks_for(:after_fork,w)
+            procline("Started:#{Time.now}")
+            begin
+              w.start
+              Chore.logger.info("Finished:#{Time.now}")
+            ensure
+              Chore.run_hooks_for(:before_fork_shutdown)
+              exit!(true)
             end
           end
-          Chore.logger.debug { "Forked worker #{pid}"}
-          workers[pid] = w
         end
-      end
-
-
-      def workers_available?
-        workers.length < Chore.config.num_workers
+        Chore.logger.debug { "Forked worker #{pid}"}
+        workers[pid] = w
       end
 
       private
@@ -88,6 +85,16 @@ module Chore
         trap "CHLD", "DEFAULT"
       end
 
+      # Attempts to essentially acquire a lock on a worker.  If no workers are
+      # available, then this will block until one is.
+      def acquire_worker
+        @queue.pop
+      end
+
+      # Releases the lock on a worker so that another thread can pick it up.
+      def release_worker
+        @queue << :worker
+      end
 
       # Only call this in the forked child. It resets some things that need fixing up
       # in the child.
@@ -112,6 +119,7 @@ module Chore
           begin
             # Avoid a SIGCHLD race condition by reaping all available child processes
             while pid = Process.wait(-1, Process::WNOHANG)
+              release_worker
               workers.delete(pid)
               Chore.logger.debug { "Removed finished worker #{pid}"}
             end

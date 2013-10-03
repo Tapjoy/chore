@@ -32,9 +32,8 @@ module Chore
           Chore.clear_hooks!
         end
 
-        it 'should not start working if there are no workers available' do
-          forker.workers.should_receive(:length).and_return(Chore.config.num_workers)
-          Worker.any_instance.should_not_receive(:start)
+        it 'should pop off the worker queue when assignd a job' do
+          Queue.any_instance.should_receive(:pop)
           forker.assign(job)
         end
 
@@ -66,6 +65,15 @@ module Chore
           forker.send(:reap_terminated_workers!)
 
           forker.workers.should_not include(pid)
+        end
+
+        it 'should add the worker back to the queue when it has completed' do
+          forker.assign(job)
+
+          Queue.any_instance.should_receive(:<<).twice.with(:worker)
+
+          Process.stub(:wait).and_return(pid, pid + 1, nil)
+          forker.send(:reap_terminated_workers!)
         end
 
         it 'should not allow more than one thread to reap terminated workers' do

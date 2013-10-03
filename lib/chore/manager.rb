@@ -46,13 +46,7 @@ module Chore
     #
     def assign(work)
       Chore.logger.debug { "Manager#assign(#{work.inspect})" }
-      assigned = false
-      until assigned
-        break if @stopping
-        assigned = @worker_strategy.assign(work)
-
-        sleep(0.2)
-      end
+      @worker_strategy.assign(work) unless @stopping
     end
   end
 end
