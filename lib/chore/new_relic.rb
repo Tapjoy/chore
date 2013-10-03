@@ -1,4 +1,4 @@
-gem 'newrelic_rpm', '>= 3.6.6.147'
+gem 'newrelic_rpm', '>= 3.6.7.159'
 require 'new_relic/agent/instrumentation/controller_instrumentation'
 
 # Reference implementation: https://github.com/newrelic/rpm/blob/master/lib/new_relic/agent/instrumentation/resque.rb
@@ -12,38 +12,6 @@ DependencyDetection.defer do
 
   executes do
     ::NewRelic::Agent.logger.info 'Installing NewRelic instrumentation'
-  end
-
-  executes do
-    # Patch NewRelic for forked processes
-    # * Issue described @ https://github.com/resque/resque/issues/1101
-    # * Fix @ https://github.com/newrelic/rpm/commit/d703271ff2638c4fa2b3edbee478a3e5c945dfd9
-    NewRelic::Agent::Agent.class_eval do
-      def synchronize_with_harvest
-        if @worker_loop.nil? || @worker_loop.lock.nil?
-          yield
-        else
-          @worker_loop.lock.synchronize do
-            yield
-          end
-        end
-      end
-
-      # Some forking cases (like Resque) end up with harvest lock held
-      # across the fork into the child. Let it go before we proceed
-      def unlock_for_harvest
-        return if @worker_loop.nil? || @worker_loop.lock.nil?
-
-        @worker_loop.lock.unlock if @worker_loop.lock.locked?
-      end
-
-      def reset_objects_with_locks_with_harvest
-        reset_objects_with_locks_without_harvest
-        unlock_for_harvest
-      end
-      alias_method :reset_objects_with_locks_without_harvest, :reset_objects_with_locks
-      alias_method :reset_objects_with_locks, :reset_objects_with_locks_with_harvest
-    end
   end
 
   executes do
