@@ -3,6 +3,7 @@ require 'spec_helper'
 describe Chore::Queues::SQS::LockingConsumer do
   let(:sqs) { double("sqs") }
   let(:queue_name) { "test" }
+  let(:queue_url) { "test_url" }
   let(:queues) { double("queues") }
   let(:queue) { double("test_queue") }
   let(:options) { {} }
@@ -16,7 +17,8 @@ describe Chore::Queues::SQS::LockingConsumer do
   before do
     AWS::SQS.stub(:new) { sqs }
     sqs.stub(:queues).and_return { queues }
-    queues.stub(:named) { queue }
+    queues.stub(:url_for) { queue_url }
+    queues.stub(:[]) { queue }
     queue.stub(:receive_message) { message }
     queue.stub(:visibility_timeout) { 10 }
     ZK.stub(:new) { zk }

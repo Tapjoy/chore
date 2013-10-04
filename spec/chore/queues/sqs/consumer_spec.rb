@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe Chore::Queues::SQS::Consumer do
   let(:queue_name) { "test" }
+  let(:queue_url) { "test_url" }
   let(:queues) { double("queues") }
   let(:queue) { double("test_queue") }
   let(:options) { {} }
@@ -11,7 +12,8 @@ describe Chore::Queues::SQS::Consumer do
 
   before do
     AWS::SQS.any_instance.stub(:queues).and_return { queues }
-    queues.stub(:named) { queue }
+    queues.stub(:url_for) { queue_url }
+    queues.stub(:[]) { queue }
     queue.stub(:receive_message) { message }
     queue.stub(:visibility_timeout) { 10 }
     pool.stub(:empty!) { nil }
@@ -39,6 +41,16 @@ describe Chore::Queues::SQS::Consumer do
       consumer.stub(:running?).and_return(true, true, false)
 
       AWS::SQS.should_receive(:new).once.and_call_original
+      consumer.consume
+    end
+
+    it 'should look up the queue url based on the queue name' do
+      queues.should_receive(:url_for).with('test').and_return(queue_url)
+      consumer.consume
+    end
+
+    it 'should look up the queue based on the queue url' do
+      queues.should_receive(:[]).with(queue_url).and_return(queue)
       consumer.consume
     end
 
