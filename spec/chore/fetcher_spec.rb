@@ -20,7 +20,7 @@ describe Chore::Fetcher do
     Chore.configure do |c| 
       c.queues = ['test'] 
       c.consumer = consumer
-      c.batch_size = 0
+      c.batch_size = 1
     end
   end
 
