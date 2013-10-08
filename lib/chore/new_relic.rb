@@ -1,4 +1,3 @@
-gem 'newrelic_rpm', '>= 3.6.7.159'
 require 'new_relic/agent/instrumentation/controller_instrumentation'
 
 # Reference implementation: https://github.com/newrelic/rpm/blob/master/lib/new_relic/agent/instrumentation/resque.rb
@@ -59,10 +58,6 @@ DependencyDetection.defer do
         # Only suppress reporting Instance/Busy for forked children
         # Traced errors UI relies on having the parent process report that metric
         NewRelic::Agent.after_fork(:report_to_channel => worker.object_id, :report_instance_busy => false)
-      end
-
-      ::Chore.add_hook(:around_fork) do |worker, &block|
-        NewRelic::Agent.instance.synchronize_with_harvest(&block)
       end
 
       ## Before Chore worker shuts itself down, tell NewRelic to do the same.
