@@ -54,9 +54,18 @@ describe Chore::Queues::SQS::Consumer do
       consumer.consume
     end
 
-    it "should receive a message from the queue" do
-      queue.should_receive(:receive_messages).with(:limit => 10, :attributes => [:receive_count])
-      consumer.consume
+    context "should receive a message from the queue" do
+
+      it 'should use the default size of 10 when no queue_polling_size is specified' do
+        queue.should_receive(:receive_messages).with(:limit => 10, :attributes => [:receive_count])
+        consumer.consume
+      end
+
+      it 'should respect the queue_polling_size when specified' do
+        Chore.config.stub(:queue_polling_size).and_return(5)
+        queue.should_receive(:receive_messages).with(:limit => 5, :attributes => [:receive_count])
+        consumer.consume
+      end
     end
 
     it "should check the uniqueness of the message" do
