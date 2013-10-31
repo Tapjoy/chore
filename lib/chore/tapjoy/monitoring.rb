@@ -9,7 +9,6 @@ module Chore
         raise "statsd options must be configured to use monitoring" unless Chore.config.statsd
 
         Watcher::Metric.publisher = Watcher::Publisher::Statsd.new(Chore.config.statsd[:host], Chore.config.statsd[:port])
-        Watcher::Metric.default_scope = "stats"
 
         default_attributes = Chore.config.statsd[:default_attributes] || {}
 
@@ -17,7 +16,7 @@ module Chore
           attributes = default_attributes.merge({ stat: "chore", state: state }).tap do |hsh|
             hsh[:queue] = queue if queue
           end
-          metric = Watcher::Metric.new(name, attributes: attributes)
+          metric = Watcher::Metric.new(name, scope: "stats", attributes: attributes)
           metric.increment
         end
 
