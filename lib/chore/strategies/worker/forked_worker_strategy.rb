@@ -77,10 +77,12 @@ module Chore
         # finish this job, and not complete another one.
         trap("INT") { worker.stop! }
         trap("QUIT") { worker.stop! }
+        #By design, we do nothing in children on USR1, so we are not re-defining this like we do INT and QUIT
       end
 
       def clear_child_signals
         # Remove handlers from the parent process
+        trap "USR1", "DEFAULT"
         trap "INT",  "DEFAULT"
         trap "CHLD", "DEFAULT"
       end

@@ -54,8 +54,8 @@ describe Chore::Tapjoy::Monitoring do
     work = []
     work << Chore::UnitOfWork.new('1', 'test', Chore::JsonEncoder.encode(job), 0, consumer)
     consumer.should_receive(:complete).with('1')
-    Watcher::Metric.should_receive(:new).with("start", attributes: hash_including( bloo: "blah", stat: "chore", state: "started", queue: "SimpleJob" )) { metric }
-    Watcher::Metric.should_receive(:new).with("finish", attributes: hash_including( bloo: "blah", stat: "chore", state: "completed", queue: "SimpleJob" )) { metric }
+    Watcher::Metric.should_receive(:new).with("start", scope: "stats", attributes: hash_including( bloo: "blah", stat: "chore", state: "started", queue: "SimpleJob" )) { metric }
+    Watcher::Metric.should_receive(:new).with("finish", scope: "stats", attributes: hash_including( bloo: "blah", stat: "chore", state: "completed", queue: "SimpleJob" )) { metric }
     Chore::Worker.start(work)
   end
 
@@ -67,14 +67,14 @@ describe Chore::Tapjoy::Monitoring do
     consumer.should_receive(:complete).with('1')
     consumer.should_receive(:reject).with('4')
 
-    Watcher::Metric.should_receive(:new).with("start", attributes: hash_including( stat: "chore", state: "started", queue: "SimpleJob" )) { metric }
-    Watcher::Metric.should_receive(:new).with("finish", attributes: hash_including( stat: "chore", state: "completed", queue: "SimpleJob" )) { metric }
+    Watcher::Metric.should_receive(:new).with("start", scope: "stats", attributes: hash_including( stat: "chore", state: "started", queue: "SimpleJob" )) { metric }
+    Watcher::Metric.should_receive(:new).with("finish", scope: "stats", attributes: hash_including( stat: "chore", state: "completed", queue: "SimpleJob" )) { metric }
 
-    Watcher::Metric.should_receive(:new).with("start", attributes: hash_including( stat: "chore", state: "started", queue: "BreakingJob" )) { metric }
-    Watcher::Metric.should_receive(:new).with("finish", attributes: hash_including( stat: "chore", state: "failed", queue: "BreakingJob" )) { metric }
+    Watcher::Metric.should_receive(:new).with("start", scope: "stats", attributes: hash_including( stat: "chore", state: "started", queue: "BreakingJob" )) { metric }
+    Watcher::Metric.should_receive(:new).with("finish", scope: "stats", attributes: hash_including( stat: "chore", state: "failed", queue: "BreakingJob" )) { metric }
 
-    Watcher::Metric.should_receive(:new).with("start", attributes: hash_including( stat: "chore", state: "started", queue: "RejectedJob" )) { metric }
-    Watcher::Metric.should_receive(:new).with("finish", attributes: hash_including( stat: "chore", state: "rejected", queue: "RejectedJob" )) { metric }
+    Watcher::Metric.should_receive(:new).with("start", scope: "stats",  attributes: hash_including( stat: "chore", state: "started", queue: "RejectedJob" )) { metric }
+    Watcher::Metric.should_receive(:new).with("finish", scope: "stats", attributes: hash_including( stat: "chore", state: "rejected", queue: "RejectedJob" )) { metric }
 
     Chore::Worker.start(work)
   end
