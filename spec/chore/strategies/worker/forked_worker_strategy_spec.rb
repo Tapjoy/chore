@@ -98,7 +98,7 @@ module Chore
           forker.send(:reap_terminated_workers!)
         end
 
-        [:before_fork, :after_fork, :before_fork_shutdown].each do |hook|
+        [:before_fork, :after_fork, :within_fork, :before_fork_shutdown].each do |hook|
           it "should run #{hook} hooks" do
             hook_called = false
             Chore.add_hook(hook) { hook_called = true }
@@ -120,7 +120,7 @@ module Chore
 
           hook_called = false
           Chore.add_hook(:before_fork_shutdown) { hook_called = true }
-          
+
           begin
             forker.assign(job)
           rescue ArgumentError => ex
