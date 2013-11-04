@@ -51,13 +51,19 @@ DependencyDetection.defer do
         NewRelic::Agent.register_report_channel(worker.object_id)
       end
 
-      ::Chore.add_hook(:after_fork) do |worker|
-        # Reset the logger to avoid deadlocks
-        NewRelic::Agent.logger = NewRelic::Agent::AgentLogger.new(NewRelic::Agent.config, NewRelic::Control.instance.root, nil)
+      ::Chore.add_hook(:within_fork) do |worker, &block|
+        begin
+          # Reset the logger to avoid deadlocks
+          NewRelic::Agent.logger = NewRelic::Agent::AgentLogger.new(NewRelic::Agent.config, NewRelic::Control.instance.root, nil)
 
-        # Only suppress reporting Instance/Busy for forked children
-        # Traced errors UI relies on having the parent process report that metric
-        NewRelic::Agent.after_fork(:report_to_channel => worker.object_id, :report_instance_busy => false)
+          # Only suppress reporting Instance/Busy for forked children
+          # Traced errors UI relies on having the parent process report that metric
+          NewRelic::Agent.after_fork(:report_to_channel => worker.object_id, :report_instance_busy => false)
+          block.call(worker)
+        rescue StandardError => e
+          NewRelic::Agent.agent.error_collector.notice_error(e, {:request_params => { :message => 'Error within fork.' }})
+          raise e
+        end
       end
 
       ## Before Chore worker shuts itself down, tell NewRelic to do the same.
