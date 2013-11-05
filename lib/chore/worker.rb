@@ -4,13 +4,14 @@ require 'chore/json_encoder'
 module Chore
   # Worker is one of the core classes in Chore. It's responsible for most of the logic
   # relating to actually processing a job. A given worker will take an amount of +work+
-  # and then process it all until either the worker is told to stop, or the work is 
+  # and then process it all until either the worker is told to stop, or the work is
   # completed. Worker is completely agnostic to the WorkerStrategy that it was called from.
   class Worker
     include Util
 
     DEFAULT_OPTIONS = { :encoder => JsonEncoder }
     attr_accessor :options
+    attr_reader   :work
 
     def self.start(work) #:nodoc:
       self.new(work).start
