@@ -14,19 +14,20 @@ Airbrake.configuration.async do |notice|
 end
 
 Chore.add_hook(:on_failure) do |msg,error|
-  msg_class = msg['class'] || 'Unknown message class'
-  
-  airbrake_opts = {}
-  airbrake_opts[:action] = msg_class.respond_to?(:underscore) ? msg_class.underscore : msg_class
-  airbrake_opts[:parameters] = {:message => msg}
-  airbrake_opts[:component] = 'chore'
-  airbrake_opts.merge!(Chore::Airbrake.options) if Chore::Airbrake.options
-
-  Chore.logger.debug {"Sending exception to airbrake. error: #{error}, opts: #{airbrake_opts}"}
-  Airbrake.notify(error, airbrake_opts)
+  Airbrake.notify(error, Chore::Airbrake.build_reporting_options_for(msg))
 end
 
-module Chore 
+Chore.add_hook(:within_fork) do |worker, &block|
+  begin
+    block.call(worker)
+  rescue StandardError => e
+    message = { :body => 'Error within fork.', :messages => worker.work.map(&:message) }
+    Airbrake.notify(error, build_reporting_options_for(message))
+    raise e
+  end
+end
+
+module Chore
   def Chore.airbrake #:nodoc:
     Chore::Airbrake
   end
@@ -35,9 +36,19 @@ module Chore
     def self.options=(opts)
       @options = opts
     end
-    
+
     def self.options
       @options
+    end
+
+    def self.build_reporting_options_for(message, opts=nil)
+      message_class = message['class'] || 'Unknown message class'
+
+      {
+        :action => (message_class.respond_to?(:underscore) ? message_class.underscore : message_class),
+        :parameters => {:message => message},
+        :component => 'chore'
+      }.merge(opts || self.options || {})
     end
   end
 end

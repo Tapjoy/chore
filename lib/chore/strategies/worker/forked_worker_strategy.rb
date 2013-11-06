@@ -50,17 +50,19 @@ module Chore
         Chore.run_hooks_for(:around_fork,w) do
           pid = fork do
             after_fork(w)
+            Chore.run_hooks_for(:within_fork,w) do
 
-            Chore.run_hooks_for(:after_fork,w)
-            procline("Started:#{Time.now}")
-            begin
-              w.start
-              Chore.logger.info("Finished:#{Time.now}")
-            ensure
-              Chore.run_hooks_for(:before_fork_shutdown)
-              exit!(true)
-            end
-          end
+              Chore.run_hooks_for(:after_fork,w)
+              procline("Started:#{Time.now}")
+              begin
+                w.start
+                Chore.logger.info("Finished:#{Time.now}")
+              ensure
+                Chore.run_hooks_for(:before_fork_shutdown)
+                exit!(true)
+              end
+            end #within_fork
+          end #around_fork
         end
         Chore.logger.debug { "Forked worker #{pid}"}
         workers[pid] = w
