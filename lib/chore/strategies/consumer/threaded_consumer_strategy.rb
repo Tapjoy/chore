@@ -1,3 +1,4 @@
+require 'chore/strategies/consumer/batcher'
 module Chore
   module Strategy
     class ThreadedConsumerStrategy
