@@ -110,9 +110,10 @@ module Chore
         # where workers would hang around and never die
         Chore.logger = nil
 
-        # When we fork, the consumer's need their connections reset. The specifics of this
+        # When we fork, the consumer's / publisher's need their connections reset. The specifics of this
         # are queue dependent, and may result in a noop.
         Chore.config.consumer.reset_connection!
+        Chore.config.publisher.reset_connection! if Chore.config.publisher #It is possible for this to be nil due to configuration woes with chore
       end
 
       def reap_terminated_workers!
