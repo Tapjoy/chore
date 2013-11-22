@@ -45,7 +45,7 @@ module Chore
     # than they can be consumed.
     #
     def assign(work)
-      Chore.logger.debug { "Manager#assign(#{work.inspect})" }
+      Chore.logger.debug { "Manager#assign: No. of UnitsOfWork: #{work.length})" }
       @worker_strategy.assign(work) unless @stopping
     end
   end

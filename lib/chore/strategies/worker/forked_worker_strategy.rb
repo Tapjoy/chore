@@ -55,8 +55,9 @@ module Chore
               Chore.run_hooks_for(:after_fork,w)
               procline("Started:#{Time.now}")
               begin
+                Chore.logger.info("Started worker:#{Time.now}")
                 w.start
-                Chore.logger.info("Finished:#{Time.now}")
+                Chore.logger.info("Finished worker:#{Time.now}")
               ensure
                 Chore.run_hooks_for(:before_fork_shutdown)
                 exit!(true)
