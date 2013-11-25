@@ -3,6 +3,8 @@ require 'logger'
 # Require chore files
 require 'chore/version'
 
+require 'chore/unit_of_work'
+require 'chore/configuration'
 require 'chore/cli'
 require 'chore/consumer'
 require 'chore/job'
@@ -20,34 +22,7 @@ end
 
 module Chore
   VERSION = Chore::Version::STRING #:nodoc:
-  # = Chore
 
-  # Simple class to hold job processing information.
-  # Has only four attributes:
-  # * +:id+ The queue implementation specific identifier for this message.
-  # * +:message+ The actual data of the message.
-  # * +:previous_attempts+ The number of times the work has been attempted previously.
-  # * +:consumer+ The consumer instance used to fetch this message. Most queue implementations won't need access to this, but some (RabbitMQ) will. So we
-  # make sure to pass it along with each message. This instance will be used by the Worker for things like <tt>complete</tt> and </tt>reject</tt>.
-  class UnitOfWork < Struct.new(:id,:queue_name,:message,:previous_attempts,:consumer)
-    # The current attempt number for the worker processing this message.
-    def current_attempt
-      previous_attempts + 1
-    end
-  end
-
-  # Wrapper around an OpenStruct to define configuration data
-  # (TODO): Add required opts, and validate that they're set
-  class Configuration < OpenStruct
-    def merge_hash(hsh={})
-      hsh.keys.each do |k|
-        self.send("#{k.to_sym}=",hsh[k])
-      end
-      self
-    end
-  end
-
-  ##
   # The default configuration options for Chore.
   DEFAULT_OPTIONS = {
     :require => "./",
