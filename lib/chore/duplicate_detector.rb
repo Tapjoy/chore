@@ -1,18 +1,8 @@
 module Chore
   class DuplicateDetector
 
-    def initialize(servers=nil,memcached_client=nil,dedupe_strategy=:relaxed,timeout=0)
-      memcached_options = {
-        :auto_eject_hosts => false,
-        :cache_lookups => false,
-        :tcp_nodelay => true,
-        :socket_max_failures => 5,
-        :socket_timeout => 2
-      }
-
-      @timeouts = {}
-
-      # make it optional. Only required when we use it
+    def initialize(opts={})
+      # Make it optional. Only required when we use it.
       begin
         require 'dalli'
       rescue LoadError => e
@@ -21,9 +11,19 @@ module Chore
         raise e
       end
 
-      @dedupe_strategy  = dedupe_strategy
-      @timeout          = timeout
-      @memcached_client = (memcached_client ? memcached_client : Dalli::Client.new(servers, memcached_options))
+      memcached_options = {
+        :auto_eject_hosts    => false,
+        :cache_lookups       => false,
+        :tcp_nodelay         => true,
+        :socket_max_failures => 5,
+        :socket_timeout      => 2
+      }
+
+      @timeouts         = {}
+      @dedupe_strategy  = opts.fetch(:dedupe_strategy) { :relaxed }
+      @timeout          = opts.fetch(:timeout) { 0 }
+      @servers          = opts.fetch(:servers) { nil }
+      @memcached_client = opts.fetch(:memcached_client) { Dalli::Client.new(@servers, memcached_options) }
     end
 
     def found_duplicate?(msg)
@@ -32,7 +32,7 @@ module Chore
       begin
         !@memcached_client.add(msg.id, "1",timeout)
       rescue StandardError => e
-        case @dedupe_strategy
+        case @dedupe_strategy.to_sym
         when :strict
           Chore.logger.error "Error accessing duplicate cache server. Assuming message is a duplicate. #{e}\n#{e.backtrace * "\n"}"
           true

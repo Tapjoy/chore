@@ -4,7 +4,8 @@ require 'securerandom'
 describe Chore::DuplicateDetector do
   let(:memcache) { double("memcache") }
   let(:dedupe_strategy) { :relaxed }
-  let(:dedupe) { Chore::DuplicateDetector.new(nil,memcache,dedupe_strategy)}
+  let(:dedupe_params)  { { :memcached_client => memcache, :dedupe_strategy => dedupe_strategy } }
+  let(:dedupe) { Chore::DuplicateDetector.new(dedupe_params)}
   let(:message) { double('message') }
   let(:timeout) { 2 }
   let(:queue_url) {"queue://bogus/url"}
