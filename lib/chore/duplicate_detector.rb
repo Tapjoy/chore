@@ -1,8 +1,8 @@
 module Chore
   class DuplicateDetector
 
-    def initialize(servers=nil,memcached_client = nil,timeout=0)
-      @memcached_options = {
+    def initialize(servers=nil,memcached_client=nil,dedupe_strategy=:relaxed,timeout=0)
+      memcached_options = {
         :auto_eject_hosts => false,
         :cache_lookups => false,
         :tcp_nodelay => true,
@@ -21,8 +21,9 @@ module Chore
         raise e
       end
 
-      @timeout = timeout
-      @memcached_client = (memcached_client ? memcached_client : Dalli::Client.new(servers, @memcached_options))
+      @dedupe_strategy  = dedupe_strategy
+      @timeout          = timeout
+      @memcached_client = (memcached_client ? memcached_client : Dalli::Client.new(servers, memcached_options))
     end
 
     def found_duplicate?(msg)
@@ -31,8 +32,14 @@ module Chore
       begin
         !@memcached_client.add(msg.id, "1",timeout)
       rescue StandardError => e
-        Chore.logger.error "Error accessing duplicate cache server. Assuming message is not a duplicate. #{e}\n#{e.backtrace * "\n"}"
-        false
+        case @dedupe_strategy
+        when :strict
+          Chore.logger.error "Error accessing duplicate cache server. Assuming message is a duplicate. #{e}\n#{e.backtrace * "\n"}"
+          true
+        when :relaxed
+          Chore.logger.error "Error accessing duplicate cache server. Assuming message is not a duplicate. #{e}\n#{e.backtrace * "\n"}"
+          false
+        end
       end
     end
 

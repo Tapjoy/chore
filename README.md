@@ -43,6 +43,7 @@ Other options include:
     --threads-per-queue 4 # number of threads per queue for fetching from queue
     --queue_prefix prefixy # A prefix to prepend to queue names, mainly for development and qa testing purposes
     --max-attempts 100 # The maximum number of times a job can be attempted
+    --dedupe_strategy # Setting this value to :strict means that when memcache is down, we assume that the message is a duplicate. Defaults to true, which assumes the message is not a duplicate.
 
 By default, Chore will run over all queues it detects among the required files. If you wish to change this behavior, you can use:
 

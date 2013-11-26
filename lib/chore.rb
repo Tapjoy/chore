@@ -50,18 +50,19 @@ module Chore
   ##
   # The default configuration options for Chore.
   DEFAULT_OPTIONS = {
-    :require => "./",
-    :num_workers => 4,
+    :require           => "./",
+    :num_workers       => 4,
     :threads_per_queue => 1,
-    :worker_strategy => Strategy::ForkedWorkerStrategy,
-    :consumer => Queues::SQS::Consumer,
-    :fetcher => Fetcher,
+    :worker_strategy   => Strategy::ForkedWorkerStrategy,
+    :consumer          => Queues::SQS::Consumer,
+    :fetcher           => Fetcher,
     :consumer_strategy => Strategy::ThreadedConsumerStrategy,
-    :batch_size => 50,
-    :log_level => Logger::WARN,
-    :log_path => STDOUT,
-    :shutdown_timeout => (2 * 60),
-    :max_attempts => 1.0 / 0.0 # Infinity
+    :batch_size        => 50,
+    :log_level         => Logger::WARN,
+    :log_path          => STDOUT,
+    :shutdown_timeout  => (2 * 60),
+    :max_attempts      => 1.0 / 0.0, # Infinity
+    :dedupe_strategy   => :relaxed
   }
 
   class << self
