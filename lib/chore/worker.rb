@@ -41,11 +41,11 @@ module Chore
     def start
       @work.each do |item|
         return if @stopping
-        Chore.logger.debug { "Doing: #{item.inspect}" }
+        Chore.logger.debug { "Doing: #{item.queue_name} with #{item.message}" }
         begin
           start_item(item)
         rescue => e
-          Chore.logger.error { "Failed to run job #{item.inspect} with error: #{e.message} #{e.backtrace * "\n"}" }
+          Chore.logger.error { "Failed to run job for #{item.message} with error: #{e.message} #{e.backtrace * "\n"}" }
           if item.current_attempt >= Chore.config.max_attempts
             Chore.run_hooks_for(:on_permanent_failure,item.queue_name,item.message,e)
             item.consumer.complete(item.id)
@@ -78,10 +78,10 @@ module Chore
         klass.run_hooks_for(:after_perform,message)
       rescue Job::RejectMessageException
         item.consumer.reject(item.id)
-        Chore.logger.error { "Failed to run job #{item.inspect} with error: Job raised a RejectMessageException" }
+        Chore.logger.error { "Failed to run job for #{item.message}  with error: Job raised a RejectMessageException" }
         klass.run_hooks_for(:on_rejected, message)
       rescue => e
-        Chore.logger.error { "Failed to run job #{item.inspect} with error: #{e.message} at #{e.backtrace * "\n"}" }
+        Chore.logger.error { "Failed to run job #{item.message} with error: #{e.message} at #{e.backtrace * "\n"}" }
         if item.current_attempt >= klass.options[:max_attempts]
           klass.run_hooks_for(:on_permanent_failure,item.queue_name,message,e)
           item.consumer.complete(item.id)
