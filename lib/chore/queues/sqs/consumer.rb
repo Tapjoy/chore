@@ -68,7 +68,7 @@ module Chore
 
         def dupe_detector
           @dupes ||= DuplicateDetector.new({:servers => Chore.config.dedupe_servers,
-                                            :dedupe_strategy => Chore.config.dedupe_strategy})
+                                            :dupe_on_cache_failure => Chore.config.dupe_on_cache_failure})
         end
 
         def queue

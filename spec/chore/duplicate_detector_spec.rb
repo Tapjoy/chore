@@ -3,8 +3,8 @@ require 'securerandom'
 
 describe Chore::DuplicateDetector do
   let(:memcache) { double("memcache") }
-  let(:dedupe_strategy) { :relaxed }
-  let(:dedupe_params)  { { :memcached_client => memcache, :dedupe_strategy => dedupe_strategy } }
+  let(:dupe_on_cache_failure) { false }
+  let(:dedupe_params)  { { :memcached_client => memcache, :dupe_on_cache_failure => dupe_on_cache_failure } }
   let(:dedupe) { Chore::DuplicateDetector.new(dedupe_params)}
   let(:message) { double('message') }
   let(:timeout) { 2 }
@@ -50,7 +50,7 @@ describe Chore::DuplicateDetector do
 
     context 'when a memecached connection error occurs' do
       context 'and when Chore.config.dedupe_strategy is set to :strict' do
-        let(:dedupe_strategy) { :strict }
+        let(:dupe_on_cache_failure) { true }
 
         it "returns true" do
           memcache.should_receive(:add).and_raise

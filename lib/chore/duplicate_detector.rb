@@ -19,11 +19,11 @@ module Chore
         :socket_timeout      => 2
       }
 
-      @timeouts         = {}
-      @dedupe_strategy  = opts.fetch(:dedupe_strategy) { :relaxed }
-      @timeout          = opts.fetch(:timeout) { 0 }
-      @servers          = opts.fetch(:servers) { nil }
-      @memcached_client = opts.fetch(:memcached_client) { Dalli::Client.new(@servers, memcached_options) }
+      @timeouts              = {}
+      @dupe_on_cache_failure = opts.fetch(:dupe_on_cache_failure) { false }
+      @timeout               = opts.fetch(:timeout) { 0 }
+      @servers               = opts.fetch(:servers) { nil }
+      @memcached_client      = opts.fetch(:memcached_client) { Dalli::Client.new(@servers, memcached_options) }
     end
 
     def found_duplicate?(msg)
@@ -32,11 +32,10 @@ module Chore
       begin
         !@memcached_client.add(msg.id, "1",timeout)
       rescue StandardError => e
-        case @dedupe_strategy.to_sym
-        when :strict
+        if @dupe_on_cache_failure
           Chore.logger.error "Error accessing duplicate cache server. Assuming message is a duplicate. #{e}\n#{e.backtrace * "\n"}"
           true
-        when :relaxed
+        else
           Chore.logger.error "Error accessing duplicate cache server. Assuming message is not a duplicate. #{e}\n#{e.backtrace * "\n"}"
           false
         end
