@@ -129,6 +129,8 @@ module Chore
 
       register_option 'shutdown_timeout', '--shutdown-timeout SECONDS', Float, "Upon shutdown, the number of seconds to wait before force killing worker strategies (default: #{Chore::DEFAULT_OPTIONS[:shutdown_timeout]})"
 
+      register_option 'dupe_on_cache_failure', '--dupe-on-cache-failure BOOLEAN', 'Determines the deduping behavior when a cache connection error occurs. When set to false, the message is assumed not to be a duplicate. (default: false)'
+
     end
 
     def parse_opts(argv)
