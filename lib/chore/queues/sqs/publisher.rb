@@ -42,7 +42,6 @@ module Chore
             @sqs = nil
             @@reset_next = false
             @sqs_queues = {}
-            @sqs_queue_urls = {}
           end
           @sqs_queue_urls[name] ||= self.sqs.queues.url_for(name)
           @sqs_queues[name] ||= self.sqs.queues[@sqs_queue_urls[name]]
