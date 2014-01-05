@@ -35,7 +35,7 @@ If you're using SQS, you'll want to add AWS keys so that Chore can authenticate 
 Other options include:
 
     --concurrency 16 # number of concurrent worker processes, if using forked worker strategy
-    --worker-strategy Chore::ForkedWorkerStrategy # which worker strategy class to use
+    --worker-strategy Chore::Strategy::ForkedWorkerStrategy # which worker strategy class to use
     --consumer Chore::Queues::SQS::Consumer # which consumer class to use
     --dedupe-servers # if using SQS and your memcache is running on something other than localhost
     --fetcher-strategy Chore::ThreadedConsumerStrategy # fetching strategy class, are you seeing a theme here?
