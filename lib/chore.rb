@@ -37,7 +37,8 @@ module Chore
     :log_path              => STDOUT,
     :shutdown_timeout      => (2 * 60),
     :max_attempts          => 1.0 / 0.0, # Infinity
-    :dupe_on_cache_failure => false
+    :dupe_on_cache_failure => false,
+    :send_in_batches       => false
   }
 
   class << self

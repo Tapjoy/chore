@@ -80,6 +80,7 @@ module Chore
       # parse again to pick up options required by loaded classes
       parse_opts(args)
       parse_config_file(@options[:config_file]) if @options[:config_file]
+      validate_batching
       detect_queues
       Chore.configure(options)
       Chore.configuring = false
@@ -131,6 +132,9 @@ module Chore
 
       register_option 'dupe_on_cache_failure', '--dupe-on-cache-failure BOOLEAN', 'Determines the deduping behavior when a cache connection error occurs. When set to false, the message is assumed not to be a duplicate. (default: false)'
 
+      register_option 'send_in_batches', '--send_in_batches BOOLEAN', 'Determines whether the sqs publisher will send one message at a time or to batch-send messages. When set to true, Chore::Queues::SQS::Publisher will use a thread pool to backround batch-send jobs. (default: false)'
+
+      register_option 'messaging_pool_size', '--messaging_pool_size INTEGER', 'Determines the size of the thread pool for sending batched SQS messages. (default: 5)'
     end
 
     def parse_opts(argv)
@@ -194,6 +198,12 @@ module Chore
       end
 
       raise ArgumentError, "No queues specified. Either include classes that include Chore::Job, or specify the --queues option" if options[:queues].empty?
+    end
+
+    def validate_batching
+      if options[:messaging_pool_size] && options[:send_in_batches].to_s != 'true'
+        raise ArgumentError, "Cannot specify --messaging_pool_size without send_in_batches set to true"
+      end
     end
 
     def missing_option!(option)
