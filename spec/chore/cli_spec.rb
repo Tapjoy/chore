@@ -68,6 +68,46 @@ describe Chore::CLI do
       Chore.config.queues.should include('prefixey_test2')
     end
 
+    context 'when provided duplicate queues' do
+      let(:queue_options) {['--queues=test2,test2']}
+      before :each do 
+        cli.parse(queue_options)
+      end
+
+      it 'should not have duplicate queues' do
+        Chore.config.queues.count.should == 1
+      end
+    end
+
+    context 'when both --queue_prefix and --queues have been provided' do
+      let(:queue_options) {['--queue-prefix=prefixy', '--queues=test2']}
+      before :each do
+        cli.parse(queue_options)
+      end
+
+      it 'should honor --queue_prefix' do
+        total_queues = Chore.config.queues.count
+        prefixed_queues = Chore.config.queues.count {|item| item.start_with?("prefixy_")}
+        prefixed_queues.should == total_queues
+      end
+
+      it 'should prefix the names of the specified queues' do
+        Chore.config.queues.should include('prefixy_test2')
+      end
+
+      it 'should not prefix the names of queues that were not specified' do
+        Chore.config.queues.should_not include('prefixy_test_queue')
+      end
+
+      it 'should not have a queue without the prefix' do
+        Chore.config.queues.should_not include('test2')
+      end
+
+      it 'should not have a queue that was not specified' do
+        Chore.config.queues.should_not include('test_queue')
+      end
+    end
+
     it 'should raise an exception if both --queues and --except are specified' do
       expect { cli.parse(['--except=something','--queues=something,else']) }.to raise_error(ArgumentError)
     end

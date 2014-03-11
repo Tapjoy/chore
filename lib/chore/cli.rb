@@ -197,10 +197,10 @@ module Chore
         end
       end
 
-      oiriginal_queues = options[:queues].dup
+      original_queues = options[:queues].dup
       # Now apply the prefixing
       options[:queues] = Set.new.tap do |queue_set|
-        oiriginal_queues.each {|oq_name| queue_set << "#{options[:queue_prefix]}#{oq_name}"}
+        original_queues.each {|oq_name| queue_set << "#{options[:queue_prefix]}#{oq_name}"}
       end
 
       raise ArgumentError, "No queues specified. Either include classes that include Chore::Job, or specify the --queues option" if options[:queues].empty?
