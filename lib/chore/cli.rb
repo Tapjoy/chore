@@ -192,9 +192,15 @@ module Chore
         options[:queues] = Set.new
         Chore::Job.job_classes.each do |j|
           klazz = constantize(j)
-          options[:queues] << "#{options[:queue_prefix]}#{klazz.options[:name]}" if klazz.options[:name]
-          options[:queues] -= ((options[:except_queues] || []).map {|entry| "#{options[:queue_prefix]}#{entry}"} || [])
+          options[:queues] << klazz.options[:name] if klazz.options[:name]
+          options[:queues] -= (options[:except_queues] || [])
         end
+      end
+
+      original_queues = options[:queues].dup
+      # Now apply the prefixing
+      options[:queues] = Set.new.tap do |queue_set|
+        original_queues.each {|oq_name| queue_set << "#{options[:queue_prefix]}#{oq_name}"}
       end
 
       raise ArgumentError, "No queues specified. Either include classes that include Chore::Job, or specify the --queues option" if options[:queues].empty?
