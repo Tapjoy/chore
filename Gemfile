@@ -16,4 +16,3 @@ end
 gem 'statsd-ruby', '~> 1.0.0'
 gem 'watcher-client', git: 'git@github.com:Tapjoy/watcher-client.git', tag: 'v0.2.0'
 gem 'ci_reporter', '~> 1.9.0'
-gem 'thread', "~> 0.1.3"
