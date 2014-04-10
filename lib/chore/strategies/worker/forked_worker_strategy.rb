@@ -28,12 +28,18 @@ module Chore
       # current job before dying.
       def stop!
         Chore.logger.info { "Manager #{Process.pid} stopping" }
-        begin
+
+        # Instead of using Process.waitall (which is a blocking operation that can
+        # cause the master process to hang), use a Unicorn style non-blocking
+        # shutdown process.
+        limit = Time.now + Chore.config.shutdown_timeout
+        until workers.empty? || Time.now > limit
           signal_children("QUIT")
-          Timeout::timeout(Chore.config.shutdown_timeout) do
-            Process.waitall
-          end
-        rescue Timeout::Error
+          sleep(0.1)
+          reap_terminated_workers!
+        end
+
+        if !workers.empty?
           Chore.logger.error "Timed out waiting for children to terminate. Terminating with prejudice."
           signal_children("KILL")
         end
