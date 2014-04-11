@@ -22,7 +22,7 @@ Chore.add_hook(:within_fork) do |worker, &block|
     block.call(worker)
   rescue StandardError => e
     message = { :body => 'Error within fork.', :messages => worker.work.map(&:message) }
-    Airbrake.notify(error, build_reporting_options_for(message))
+    Airbrake.notify(e, Chore::Airbrake.build_reporting_options_for(message))
     raise e
   end
 end
