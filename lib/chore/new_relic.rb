@@ -1,3 +1,4 @@
+gem 'newrelic_rpm', '>= 3.7.0'
 require 'new_relic/agent/instrumentation/controller_instrumentation'
 
 # Reference implementation: https://github.com/newrelic/rpm/blob/master/lib/new_relic/agent/instrumentation/resque.rb
@@ -54,7 +55,7 @@ DependencyDetection.defer do
       ::Chore.add_hook(:within_fork) do |worker, &block|
         begin
           # Reset the logger to avoid deadlocks
-          NewRelic::Agent.logger = NewRelic::Agent::AgentLogger.new(NewRelic::Agent.config, NewRelic::Control.instance.root, nil)
+          NewRelic::Agent.logger = NewRelic::Agent::AgentLogger.new(NewRelic::Control.instance.root, nil)
 
           # Only suppress reporting Instance/Busy for forked children
           # Traced errors UI relies on having the parent process report that metric
