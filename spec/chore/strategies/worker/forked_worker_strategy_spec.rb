@@ -9,7 +9,7 @@ describe Chore::Strategy::ForkedWorkerStrategy do
     strategy
   end
   let(:job) { Chore::UnitOfWork.new(SecureRandom.uuid, 'test', Chore::JsonEncoder.encode(TestJob.job_hash([1,2,"3"])), 0) }
-  let(:worker) { Chore::Worker.new(job) }
+  let!(:worker) { Chore::Worker.new(job) }
   let(:pid) { Random.rand(2048) }
 
   context "signal handling" do
@@ -24,7 +24,6 @@ describe Chore::Strategy::ForkedWorkerStrategy do
     before(:each) do
       forker.stub(:fork).and_yield.and_return(pid)
       forker.stub(:after_fork)
-      worker #can't let this resolve lazily
     end
     after(:each) do
       Chore.clear_hooks!
@@ -140,6 +139,42 @@ describe Chore::Strategy::ForkedWorkerStrategy do
       forker.should_receive(:clear_child_signals)
       forker.should_receive(:trap_child_signals)
       forker.send(:after_fork,worker)
+    end
+  end
+
+  context '#stop!' do
+    before(:each) do
+      Process.stub(:kill)
+
+      forker.stub(:fork).and_yield.and_return(pid)
+      forker.stub(:after_fork)
+      forker.assign(job)
+    end
+
+    it 'should send a quit signal to each child' do
+      Process.should_receive(:kill).once.with('QUIT', pid)
+      Process.stub(:wait).and_return(pid, nil)
+      forker.stop!
+    end
+
+    it 'should reap each worker' do
+      Process.should_receive(:wait).and_return(pid, nil)
+      forker.stop!
+      forker.workers.should be_empty
+    end
+
+    it 'should resend quit signal to children if workers are not reaped' do
+      Process.should_receive(:kill).twice.with('QUIT', pid)
+      Process.stub(:wait).and_return(nil, pid, nil)
+      forker.stop!
+    end
+
+    it 'should send kill signal to children if timeout is exceeded' do
+      Chore.config.stub(:shutdown_timeout).and_return(0.05)
+      Process.should_receive(:kill).once.with('QUIT', pid)
+      Process.stub(:wait).and_return(nil)
+      Process.should_receive(:kill).once.with('KILL', pid)
+      forker.stop!
     end
   end
 end
