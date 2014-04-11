@@ -12,6 +12,9 @@ describe Chore do
   $test_msg = {"class"=> "TestJob", "args" => {"message"=> "test message"} }
   
   describe "airbrake failure callback" do
+    let(:worker) { double('worker', :work => [work]) }
+    let(:work) { Chore::UnitOfWork.new(1,'test',$test_msg,0,nil) }
+
     before(:all) do 
       # tests run in random order so we can only check the require
       # loading in before all
@@ -45,6 +48,19 @@ describe Chore do
       Chore.run_hooks_for(:on_failure, $test_msg, RuntimeError.new("exception"))
     end
     
+    it 'should send an airbrake exception on fork failures if chore/airbrake has been required' do
+      expected_options = get_default_airbrake_options.merge(
+        :action => 'Unknown message class',
+        :parameters => {:message => {:body => 'Error within fork.', :messages => [$test_msg]}}
+      )
+      Airbrake.should_receive(:notify).with(kind_of(RuntimeError), expected_options)
+      lambda do
+        Chore.run_hooks_for(:within_fork, worker) do
+          raise RuntimeError, "exception"
+        end
+      end.should raise_error(RuntimeError)
+    end
+
     it "should accept options modified by Chore.airbrake" do 
       # app can send arbitrary options to airbrake through options wrapper
       additional_airbrake_options = {:test_param => "test value"}
