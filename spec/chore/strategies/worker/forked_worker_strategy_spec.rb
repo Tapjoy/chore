@@ -132,6 +132,36 @@ describe Chore::Strategy::ForkedWorkerStrategy do
     end
   end
 
+  context '#before_fork' do
+    before(:each) do
+      Chore::Worker.stub(:new).and_return(worker)
+    end
+    after(:each) do
+      Chore.clear_hooks!
+    end
+
+    it 'should release the worker if an exception occurs' do
+      Chore.add_hook(:before_fork) { raise ArgumentError }
+      forker.should_receive(:release_worker)
+      forker.assign(job)
+    end
+  end
+
+  context '#around_fork' do
+    before(:each) do
+      Chore::Worker.stub(:new).and_return(worker)
+    end
+    after(:each) do
+      Chore.clear_hooks!
+    end
+
+    it 'should release the worker if an exception occurs' do
+      Chore.add_hook(:around_fork) {|worker, &block| raise ArgumentError}
+      forker.should_receive(:release_worker)
+      forker.assign(job)
+    end
+  end
+
   context '#after_fork' do
     let(:worker) { double('worker') }
 
