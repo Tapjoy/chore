@@ -35,7 +35,7 @@ module Chore
               Chore.logger.error "You specified a queue that does not exist. You must create the queue before starting Chore. Shutting down..."
               raise Chore::TerribleMistake  
             rescue => e
-              Chore.logger.error { "SQSConsumer#Consume: #{e.inspect}" }
+              Chore.logger.error { "SQSConsumer#Consume: #{e.inspect} #{e.backtrace * "\n"}" }
             end
           end
         end
