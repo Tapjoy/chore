@@ -50,29 +50,35 @@ module Chore
       def assign(work)
         acquire_worker
 
-        w = Worker.new(work)
-        Chore.run_hooks_for(:before_fork,w)
-        pid = nil
-        Chore.run_hooks_for(:around_fork,w) do
-          pid = fork do
-            after_fork(w)
-            Chore.run_hooks_for(:within_fork,w) do
+        begin
+          w = Worker.new(work)
+          Chore.run_hooks_for(:before_fork,w)
+          pid = nil
+          Chore.run_hooks_for(:around_fork,w) do
+            pid = fork do
+              after_fork(w)
+              Chore.run_hooks_for(:within_fork,w) do
 
-              Chore.run_hooks_for(:after_fork,w)
-              procline("Started:#{Time.now}")
-              begin
-                Chore.logger.info("Started worker:#{Time.now}")
-                w.start
-                Chore.logger.info("Finished worker:#{Time.now}")
-              ensure
-                Chore.run_hooks_for(:before_fork_shutdown)
-                exit!(true)
-              end
-            end #within_fork
-          end #around_fork
+                Chore.run_hooks_for(:after_fork,w)
+                procline("Started:#{Time.now}")
+                begin
+                  Chore.logger.info("Started worker:#{Time.now}")
+                  w.start
+                  Chore.logger.info("Finished worker:#{Time.now}")
+                ensure
+                  Chore.run_hooks_for(:before_fork_shutdown)
+                  exit!(true)
+                end
+              end #within_fork
+            end #around_fork
+          end
+
+          Chore.logger.debug { "Forked worker #{pid}"}
+          workers[pid] = w
+        rescue => ex
+          Chore.logger.error { "Failed to fork worker: #{ex.message} #{ex.backtrace * "\n"}"}
+          release_worker
         end
-        Chore.logger.debug { "Forked worker #{pid}"}
-        workers[pid] = w
       end
 
       private
