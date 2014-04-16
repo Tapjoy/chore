@@ -1,3 +1,5 @@
+require 'chore/signal'
+
 module Chore
   module Strategy
     class ForkedWorkerStrategy
@@ -86,22 +88,20 @@ module Chore
       private
 
       def trap_master_signals
-        trap('CHLD') { reap_terminated_workers! }
+        Signal.trap('CHLD') { reap_terminated_workers! }
       end
 
       def trap_child_signals(worker)
         # Register a new QUIT handler to make the current worker
         # finish this job, and not complete another one.
-        trap("INT") { worker.stop! }
-        trap("QUIT") { worker.stop! }
+        Signal.trap("INT") { worker.stop! }
+        Signal.trap("QUIT") { worker.stop! }
         #By design, we do nothing in children on USR1, so we are not re-defining this like we do INT and QUIT
       end
 
       def clear_child_signals
         # Remove handlers from the parent process
-        trap "USR1", "DEFAULT"
-        trap "INT",  "DEFAULT"
-        trap "CHLD", "DEFAULT"
+        Signal.reset
       end
 
       # Attempts to essentially acquire a lock on a worker.  If no workers are

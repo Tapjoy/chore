@@ -3,7 +3,7 @@ require 'timeout'
 
 describe Chore::Manager do
 
-  let(:fetcher) { mock() }
+  let(:fetcher) { mock(:start => nil) }
   let(:opts) { { :num_workers => 4, :other_opt => 'hi', :fetcher => fetcher } }
 
   before(:each) do

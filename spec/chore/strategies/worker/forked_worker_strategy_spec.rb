@@ -14,7 +14,7 @@ describe Chore::Strategy::ForkedWorkerStrategy do
 
   context "signal handling" do
     it 'should trap signals from terminating children and reap them' do
-      Chore::Strategy::ForkedWorkerStrategy.any_instance.should_receive(:trap).with('CHLD').and_yield
+      Chore::Signal.should_receive(:trap).with('CHLD').and_yield
       Chore::Strategy::ForkedWorkerStrategy.any_instance.should_receive(:reap_terminated_workers!)
       forker
     end
