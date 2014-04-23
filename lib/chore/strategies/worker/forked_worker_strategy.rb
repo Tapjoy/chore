@@ -53,7 +53,10 @@ module Chore
         acquire_worker
 
         if @stopped
-          # Strategy has stopped since the worker was acquired
+          # Strategy has stopped since the worker was acquired.  If workers are
+          # allowed to run even though the strategy is stopped, this could result
+          # in forks occuring while the CLI is calling +Kernel#exit+ -- which can
+          # cause chore to hang.
           release_worker
         else
           begin
