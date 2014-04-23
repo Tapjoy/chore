@@ -5,6 +5,7 @@ module Chore
 
       def initialize(manager)
         @manager = manager
+        @stopped = false
         @workers = {}
         @reap_mutex = Mutex.new
         @queue = Queue.new
@@ -27,6 +28,7 @@ module Chore
       # that <tt>stop!</tt> is non-destructive in that it allow each worker to complete it's
       # current job before dying.
       def stop!
+        @stopped = true
         Chore.logger.info { "Manager #{Process.pid} stopping" }
 
         # Instead of using Process.waitall (which is a blocking operation that can
@@ -50,34 +52,39 @@ module Chore
       def assign(work)
         acquire_worker
 
-        begin
-          w = Worker.new(work)
-          Chore.run_hooks_for(:before_fork,w)
-          pid = nil
-          Chore.run_hooks_for(:around_fork,w) do
-            pid = fork do
-              after_fork(w)
-              Chore.run_hooks_for(:within_fork,w) do
-
-                Chore.run_hooks_for(:after_fork,w)
-                procline("Started:#{Time.now}")
-                begin
-                  Chore.logger.info("Started worker:#{Time.now}")
-                  w.start
-                  Chore.logger.info("Finished worker:#{Time.now}")
-                ensure
-                  Chore.run_hooks_for(:before_fork_shutdown)
-                  exit!(true)
-                end
-              end #within_fork
-            end #around_fork
-          end
-
-          Chore.logger.debug { "Forked worker #{pid}"}
-          workers[pid] = w
-        rescue => ex
-          Chore.logger.error { "Failed to fork worker: #{ex.message} #{ex.backtrace * "\n"}"}
+        if @stopped
+          # Strategy has stopped since the worker was acquired
           release_worker
+        else
+          begin
+            w = Worker.new(work)
+            Chore.run_hooks_for(:before_fork,w)
+            pid = nil
+            Chore.run_hooks_for(:around_fork,w) do
+              pid = fork do
+                after_fork(w)
+                Chore.run_hooks_for(:within_fork,w) do
+
+                  Chore.run_hooks_for(:after_fork,w)
+                  procline("Started:#{Time.now}")
+                  begin
+                    Chore.logger.info("Started worker:#{Time.now}")
+                    w.start
+                    Chore.logger.info("Finished worker:#{Time.now}")
+                  ensure
+                    Chore.run_hooks_for(:before_fork_shutdown)
+                    exit!(true)
+                  end
+                end #within_fork
+              end #around_fork
+            end
+
+            Chore.logger.debug { "Forked worker #{pid}"}
+            workers[pid] = w
+          rescue => ex
+            Chore.logger.error { "Failed to fork worker: #{ex.message} #{ex.backtrace * "\n"}"}
+            release_worker
+          end
         end
       end
 
