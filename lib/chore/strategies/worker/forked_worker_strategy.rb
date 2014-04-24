@@ -50,44 +50,36 @@ module Chore
       # Take a UnitOfWork (or an Array of UnitOfWork) and assign it to a Worker. We only
       # assign work if there are <tt>workers_available?</tt>.
       def assign(work)
-        acquire_worker
+        return unless acquire_worker
 
-        if @stopped
-          # Strategy has stopped since the worker was acquired.  If workers are
-          # allowed to run even though the strategy is stopped, this could result
-          # in forks occuring while the CLI is calling +Kernel#exit+ -- which can
-          # cause chore to hang.
-          release_worker
-        else
-          begin
-            w = Worker.new(work)
-            Chore.run_hooks_for(:before_fork,w)
-            pid = nil
-            Chore.run_hooks_for(:around_fork,w) do
-              pid = fork do
-                after_fork(w)
-                Chore.run_hooks_for(:within_fork,w) do
+        begin
+          w = Worker.new(work)
+          Chore.run_hooks_for(:before_fork,w)
+          pid = nil
+          Chore.run_hooks_for(:around_fork,w) do
+            pid = fork do
+              after_fork(w)
+              Chore.run_hooks_for(:within_fork,w) do
 
-                  Chore.run_hooks_for(:after_fork,w)
-                  procline("Started:#{Time.now}")
-                  begin
-                    Chore.logger.info("Started worker:#{Time.now}")
-                    w.start
-                    Chore.logger.info("Finished worker:#{Time.now}")
-                  ensure
-                    Chore.run_hooks_for(:before_fork_shutdown)
-                    exit!(true)
-                  end
-                end #within_fork
-              end #around_fork
-            end
-
-            Chore.logger.debug { "Forked worker #{pid}"}
-            workers[pid] = w
-          rescue => ex
-            Chore.logger.error { "Failed to fork worker: #{ex.message} #{ex.backtrace * "\n"}"}
-            release_worker
+                Chore.run_hooks_for(:after_fork,w)
+                procline("Started:#{Time.now}")
+                begin
+                  Chore.logger.info("Started worker:#{Time.now}")
+                  w.start
+                  Chore.logger.info("Finished worker:#{Time.now}")
+                ensure
+                  Chore.run_hooks_for(:before_fork_shutdown)
+                  exit!(true)
+                end
+              end #within_fork
+            end #around_fork
           end
+
+          Chore.logger.debug { "Forked worker #{pid}"}
+          workers[pid] = w
+        rescue => ex
+          Chore.logger.error { "Failed to fork worker: #{ex.message} #{ex.backtrace * "\n"}"}
+          release_worker
         end
       end
 
@@ -115,7 +107,18 @@ module Chore
       # Attempts to essentially acquire a lock on a worker.  If no workers are
       # available, then this will block until one is.
       def acquire_worker
-        @queue.pop
+        result = @queue.pop
+
+        if @stopped
+          # Strategy has stopped since the worker was acquired.  If workers are
+          # allowed to run even though the strategy is stopped, this could result
+          # in forks occuring while the CLI is calling +Kernel#exit+ -- which can
+          # cause chore to hang.
+          release_worker
+          nil
+        else
+          result
+        end
       end
 
       # Releases the lock on a worker so that another thread can pick it up.
