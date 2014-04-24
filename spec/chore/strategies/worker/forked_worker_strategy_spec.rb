@@ -206,6 +206,14 @@ describe Chore::Strategy::ForkedWorkerStrategy do
       Process.should_receive(:kill).once.with('KILL', pid)
       forker.stop!
     end
+
+    it 'should not allow more work to be assigned' do
+      Process.stub(:wait).and_return(pid, nil)
+      forker.stop!
+
+      Chore::Worker.should_not_receive(:new)
+      forker.assign(job)
+    end
   end
 end
 

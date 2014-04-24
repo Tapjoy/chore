@@ -5,6 +5,7 @@ module Chore
 
       def initialize(manager)
         @manager = manager
+        @stopped = false
         @workers = {}
         @reap_mutex = Mutex.new
         @queue = Queue.new
@@ -27,6 +28,7 @@ module Chore
       # that <tt>stop!</tt> is non-destructive in that it allow each worker to complete it's
       # current job before dying.
       def stop!
+        @stopped = true
         Chore.logger.info { "Manager #{Process.pid} stopping" }
 
         # Instead of using Process.waitall (which is a blocking operation that can
@@ -48,7 +50,7 @@ module Chore
       # Take a UnitOfWork (or an Array of UnitOfWork) and assign it to a Worker. We only
       # assign work if there are <tt>workers_available?</tt>.
       def assign(work)
-        acquire_worker
+        return unless acquire_worker
 
         begin
           w = Worker.new(work)
@@ -105,7 +107,18 @@ module Chore
       # Attempts to essentially acquire a lock on a worker.  If no workers are
       # available, then this will block until one is.
       def acquire_worker
-        @queue.pop
+        result = @queue.pop
+
+        if @stopped
+          # Strategy has stopped since the worker was acquired.  If workers are
+          # allowed to run even though the strategy is stopped, this could result
+          # in forks occuring while the CLI is calling +Kernel#exit+ -- which can
+          # cause chore to hang.
+          release_worker
+          nil
+        else
+          result
+        end
       end
 
       # Releases the lock on a worker so that another thread can pick it up.
