@@ -9,7 +9,6 @@ module Chore
         @manager = manager
         @stopped = false
         @workers = {}
-        @reap_mutex = Mutex.new
         @queue = Queue.new
         Chore.config.num_workers.times { @queue << :worker }
 
@@ -142,22 +141,27 @@ module Chore
         Chore.config.publisher.reset_connection! if Chore.config.publisher #It is possible for this to be nil due to configuration woes with chore
       end
 
+      # Reaps any in-flight workers that have completed.  This only relies on
+      # known process ids instead of discovering all child processes from the
+      # OS.  By doing this, we avoid running into a tight loop reaping
+      # short-lived forks.
       def reap_terminated_workers!
-        # If a second CHLD signal comes in while a lock is held in a logger,
-        # this will deadlock since the method will basically get called recursively.
-        # To avoid deadlock, this logic can only get run once.
-        if @reap_mutex.try_lock
+        # Take a snapshot in time of what workers are in flight
+        pids = workers.keys
+
+        pids.each do |pid|
+          reaped = false
           begin
-            # Avoid a SIGCHLD race condition by reaping all available child processes
-            while pid = Process.wait(-1, Process::WNOHANG)
-              release_worker
-              workers.delete(pid)
-              Chore.logger.debug { "Removed finished worker #{pid}"}
-            end
+            reaped = Process.wait(pid, Process::WNOHANG)
           rescue Errno::ECHILD => ex
-            # Child processes have already terminated
-          ensure
-            @reap_mutex.unlock
+            # Child process has already terminated
+            reaped = true
+          end
+
+          # Clean up / release worker
+          if reaped && workers.delete(pid)
+            release_worker
+            Chore.logger.debug { "Removed finished worker #{pid}"}
           end
         end
       end
