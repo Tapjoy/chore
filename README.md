@@ -167,6 +167,20 @@ Chore.add_hook :after_publish do
 end
 ```
 
+## Signals
+
+Signal handling can get complicated when you have multiple threads, process
+forks, and both signal handlers and application code making use of mutexes.
+
+To simplify the complexities around this, Chore introduces some additional
+behaviors on top of Ruby's default Signal.trap implementation.  This
+functionality is primarily inspired by sidekiq's signal handling @
+https://github.com/mperham/sidekiq/blob/master/lib/sidekiq/cli.rb.
+
+In particular, Chore handles signals in a separate thread and does so
+sequentially instead of interrupt-driven.  See Chore::Signal for more details
+on the differences between Ruby's `Signal.trap` and Chore's `Chore::Signal.trap`.
+
 ## Contributing to chore
 
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet.

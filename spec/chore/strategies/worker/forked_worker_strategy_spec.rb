@@ -14,7 +14,7 @@ describe Chore::Strategy::ForkedWorkerStrategy do
 
   context "signal handling" do
     it 'should trap signals from terminating children and reap them' do
-      Chore::Strategy::ForkedWorkerStrategy.any_instance.should_receive(:trap).with('CHLD').and_yield
+      Chore::Signal.should_receive(:trap).with('CHLD').and_yield
       Chore::Strategy::ForkedWorkerStrategy.any_instance.should_receive(:reap_terminated_workers!)
       forker
     end
@@ -22,7 +22,7 @@ describe Chore::Strategy::ForkedWorkerStrategy do
 
   context '#assign' do
     before(:each) do
-      forker.stub(:fork).and_yield.and_return(pid)
+      forker.stub(:fork).and_yield.and_return(pid, pid + 1)
       forker.stub(:after_fork)
     end
     after(:each) do
@@ -58,41 +58,55 @@ describe Chore::Strategy::ForkedWorkerStrategy do
     it 'should remove the worker from the list when it has completed' do
       forker.assign(job)
 
-      Process.should_receive(:wait).and_return(pid, nil)
+      Process.should_receive(:wait).with(pid, Process::WNOHANG).and_return(pid)
       forker.send(:reap_terminated_workers!)
 
       forker.workers.should_not include(pid)
     end
 
-    it 'should add the worker back to the queue when it has completed' do
+    it 'should not remove the worker from the list if it has not yet completed' do
       forker.assign(job)
+
+      Process.stub(:wait).and_return(nil)
+      forker.send(:reap_terminated_workers!)
+
+      forker.workers.should include(pid)
+    end
+
+    it 'should add the worker back to the queue when it has completed' do
+      2.times { forker.assign(job) }
 
       Queue.any_instance.should_receive(:<<).twice.with(:worker)
 
-      Process.stub(:wait).and_return(pid, pid + 1, nil)
+      Process.stub(:wait).and_return(pid, pid + 1)
       forker.send(:reap_terminated_workers!)
     end
 
-    it 'should not allow more than one thread to reap terminated workers' do
+    it 'should only release a worker once if reaped twice' do
       forker.assign(job)
+      reaped = false
 
-      Process.should_receive(:wait).and_return do
-        Process.should_not_receive(:wait)
-        forker.send(:reap_terminated_workers!)
+      forker.should_receive(:release_worker).once
 
-        nil
+      Process.should_receive(:wait).twice.with(pid, anything).and_return do
+        if !reaped
+          reaped = true
+          forker.send(:reap_terminated_workers!)
+        end
+
+        pid
       end
       forker.send(:reap_terminated_workers!)
     end
 
     it 'should continue to allow reaping after an exception occurs' do
-      forker.assign(job)
+      2.times { forker.assign(job) }
 
-      Process.stub(:wait).and_raise(Errno::ECHILD)
+      Process.should_receive(:wait).and_raise(Errno::ECHILD)
+      Process.should_receive(:wait).and_return(pid + 1)
       forker.send(:reap_terminated_workers!)
 
-      Process.should_receive(:wait).and_return(pid, nil)
-      forker.send(:reap_terminated_workers!)
+      forker.workers.should be_empty
     end
 
     [:before_fork, :after_fork, :within_fork, :before_fork_shutdown].each do |hook|
@@ -188,7 +202,7 @@ describe Chore::Strategy::ForkedWorkerStrategy do
     end
 
     it 'should reap each worker' do
-      Process.should_receive(:wait).and_return(pid, nil)
+      Process.should_receive(:wait).and_return(pid)
       forker.stop!
       forker.workers.should be_empty
     end
