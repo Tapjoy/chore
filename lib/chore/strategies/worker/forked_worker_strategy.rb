@@ -61,9 +61,7 @@ module Chore
             pid = fork do
               after_fork(w)
               Chore.run_hooks_for(:within_fork,w) do
-
                 Chore.run_hooks_for(:after_fork,w)
-                procline("Started:#{Time.now}")
                 begin
                   Chore.logger.info("Started worker:#{Time.now}")
                   w.start
@@ -128,6 +126,10 @@ module Chore
       # Only call this in the forked child. It resets some things that need fixing up
       # in the child.
       def after_fork(worker)
+        # Immediately swap out the process name so that it doesn't look like
+        # the master process
+        procline("Started:#{Time.now}")
+
         clear_child_signals
         trap_child_signals(worker)
 
