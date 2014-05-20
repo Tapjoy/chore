@@ -11,6 +11,7 @@ group :development do
   gem 'debugger'
   gem 'redcarpet'
   gem 'yard'
+  gem 'timecop'
 end
 
 gem 'statsd-ruby', '~> 1.0.0'
