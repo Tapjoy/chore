@@ -35,6 +35,7 @@ module Chore
     :batch_size            => 50,
     :log_level             => Logger::WARN,
     :log_path              => STDOUT,
+    :default_queue_timeout => (12 * 60 * 60), # 12 hours
     :shutdown_timeout      => (2 * 60),
     :max_attempts          => 1.0 / 0.0, # Infinity
     :dupe_on_cache_failure => false,

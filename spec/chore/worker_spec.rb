@@ -38,6 +38,37 @@ describe Chore::Worker do
     Chore::Worker.start(work)
   end
 
+  describe 'expired?' do
+    let(:now) { Time.now }
+    let(:queue_timeouts) { [10, 20, 30] }
+    let(:work) do
+      queue_timeouts.map do |queue_timeout|
+        Chore::UnitOfWork.new('1', 'test', queue_timeout, Chore::JsonEncoder.encode(job), 0, consumer)
+      end
+    end
+    let(:worker) do
+      Timecop.freeze(now) do
+        Chore::Worker.new(work)
+      end
+    end
+
+    it 'should not be expired when before total timeout' do
+      worker.should_not be_expired
+    end
+
+    it 'should not be expired when at total timeout' do
+      Timecop.freeze(now + 60) do
+        worker.should_not be_expired
+      end
+    end
+
+    it 'should be expired when past total timeout' do
+      Timecop.freeze(now + 61) do
+        worker.should be_expired
+      end
+    end
+  end
+
   describe 'with errors' do
     context 'on parse' do
       let(:job) { "Not-A-Valid-Json-String" }

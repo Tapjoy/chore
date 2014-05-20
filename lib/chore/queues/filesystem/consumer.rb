@@ -23,6 +23,8 @@ module Chore
         
         FILE_QUEUE_MUTEXES = {}
         
+        # The amount of time units of work can run before the queue considers
+        # them timed out.  For filesystem queues, this is the global default.
         attr_reader :queue_timeout
 
         def initialize(queue_name, opts={})
@@ -35,7 +37,7 @@ module Chore
 
           @in_progress_dir = in_progress_dir(queue_name)
           @new_dir = new_dir(queue_name)
-          @queue_timeout = nil
+          @queue_timeout = Chore.config.default_queue_timeout
         end
 
         def consume(&handler)

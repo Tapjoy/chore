@@ -2,6 +2,9 @@ require 'chore/util'
 require 'chore/json_encoder'
 
 module Chore
+  class TimeoutError < StandardError
+  end
+
   # Worker is one of the core classes in Chore. It's responsible for most of the logic
   # relating to actually processing a job. A given worker will take an amount of +work+
   # and then process it all until either the worker is told to stop, or the work is
@@ -12,6 +15,7 @@ module Chore
     DEFAULT_OPTIONS = { :encoder => JsonEncoder }
     attr_accessor :options
     attr_reader   :work
+    attr_reader   :started_at
 
     def self.start(work) #:nodoc:
       self.new(work).start
@@ -26,6 +30,17 @@ module Chore
       @work = work
       @work = [work] unless work.kind_of?(Array)
       self.options = DEFAULT_OPTIONS.merge(opts)
+    end
+
+    # Whether this worker has existed for longer than it's allowed to
+    def expired?
+      Time.now > expires_at
+    end
+
+    # The time at which this worker expires
+    def expires_at
+      total_timeout = @work.inject(0) {|sum, item| sum += item.queue_timeout}
+      @started_at + total_timeout
     end
 
     # The workhorse. Do the work, all of it. This will block for an entirely unspecified amount

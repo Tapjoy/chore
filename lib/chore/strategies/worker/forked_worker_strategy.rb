@@ -13,6 +13,7 @@ module Chore
         Chore.config.num_workers.times { @queue << :worker }
 
         trap_master_signals
+        monitor_workers
 
         Chore.run_hooks_for(:before_first_fork)
       end
@@ -29,6 +30,8 @@ module Chore
       # that <tt>stop!</tt> is non-destructive in that it allow each worker to complete it's
       # current job before dying.
       def stop!
+        return if @stopped
+
         @stopped = true
         Chore.logger.info { "Manager #{Process.pid} stopping" }
 
@@ -146,9 +149,6 @@ module Chore
       # OS.  By doing this, we avoid running into a tight loop reaping
       # short-lived forks.
       def reap_terminated_workers!
-        # Take a snapshot in time of what workers are in flight
-        pids = workers.keys
-
         pids.each do |pid|
           reaped = false
           begin
@@ -166,6 +166,34 @@ module Chore
         end
       end
 
+      # Ensures that workers don't live past their expiration date.  When this
+      # is detect, the workers are kill -9'd.
+      def monitor_workers
+        Thread.new do
+          while !@stopped
+            pids.each do |pid|
+              worker = workers[pid]
+              if worker && worker.expired?
+                messages = worker.work.map(&:message)
+                Chore.logger.error { "Failed to run jobs -- #{messages} -- by #{worker.expires_at}, started at #{worker.started_at}"}
+                Chore.run_hooks_for(:on_failure, {:body => 'Worker fork timed out.', :messages => messages}, TimeoutError.new)
+
+                signal_children('KILL', [pid])
+              end
+            end
+
+            sleep 1
+          end
+        end
+      end
+
+      # Take a snapshot in time of what workers are in flight.  Iterating over
+      # the workers collection itself can lead to a hard loop if new items are
+      # constantly added.
+      def pids
+        workers.keys
+      end
+
       # Wrapper around fork for specs.
       def fork(&block)
         Kernel.fork(&block)
@@ -176,8 +204,8 @@ module Chore
         $0 = "chore-#{Chore::VERSION}:#{str}"
       end
 
-      def signal_children(sig)
-        @workers.keys.each do |pid|
+      def signal_children(sig, pids_to_signal = pids)
+        pids_to_signal.each do |pid|
           begin
             Chore.logger.info { "Sending #{sig} to: #{pid}" }
             Process.kill(sig, pid)
