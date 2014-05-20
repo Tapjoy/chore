@@ -74,7 +74,7 @@ describe Chore::Queues::SQS::Consumer do
     end
 
     it "should yield the message to the handler block" do
-      expect { |b| consumer.consume(&b) }.to yield_with_args('handle', queue_name, 'message body', 0)
+      expect { |b| consumer.consume(&b) }.to yield_with_args('handle', queue_name, 10, 'message body', 0)
     end
 
     it 'should not yield for a dupe message' do

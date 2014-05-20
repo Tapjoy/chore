@@ -8,7 +8,8 @@ describe Chore::Strategy::ForkedWorkerStrategy do
     strategy.stub(:exit!)
     strategy
   end
-  let(:job) { Chore::UnitOfWork.new(SecureRandom.uuid, 'test', Chore::JsonEncoder.encode(TestJob.job_hash([1,2,"3"])), 0) }
+  let(:job_timeout) { 60 }
+  let(:job) { Chore::UnitOfWork.new(SecureRandom.uuid, 'test', job_timeout, Chore::JsonEncoder.encode(TestJob.job_hash([1,2,"3"])), 0) }
   let!(:worker) { Chore::Worker.new(job) }
   let(:pid) { Random.rand(2048) }
 

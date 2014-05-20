@@ -56,7 +56,7 @@ module Chore
 
           messages = *msg
           messages.each do |message|
-            block.call(message.handle, queue_name, message.body, message.receive_count - 1) unless duplicate_message?(message)
+            block.call(message.handle, queue_name, queue_timeout, message.body, message.receive_count - 1) unless duplicate_message?(message)
             Chore.run_hooks_for(:on_fetch, message.handle, message.body)
           end
           messages
@@ -82,6 +82,10 @@ module Chore
           end
           @queue_url ||= sqs.queues.url_for(@queue_name)
           @queue ||= sqs.queues[@queue_url]
+        end
+
+        def queue_timeout
+          @queue_timeout ||= queue.visibility_timeout
         end
 
         def sqs

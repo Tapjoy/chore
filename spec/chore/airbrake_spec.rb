@@ -13,7 +13,7 @@ describe Chore do
   
   describe "airbrake failure callback" do
     let(:worker) { double('worker', :work => [work]) }
-    let(:work) { Chore::UnitOfWork.new(1,'test',$test_msg,0,nil) }
+    let(:work) { Chore::UnitOfWork.new(1,'test',60,$test_msg,0,nil) }
 
     before(:all) do 
       # tests run in random order so we can only check the require
