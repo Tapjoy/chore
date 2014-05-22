@@ -22,12 +22,6 @@ DependencyDetection.defer do
       add_transaction_tracer :handle_messages, :name => 'consume', :class_name => 'SQSConsumer', :category => 'OtherTransaction/Chore'
     end
 
-    Chore::Queues::SQS::LockingConsumer.class_eval do
-      include NewRelic::Agent::Instrumentation::ControllerInstrumentation
-
-      add_transaction_tracer :handle_messages, :name => 'consume', :class_name => 'LockingSQSConsumer', :category => 'OtherTransaction/Chore'
-    end
-
     # Track processing done in the worker
     Chore::Worker.class_eval do
       include NewRelic::Agent::Instrumentation::ControllerInstrumentation
