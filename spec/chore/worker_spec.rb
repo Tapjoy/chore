@@ -21,7 +21,7 @@ describe Chore::Worker do
   end
 
   it 'should process a single job' do
-    work = Chore::UnitOfWork.new('1', 'test', Chore::JsonEncoder.encode(job), 0, consumer)
+    work = Chore::UnitOfWork.new('1', 'test', 60, Chore::JsonEncoder.encode(job), 0, consumer)
     SimpleJob.should_receive(:perform).with(*job_args)
     consumer.should_receive(:complete).with('1')
     w = Chore::Worker.new(work)
@@ -31,11 +31,42 @@ describe Chore::Worker do
   it 'should process multiple jobs' do
     work = []
     10.times do |i|
-      work << Chore::UnitOfWork.new(i, 'test', Chore::JsonEncoder.encode(job), 0, consumer)
+      work << Chore::UnitOfWork.new(i, 'test', 60, Chore::JsonEncoder.encode(job), 0, consumer)
     end
     SimpleJob.should_receive(:perform).exactly(10).times
     consumer.should_receive(:complete).exactly(10).times
     Chore::Worker.start(work)
+  end
+
+  describe 'expired?' do
+    let(:now) { Time.now }
+    let(:queue_timeouts) { [10, 20, 30] }
+    let(:work) do
+      queue_timeouts.map do |queue_timeout|
+        Chore::UnitOfWork.new('1', 'test', queue_timeout, Chore::JsonEncoder.encode(job), 0, consumer)
+      end
+    end
+    let(:worker) do
+      Timecop.freeze(now) do
+        Chore::Worker.new(work)
+      end
+    end
+
+    it 'should not be expired when before total timeout' do
+      worker.should_not be_expired
+    end
+
+    it 'should not be expired when at total timeout' do
+      Timecop.freeze(now + 60) do
+        worker.should_not be_expired
+      end
+    end
+
+    it 'should be expired when past total timeout' do
+      Timecop.freeze(now + 61) do
+        worker.should be_expired
+      end
+    end
   end
 
   describe 'with errors' do
@@ -43,7 +74,7 @@ describe Chore::Worker do
       let(:job) { "Not-A-Valid-Json-String" }
 
       it 'should fail cleanly' do
-        work = Chore::UnitOfWork.new(2,'test',job,0,consumer)
+        work = Chore::UnitOfWork.new(2,'test',60,job,0,consumer)
         consumer.should_not_receive(:complete)
         Chore.should_receive(:run_hooks_for).with(:on_failure, job, anything())
         Chore::Worker.start(work)
@@ -55,13 +86,13 @@ describe Chore::Worker do
         end
 
         it 'should permanently fail' do
-          work = Chore::UnitOfWork.new(2,'test',job,9,consumer)
+          work = Chore::UnitOfWork.new(2,'test',60,job,9,consumer)
           Chore.should_receive(:run_hooks_for).with(:on_permanent_failure, 'test', job, anything())
           Chore::Worker.start(work)
         end
 
         it 'should mark the item as completed' do
-          work = Chore::UnitOfWork.new(2,'test',job,9,consumer)
+          work = Chore::UnitOfWork.new(2,'test',60,job,9,consumer)
           consumer.should_receive(:complete).with(2)
           Chore::Worker.start(work)
         end
@@ -78,7 +109,7 @@ describe Chore::Worker do
       end
 
       it 'should fail cleanly' do
-        work = Chore::UnitOfWork.new(2,'test',encoded_job,0,consumer)
+        work = Chore::UnitOfWork.new(2,'test',60,encoded_job,0,consumer)
         consumer.should_not_receive(:complete)
         SimpleJob.should_receive(:run_hooks_for).with(:on_failure, parsed_job, anything())
 
@@ -87,13 +118,13 @@ describe Chore::Worker do
 
       context 'more than the maximum allowed times' do
         it 'should permanently fail' do
-          work = Chore::UnitOfWork.new(2,'test',encoded_job,999,consumer)
+          work = Chore::UnitOfWork.new(2,'test',60,encoded_job,999,consumer)
           SimpleJob.should_receive(:run_hooks_for).with(:on_permanent_failure, 'test', parsed_job, anything())
           Chore::Worker.start(work)
         end
 
         it 'should mark the item as completed' do
-          work = Chore::UnitOfWork.new(2,'test',encoded_job,999,consumer)
+          work = Chore::UnitOfWork.new(2,'test',60,encoded_job,999,consumer)
           consumer.should_receive(:complete).with(2)
           Chore::Worker.start(work)
         end

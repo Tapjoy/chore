@@ -23,6 +23,10 @@ module Chore
         
         FILE_QUEUE_MUTEXES = {}
         
+        # The amount of time units of work can run before the queue considers
+        # them timed out.  For filesystem queues, this is the global default.
+        attr_reader :queue_timeout
+
         def initialize(queue_name, opts={})
           super(queue_name, opts)
 
@@ -33,6 +37,7 @@ module Chore
 
           @in_progress_dir = in_progress_dir(queue_name)
           @new_dir = new_dir(queue_name)
+          @queue_timeout = Chore.config.default_queue_timeout
         end
 
         def consume(&handler)
@@ -77,7 +82,7 @@ module Chore
               basename, previous_attempts = file_info(job_file)
 
               # job_file is just the name which is the job id
-              block.call(job_file, queue_name, job_json, previous_attempts)
+              block.call(job_file, queue_name, queue_timeout, job_json, previous_attempts)
               Chore.run_hooks_for(:on_fetch, job_file, job_json)
             end
           end

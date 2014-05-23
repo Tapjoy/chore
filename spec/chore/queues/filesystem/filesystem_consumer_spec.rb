@@ -11,6 +11,7 @@ describe Chore::Queues::Filesystem::Consumer do
 
   before do
     Chore.config.fs_queue_root = test_queues_dir
+    Chore.config.stub(:default_queue_timeout).and_return(60)
     consumer.stub(:sleep)
   end
   
@@ -27,7 +28,7 @@ describe Chore::Queues::Filesystem::Consumer do
     end
 
     it "should consume a published job and yield the job to the handler block" do
-      expect { |b| consumer.consume(&b) }.to yield_with_args(anything, 'test-queue', test_job_hash.to_json, 0)
+      expect { |b| consumer.consume(&b) }.to yield_with_args(anything, 'test-queue', 60, test_job_hash.to_json, 0)
     end
 
     context "rejecting a job" do
@@ -41,7 +42,7 @@ describe Chore::Queues::Filesystem::Consumer do
         end
         rejected.should be_true
 
-        expect { |b| consumer.consume(&b) }.to yield_with_args(anything, 'test-queue', test_job_hash.to_json, 1)
+        expect { |b| consumer.consume(&b) }.to yield_with_args(anything, 'test-queue', 60, test_job_hash.to_json, 1)
       end
     end
     

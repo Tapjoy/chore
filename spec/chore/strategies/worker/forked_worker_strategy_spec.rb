@@ -8,9 +8,15 @@ describe Chore::Strategy::ForkedWorkerStrategy do
     strategy.stub(:exit!)
     strategy
   end
-  let(:job) { Chore::UnitOfWork.new(SecureRandom.uuid, 'test', Chore::JsonEncoder.encode(TestJob.job_hash([1,2,"3"])), 0) }
+  let(:job_timeout) { 60 }
+  let(:job) { Chore::UnitOfWork.new(SecureRandom.uuid, 'test', job_timeout, Chore::JsonEncoder.encode(TestJob.job_hash([1,2,"3"])), 0) }
   let!(:worker) { Chore::Worker.new(job) }
   let(:pid) { Random.rand(2048) }
+
+  after(:each) do
+    Process.stub(:kill => nil, :wait => pid)
+    forker.stop!
+  end
 
   context "signal handling" do
     it 'should trap signals from terminating children and reap them' do
@@ -143,6 +149,44 @@ describe Chore::Strategy::ForkedWorkerStrategy do
     it 'should exit the process without running at_exit handlers' do
       forker.should_receive(:exit!).with(true)
       forker.assign(job)
+    end
+
+    context 'long-lived work' do
+      let(:job_timeout) { 0.1 }
+
+      before(:each) do
+        Process.stub(:kill)
+        Chore::Worker.stub(:new).and_return(worker)
+      end
+
+      it 'should kill the process if it expires' do
+        Process.should_receive(:kill).with('KILL', pid)
+        forker.assign(job)
+        sleep 2
+      end
+
+      it 'should run the on_failure callback hook' do
+        forker.assign(job)
+        Chore.should_receive(:run_hooks_for).with(:on_failure, anything, instance_of(Chore::TimeoutError))
+        sleep 2
+      end
+    end
+
+    context 'short-lived work' do
+      let(:job_timeout) { 0.1 }
+
+      before(:each) do
+        Chore::Worker.stub(:new).and_return(worker)
+      end
+
+      it 'should not kill the process if does not expire' do
+        Process.should_not_receive(:kill)
+
+        forker.assign(job)
+        Process.stub(:wait).and_return(pid)
+        forker.send(:reap_terminated_workers!)
+        sleep 2
+      end
     end
   end
 

@@ -181,6 +181,40 @@ In particular, Chore handles signals in a separate thread and does so
 sequentially instead of interrupt-driven.  See Chore::Signal for more details
 on the differences between Ruby's `Signal.trap` and Chore's `Chore::Signal.trap`.
 
+## Timeouts
+
+When using the forked worker strategy for processing jobs, inevitably there are
+cases in which child processes become stuck.  This could result from deadlocks,
+hung network calls, tight loops, etc.  When these jobs hang, they consume
+resources and can affect throughput.
+
+To mitigate this, Chore has built-in monitoring of forked child processes.
+When a fork is created to process a batch of work, that fork is assigned an
+expiration time -- if it doesn't complete by that time, the process is sent
+a KILL signal.
+
+Fork expiration times are determined from one of two places:
+1. The timeout associated with the queue.  For SQS, this is the visibility
+   timeout.
+2. The default queue timeout configured for Chore.  For Filesystem queues,
+   this is the value used.
+
+For example, if a worker is processing a batch of 5 jobs and each job's queue
+has a timeout of 60s, then the expiration time will be 5 minutes for the worker.
+
+To change the default queue timeout (when one can't be inferred), you can do
+the following:
+
+```ruby
+Chore.configure do |c|
+  c.default_queue_timeout = 3600
+end
+```
+
+A reasonable timeout would be based on the maximum amount of time you expect any
+job in your system to run.  Keep in mind that the process running the job may
+get killed if the job is running for too long.
+
 ## Contributing to chore
 
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet.
