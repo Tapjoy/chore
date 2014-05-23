@@ -1,11 +1,11 @@
 namespace :chore do
   desc "Create all defined queues"
   task :create do
-    Chore.create_queues!
+    Chore::Queues::SQS.create_queues!
   end
 
   desc "Remove all defined queues"
   task :remove do
-    Chore.delete_queues!
+    Chore::Queues::SQS.delete_queues!
   end
 end
