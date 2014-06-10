@@ -14,6 +14,4 @@ group :development do
   gem 'timecop'
 end
 
-gem 'statsd-ruby', '~> 1.0.0'
-gem 'watcher-client', git: 'git@github.com:Tapjoy/watcher-client.git', tag: 'v0.2.0'
 gem 'ci_reporter', '~> 1.9.0'
