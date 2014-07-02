@@ -56,11 +56,6 @@ describe Chore::Strategy::ForkedWorkerStrategy do
       forker.assign(job)
     end
 
-    it 'should reset the procline' do
-      forker.should_receive(:procline)
-      forker.assign(job)
-    end
-
     it 'should remove the worker from the list when it has completed' do
       forker.assign(job)
 
@@ -225,7 +220,16 @@ describe Chore::Strategy::ForkedWorkerStrategy do
 
     it 'should clear signals' do
       forker.should_receive(:clear_child_signals)
+      forker.send(:after_fork,worker)
+    end
+
+    it 'should trap signals' do
       forker.should_receive(:trap_child_signals)
+      forker.send(:after_fork,worker)
+    end
+
+    it 'should set the procline' do
+      forker.should_receive(:procline)
       forker.send(:after_fork,worker)
     end
   end
