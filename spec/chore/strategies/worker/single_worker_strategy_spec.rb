@@ -13,6 +13,8 @@ describe Chore::Strategy::SingleWorkerStrategy do
       let(:worker)  { nil }
 
       it 'does nothing' do
+        allow_message_expectations_on_nil
+        
         worker.should_not_receive(:stop!)
         subject.stop!
       end
