@@ -8,7 +8,6 @@ group :development do
   gem 'airbrake'
   gem 'rake', '~> 10.0'
   gem 'dalli'
-  gem 'debugger'
   gem 'redcarpet'
   gem 'yard'
   gem 'timecop'
