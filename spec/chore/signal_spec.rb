@@ -4,8 +4,11 @@ describe Chore::Signal do
   let(:signal_handlers) {{}}
   before :each do
     ::Signal.stub(:trap) do |signal, command=nil, &block|
-      signal_handlers.delete(signal) if command
-      signal_handlers[signal] = block unless command
+      if command
+        signal_handlers.delete(signal)
+      else
+        signal_handlers[signal] = block
+      end
     end
 
     Process.stub(:kill) do |signal, process_id|
@@ -222,7 +225,7 @@ describe Chore::Signal do
       Process.kill('SIG2', Process.pid)
       described_class.reset
       mutex.unlock
-      callbacks.should == [:sig1]
+      callbacks.should match_array([:sig1])
     end
 
     it 'should still listen for new traps' do
@@ -235,7 +238,7 @@ describe Chore::Signal do
         callbacks << :sig1
       end
       Process.kill('SIG1', Process.pid)
-      callbacks.should == [:sig1]
+      callbacks.should match_array([:sig1])
     end
   end
 end

@@ -9,9 +9,12 @@ describe Chore::Queues::SQS::Consumer do
   let(:consumer) { Chore::Queues::SQS::Consumer.new(queue_name) }
   let(:message) { TestMessage.new("handle",queue_name,"message body", 1) }
   let(:pool) { double("pool") }
+  let(:sqs) { double('AWS::SQS') }
 
   before do
-    AWS::SQS.any_instance.stub(:queues).and_return { queues }
+    AWS::SQS.stub(:new).and_return(sqs)
+    sqs.stub(:queues).and_return { queues }
+     
     queues.stub(:url_for) { queue_url }
     queues.stub(:[]) { queue }
     queue.stub(:receive_message) { message }
@@ -33,14 +36,14 @@ describe Chore::Queues::SQS::Consumer do
         :secret_access_key => 'secret',
         :logger => Chore.logger,
         :log_level => :debug
-      ).and_call_original
+      ).and_return(sqs)
       consumer.consume
     end
 
     it 'should not configure sqs multiple times' do
       consumer.stub(:running?).and_return(true, true, false)
 
-      AWS::SQS.should_receive(:new).once.and_call_original
+      AWS::SQS.should_receive(:new).once.and_return(sqs)
       consumer.consume
     end
 
@@ -124,7 +127,7 @@ describe Chore::Queues::SQS::Consumer do
       consumer.consume
 
       Chore::Queues::SQS::Consumer.reset_connection!
-      AWS::SQS.should_receive(:new).and_call_original
+      AWS::SQS.should_receive(:new).and_return(sqs)
 
       consumer.stub(:running?).and_return(true, false)
       consumer.consume
