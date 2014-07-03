@@ -1,42 +1,60 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Chore::Signal do
+  let(:signal_handlers) {{}}
+  before :each do
+    ::Signal.stub(:trap) do |signal, command=nil, &block|
+      signal_handlers.delete(signal) if command
+      signal_handlers[signal] = block unless command
+    end
+
+    Process.stub(:kill) do |signal, process_id|
+      signal_handlers[signal].call if signal_handlers[signal]
+      sleep 0.1
+    end
+  end
+
   after(:each) do
     described_class.reset
   end
 
   describe 'trap' do
     context 'without any handlers' do
-      it 'should not raise an error' do
-        lambda { Process.kill('WINCH', Process.pid) }.should_not raise_error(Exception)
+      it 'should not be intercepted by Chore::Signal' do
+        described_class.should_not_receive(:process).with("SIG1")
+        lambda { Process.kill('SIG1', Process.pid) }
       end
     end
 
     context 'with a command' do
       before(:each) do
-        described_class.trap('WINCH', 'DEFAULT')
+        described_class.trap('SIG1', 'DEFAULT')
       end
 
-      it 'should not raise an error' do
-        lambda { Process.kill('WINCH', Process.pid) }.should_not raise_error(Exception)
+      it 'should result in Rubys default behavior for the signal' do
+        lambda { Process.kill('SIG1', Process.pid) }.should_not raise_error(SignalException)
       end
     end
 
     context 'with a command and handler' do
       before(:each) do
         @callbacks = []
-        described_class.trap('WINCH', 'DEFAULT') do
-          @callbacks << :winch
+        described_class.trap('SIG1', 'DEFAULT') do
+          @callbacks << :usr2
         end
       end
 
-      it 'should not raise an error' do
-        lambda { Process.kill('WINCH', Process.pid) }.should_not raise_error(Exception)
+      it 'should result in Rubys default behavior for the signal' do
+        lambda { Process.kill('SIG1', Process.pid) }.should_not raise_error(SignalException)
       end
 
       it 'should not call the handler' do
-        Process.kill('WINCH', Process.pid)
-        @callbacks.should == []
+        begin
+          Process.kill('SIG1', Process.pid)
+        rescue SignalException => e
+
+        end
+        @callbacks.should match_array([])
       end
     end
 
@@ -47,19 +65,19 @@ describe Chore::Signal do
 
       context 'without exceptions' do
         before(:each) do
-          described_class.trap('WINCH') do
-            @callbacks << :winch
+          described_class.trap('SIG1') do
+            @callbacks << :sig1
           end
         end
 
         it 'should not call the handler if signal does not match' do
-          lambda { Process.kill('USR2', Process.pid) }.should raise_error(SignalException)
-          @callbacks.should == []
+          lambda { Process.kill('SIG2', Process.pid) }.should_not raise_error(SignalException)
+          @callbacks.should match_array([])
         end
 
         it 'should call the handler if the signal matches' do
-          Process.kill('WINCH', Process.pid)
-          @callbacks.should == [:winch]
+          Process.kill('SIG1', Process.pid)
+          @callbacks.should match_array([:sig1])
         end
       end
 
@@ -67,21 +85,21 @@ describe Chore::Signal do
         before(:each) do
           @count = 0
           @callbacks = []
-          described_class.trap('WINCH') do
+          described_class.trap('SIG1') do
             @count += 1
             raise ArgumentError if @count == 1
-            @callbacks << :winch
+            @callbacks << :sig1
           end
         end
 
         it 'should not retry the callback' do
-          Process.kill('WINCH', Process.pid)
-          @callbacks.should == []
+          Process.kill('SIG1', Process.pid)
+          @callbacks.should match_array([])
         end
 
         it 'should still continue processing' do
-          2.times { Process.kill('WINCH', Process.pid) }
-          @callbacks.should == [:winch]
+          2.times { Process.kill('SIG1', Process.pid) }
+          @callbacks.should match_array([:sig1])
         end
       end
     end
@@ -89,91 +107,91 @@ describe Chore::Signal do
     context 'with multiple handlers' do
       before(:each) do
         @callbacks = []
-        described_class.trap('WINCH') do
+        described_class.trap('SIG1') do
           @callbacks << :first
         end
-        described_class.trap('WINCH') do
+        described_class.trap('SIG1') do
           @callbacks << :second
         end
       end
 
       it 'should only call the last recorded handler' do
-        Process.kill('WINCH', Process.pid)
-        @callbacks.should == [:second]
+        Process.kill('SIG1', Process.pid)
+        @callbacks.should match_array([:second])
       end
     end
 
     context 'with reset handler' do
       before(:each) do
         @callbacks = []
-        described_class.trap('WINCH') do
+        described_class.trap('SIG1') do
           @callbacks << :first
         end
-        described_class.trap('WINCH', 'DEFAULT')
+        described_class.trap('SIG1', 'DEFAULT')
       end
 
       it 'should not call the original handler' do
-        Process.kill('WINCH', Process.pid)
-        @callbacks.should == []
+        Process.kill('SIG1', Process.pid)
+        @callbacks.should match_array([])
       end
     end
 
     context 'with multiple signals' do
       before(:each) do
         @callbacks = []
-        described_class.trap('WINCH') do
-          @callbacks << :winch
+        described_class.trap('SIG1') do
+          @callbacks << :sig1
         end
-        described_class.trap('USR2') do
-          @callbacks << :usr2
+        described_class.trap('SIG2') do
+          @callbacks << :sig2
         end
       end
 
       it 'should handle each one' do
-        Process.kill('WINCH', Process.pid)
-        Process.kill('USR2', Process.pid)
-        @callbacks.should == [:winch, :usr2]
+        Process.kill('SIG1', Process.pid)
+        Process.kill('SIG2', Process.pid)
+        @callbacks.should match_array([:sig1, :sig2])
       end
 
       it 'should process most recent signals first' do
         mutex = Mutex.new
-        described_class.trap('WINCH') do
-          @callbacks << :winch
+        described_class.trap('SIG1') do
+          @callbacks << :sig1
           mutex.lock
         end
-        described_class.trap('PIPE') do
-          @callbacks << :pipe
+        described_class.trap('SIG3') do
+          @callbacks << :sig3
         end
 
         mutex.lock
-        Process.kill('WINCH', Process.pid)
-        Process.kill('WINCH', Process.pid)
-        Process.kill('USR2', Process.pid)
-        Process.kill('PIPE', Process.pid)
+        Process.kill('SIG1', Process.pid)
+        Process.kill('SIG1', Process.pid)
+        Process.kill('SIG2', Process.pid)
+        Process.kill('SIG3', Process.pid)
         mutex.unlock
-        sleep 1
+        sleep 0.1
 
-        @callbacks.should == [:winch, :pipe, :usr2, :winch]
+        @callbacks.should match_array([:sig1, :sig3, :sig2, :sig1])
       end
 
       it 'should process primary signals first' do
         mutex = Mutex.new
-        described_class.trap('WINCH') do
-          @callbacks << :winch
+        described_class.trap('SIG1') do
+          @callbacks << :sig1
           mutex.lock
         end
-        described_class.trap('CHLD') do
-          @callbacks << :chld
+        described_class.trap('SIG3') do
+          @callbacks << :sig3
         end
 
         mutex.lock
-        Process.kill('WINCH', Process.pid)
-        Process.kill('USR2', Process.pid)
-        Process.kill('CHLD', Process.pid)
+        Process.kill('SIG1', Process.pid)
+        Process.kill('SIG2', Process.pid)
+        Process.kill('SIG3', Process.pid)
         mutex.unlock
-        sleep 1
+        sleep 0.1
 
-        @callbacks.should == [:winch, :usr2, :chld]
+        @callbacks.should match_array([:sig1, :sig2, :sig3])
       end
     end
   end
@@ -181,41 +199,43 @@ describe Chore::Signal do
   describe 'reset' do
     it 'should clear existing handlers' do
       callbacks = []
-      described_class.trap('WINCH') do
-        callbacks << :winch
+      described_class.trap('SIG1') do
+        callbacks << :sig1
       end
       described_class.reset
-      Process.kill('WINCH', Process.pid)
-      callbacks.should == []
+      Process.kill('SIG1', Process.pid)
+      callbacks.should match_array([])
     end
 
     it 'should not run unprocessed signals' do
       callbacks = []
-      described_class.trap('WINCH') do
-        callbacks << :winch
-        sleep 0.5
+      mutex = Mutex.new
+      described_class.trap('SIG1') do
+        callbacks << :sig1
+        mutex.lock
       end
-      described_class.trap('USR2') do
-        callbacks << :usr2
+      described_class.trap('SIG2') do
+        callbacks << :sig2
       end
-      Process.kill('WINCH', Process.pid)
-      Process.kill('USR2', Process.pid)
+      mutex.lock
+      Process.kill('SIG1', Process.pid)
+      Process.kill('SIG2', Process.pid)
       described_class.reset
-      sleep 1
-      callbacks.should == [:winch]
+      mutex.unlock
+      callbacks.should == [:sig1]
     end
 
     it 'should still listen for new traps' do
       callbacks = []
-      described_class.trap('WINCH') do
-        callbacks << :winch
+      described_class.trap('SIG1') do
+        callbacks << :sig1
       end
       described_class.reset
-      described_class.trap('WINCH') do
-        callbacks << :winch
+      described_class.trap('SIG1') do
+        callbacks << :sig1
       end
-      Process.kill('WINCH', Process.pid)
-      callbacks.should == [:winch]
+      Process.kill('SIG1', Process.pid)
+      callbacks.should == [:sig1]
     end
   end
 end
