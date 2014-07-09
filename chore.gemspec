@@ -8,10 +8,10 @@ Gem::Specification.new do |s|
   s.version = Chore::Version::STRING
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Tanner Burson", "Andy LeClair"]
+  s.authors = ["Tapjoy"]
   s.date = Time.new.strftime("%Y-%m-%d")
   s.description = "Job processing with pluggable backends and strategies"
-  s.email = "me@tannerburson.com"
+  s.email = "eng-group-arch@tapjoy.com"
 
   s.executables = Dir["bin/*"].map { |f| f.gsub(/bin\//, '') }
   s.default_executable = "chore"
