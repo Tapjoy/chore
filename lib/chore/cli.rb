@@ -199,10 +199,12 @@ module Chore
 
       original_queues = options[:queues].dup
       # Now apply the prefixing
+      # Because the prefix could have been detected via the apps chore config file
+      # Lets see if that is present before we check for a CLI passed prefix
+      prefix = Chore.config.queue_prefix || options[:queue_prefix]
       options[:queues] = Set.new.tap do |queue_set|
-        original_queues.each {|oq_name| queue_set << "#{options[:queue_prefix]}#{oq_name}"}
+        original_queues.each {|oq_name| queue_set << "#{prefix}#{oq_name}"}
       end
-
       raise ArgumentError, "No queues specified. Either include classes that include Chore::Job, or specify the --queues option" if options[:queues].empty?
     end
 
