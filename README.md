@@ -227,5 +227,5 @@ get killed if the job is running for too long.
 
 ## Copyright
 
-Copyright (c) 2013 Tapjoy. See LICENSE.txt for
+Copyright (c) 2013 - 2014 Tapjoy. See LICENSE.txt for
 further details.
