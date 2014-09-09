@@ -51,52 +51,6 @@ module Chore
       2.times { publisher.publish('test_queue', job) }
     end
 
-    context "batch sending" do
-      let(:queue)       { Queue.new }
-      let(:thread_pool) { double("Chore::Queues::SQS::BatchSendingPool") }
-      before do
-        Chore.config.stub(:send_in_batches).and_return(true)
-      end
-      it "should create a pool" do
-        Thread::Pool.should_receive(:new).with(5).and_return(thread_pool)
-        publisher.publish('test_queue',job)
-      end
-
-      context "context" do
-        before do
-          Chore::Queues::SQS::BatchSendingPool.stub(:new).and_return(thread_pool)
-          thread_pool.stub(:ready?).and_return(true)
-          queue << {:message_body=>job.to_json}
-          publisher.class.class_variable_set(:@@messages, { 'test_queue' => queue})
-          publisher.class.class_variable_set(:@@thread_pool, thread_pool)
-          publisher.class.class_variable_set(:@@running, true)
-        end
-        it "should drain a queue" do
-          thread_pool.should_receive(:process).at_least(:once)
-          publisher.class.pass_batch_to_thread_pool('test_queue')
-        end
-      end
-
-      context "after init" do
-        before do
-          Chore::Queues::SQS::BatchSendingPool.stub(:new).and_return(thread_pool)
-          publisher.class.class_variable_set(:@@messages, {})
-          publisher.class.class_variable_set(:@@thread_pool, nil)
-          publisher.class.class_variable_set(:@@running, false)
-        end
-
-        it "should enqueue into the class level message queue" do
-          publisher.publish('test_queue', job)
-          publisher.class.class_variable_get(:@@messages)['test_queue'].pop.should == {:message_body => job.to_json}
-        end
-
-        it "should start a background timer thread" do
-          publisher.class.should_receive(:spawn_timer)
-          publisher.publish('test_queue', job)
-        end
-      end
-    end
-
     describe '#reset_connection!' do
       it 'should reset the connection after a call to reset_connection!' do
         AWS::Core::Http::ConnectionPool.stub(:pools).and_return([pool])
