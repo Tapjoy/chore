@@ -19,31 +19,30 @@ If you also plan on using SQS, you must also bring in dalli to use for memcached
 
     gem 'dalli'
 
-Create a `chore.config` file in a suitable place, e.g. `./config`. This file controls how the consumer end of chore will operate.
+Create a `Chorefile` file in the root of your project directory. While you can configure Chore itself from this file, it's primarly used to direct the Chore binary toward the root of your application, so that it can locate all of the depdendencies and required code.
 
     --require=./<FILE_TO_LOAD>
-    --verbose
-    --concurrency 10
 
-Make sure that `--require` points to the main entry point for your app. If integrating with a Rails app, just point it to the directory of your application and it will handle loading the correct files on its own. See the help options for more details on the other settings.
-
-If you're using SQS, you'll want to add AWS keys so that Chore can authenticate with AWS.
-
-    --aws-access-key=<AWS KEY>
-    --aws-secret-key=<AWS SECRET>
+Make sure that `--require` points to the main entry point for your app. If integrating with a Rails app, just point it to the directory of your application and it will handle loading the correct files on its own. 
 
 Other options include:
 
     --concurrency 16 # number of concurrent worker processes, if using forked worker strategy
     --worker-strategy Chore::Strategy::ForkedWorkerStrategy # which worker strategy class to use
-    --consumer Chore::Queues::SQS::Consumer # which consumer class to use
-    --dedupe-servers # if using SQS and your memcache is running on something other than localhost
-    --fetcher-strategy Chore::ThreadedConsumerStrategy # fetching strategy class, are you seeing a theme here?
+    --consumer Chore::Queues::SQS::Consumer # which consumer class to use Options are SQS::Consumer and Filesystem::Consumer. Filesystem is recommended for local and testing purposes only.
+    --consumer-strategy Chore::Queues::Strategies::Consumer::ThreadedConsumerStrategy # which consuming strategy to use. Options are SingleConsumerStrategy and ThreadedConsumerStrategy. Threaded is recommended for better tuning your consuming profile
+    --threads-per-queue 4 # number of threads per queue for consuming from a given queue.
+    --dedupe-servers # if using SQS or similiar queue with at-least once delivery and your memcache is running on something other than localhost
     --batch-size 50 # how many messages are batched together before handing them to a worker
-    --threads-per-queue 4 # number of threads per queue for fetching from queue
     --queue_prefix prefixy # A prefix to prepend to queue names, mainly for development and qa testing purposes
     --max-attempts 100 # The maximum number of times a job can be attempted
     --dupe-on-cache-failure # Determines the deduping behavior when a cache connection error occurs. When set to `false`, the message is assumed not to be a duplicate. Defaults to `false`.
+    --queue-polling-size 10 # If your particular queueing system supports responding with messages in batches of a certain size, you can control that with this flag. SQS has a built in upper-limit of 10, but other systems will vary. 
+
+If you're using SQS, you'll want to add AWS keys so that Chore can authenticate with AWS.
+
+    --aws-access-key=<AWS KEY>
+    --aws-secret-key=<AWS SECRET>
 
 By default, Chore will run over all queues it detects among the required files. If you wish to change this behavior, you can use:
 
