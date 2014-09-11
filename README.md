@@ -228,6 +228,7 @@ get killed if the job is running for too long.
 Chore has several plugin gems available, which extend it's core functionality
 
 [New Relic](https://github.com/Tapjoy/chore-new_relic) - Integrating Chore with New Relic
+
 [Airbrake](https://github.com/Tapjoy/chore-airbrake) - Integrating Chore with Airbrake
 
 ## Copyright
