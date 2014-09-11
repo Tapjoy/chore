@@ -57,11 +57,6 @@ Add an appropriate line to your `Procfile`:
 
     jobs: bundle exec chore -c config/chore.config
 
-Don't forget to start memcached if you're using SQS:
-
-    memcached &
-
-
 If your queues do not exist, you must create them before you run the application:
 
 ```ruby
