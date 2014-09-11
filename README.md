@@ -82,25 +82,34 @@ A Chore::Job is any class that includes `Chore::Job` and implements `perform(*ar
 ```ruby
 class TestJob
   include Chore::Job
-  queue_options :name => 'test_queue', :publisher => Chore::Queues::SQS::Publisher, :max_attempts => 100
+  queue_options :name => 'test_queue'
 
-  def perform(*args)
+  def perform(args={})
     Chore.logger.debug "My first async job"
   end
 
 end
 ```
+### Chore::Job and perform signatures
 
-This job uses the included `Chore::Queues::SQS::Publisher` to remove the message from the queue once the job is completed.
-It also declares that the name of the queue it uses is `test_queue`.
+This job declares that the name of the queue it uses is `test_queue`.
+
+The perform method signature can have explicit argument names, but in practice this makes changing the signature more difficult later on. Once a Job is in production and is being used at a constant rate, it becomes problematic to begin mixing versions of jobs which have non-matching signatures.
+
+While this is able to be overcome with a number of techniques, such as versioning your jobs/queues, it increases the complexity of making changes.
+
+The simplest way to structure job signatures is to treat the arguments as a hash. This will allow you to maintain forwards and backwards compatibility between signature changes with the same job class.
+
+However, Chore is ultimately agnostic to your particular needs in this regard, and will let you use explicit arguments in your signatures as easily as you can use a simple hash - the choice is left to you, the developer.
+
+### Chore::Job and publishing Jobs
 
 Now that you've got a test job, if you wanted to publish to that job it's as simple as:
 ```ruby
-TestJob.perform_async("YES, DO THAT THING.")
+TestJob.perform_async({"message"=>"YES, DO THAT THING.")
 ```
 
-
-If you wish to specify a global publisher for all of your job classes, you can add a configuration block to an initializer like so:
+It's advisable to specify the Publisher chore uses to send messages globally, so that you can change it easily for local and test environments. To do this, you can add a configuration block to an initializer like so:
 
 ```ruby
 Chore.configure do |c|
@@ -152,9 +161,9 @@ Hooks can be added to a job class as so:
 ```ruby
 class TestJob
   include Chore::Job
-  queue_options :name => 'test_queue', :publisher => Chore::Queues::SQS::Publisher
+  queue_options :name => 'test_queue'
 
-  def perform(*args)
+  def perform(args={})
     Chore.logger.debug "My first sync job"
   end
 end
