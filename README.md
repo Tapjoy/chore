@@ -205,6 +205,11 @@ In particular, Chore handles signals in a separate thread and does so
 sequentially instead of interrupt-driven.  See Chore::Signal for more details
 on the differences between Ruby's `Signal.trap` and Chore's `Chore::Signal.trap`.
 
+Chore will respond to the following Signals:
+
+* INT , TERM, QUIT - Chore will begin shutting down, taking steps to safely terminate workers and not interrupt jobs in progress unless it believes they may be hung
+* USR1 - Re-opens logfiles, useful for handling log rotations
+
 ## Timeouts
 
 When using the forked worker strategy for processing jobs, inevitably there are
