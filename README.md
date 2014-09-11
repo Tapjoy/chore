@@ -223,6 +223,13 @@ A reasonable timeout would be based on the maximum amount of time you expect any
 job in your system to run.  Keep in mind that the process running the job may
 get killed if the job is running for too long.
 
+## Plugins
+
+Chore has several plugin gems available, which extend it's core functionality
+
+[New Relic](https://github.com/Tapjoy/chore-new_relic) - Integrating Chore with New Relic
+[Airbrake](https://github.com/Tapjoy/chore-airbrake) - Integrating Chore with Airbrake
+
 ## Copyright
 
 Copyright (c) 2013 - 2014 Tapjoy. See LICENSE.txt for
