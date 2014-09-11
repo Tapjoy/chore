@@ -53,16 +53,22 @@ Note that you can use one or the other but not both. Chore will quit and make fu
 
 ### Tips for configuring Chore
 
-You can configure almost everything that you can via the CLI / Chorefile by way of a ruby initializer in your application. The two primary differences are:
+You can configure almost everything that you can via the CLI / Chorefile by way of a ruby initializer in your application. This is the preferred method of configuration, for several reasons. The two primary differences are:
 
 * Internally, Chore will use underscores instead of dashes, ex: max-workers VS max_workers, as per ruby convention.
 * You cannot specify the `require` option this way, because this is how you instruct Chore to begin loading your application from, which includes this initializer.
 
-One benefit to putting everything in an initializer is that it makes it far easier for your application to serve as both producer (rails or sinatra web app which puts messages onto the queue) and consumer of jobs (the same app, but running via the Chore binary), using one unified configuration. 
+One benefit to putting everything in an initializer is that it makes it far easier for your application to serve as both producer (rails or sinatra web app which puts messages onto the queue) and consumer of jobs (the same app, but running via the Chore binary), using one unified configuration.
+
+An example of how to configure chore this way:
 
 ```ruby
 Chore.configure do |c|
+  c.concurrency = 16
+  c.worker_strategy = Chore::Strategy::ForkedWorkerStrategy
   c.max_attempts = 100
+  ...
+  c.batch_size = 50
 end
 ```
 
