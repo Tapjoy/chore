@@ -53,14 +53,17 @@ Note that you can use one or the other but not both. Chore will quit and make fu
 
 ### Tips for configuring Chore
 
-You can configure almost everything that you can via the CLI / Chorefile by way of a ruby initializer in your application. This is the preferred method of configuration, for several reasons. The two primary differences are:
+When it comes to configuring Chore, you have 2 main use cases - as a producer of messages, or as a consumer of messages (the consumer is also able to produce messages if need be, but is running as it's own isolated instance of your application).
 
-* Internally, Chore will use underscores instead of dashes, ex: max-workers VS max_workers, as per ruby convention.
-* You cannot specify the `require` option this way, because this is how you instruct Chore to begin loading your application from, which includes this initializer.
+For producers, you must do all of your Chore configuration in an intializer.
 
-One benefit to putting everything in an initializer is that it makes it far easier for your application to serve as both producer (rails or sinatra web app which puts messages onto the queue) and consumer of jobs (the same app, but running via the Chore binary), using one unified configuration.
+For consumers, you need to either Chorefile or Chorefile + an initializer.
 
-An example of how to configure chore this way:
+Because you are likely to use the same app as the basis for both producing and consuming messages, you'll already have a considerable amount of configuration in your Producer - it makes sense to use Chorefile to simply provide the `require` option, and stick to the initializer for the rest of the configuration to keep things DRY.
+
+However, like many aspects of Chore, it is ultimately up to the developer to decide which use case fits their needs best. Chore is happy to let you configure it in almost any way you want.
+
+An example of how to configure chore via and initializer:
 
 ```ruby
 Chore.configure do |c|
