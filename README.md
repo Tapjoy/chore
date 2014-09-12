@@ -105,9 +105,10 @@ class TestJob
 
 end
 ```
-### Chore::Job and perform signatures
 
-This job declares that the name of the queue it uses is `test_queue`.
+This job declares that the name of the queue it uses is `test_queue`, set in the queue_options method.
+
+### Chore::Job and perform signatures
 
 The perform method signature can have explicit argument names, but in practice this makes changing the signature more difficult later on. Once a Job is in production and is being used at a constant rate, it becomes problematic to begin mixing versions of jobs which have non-matching signatures.
 
