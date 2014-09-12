@@ -121,7 +121,7 @@ However, Chore is ultimately agnostic to your particular needs in this regard, a
 
 Now that you've got a test job, if you wanted to publish to that job it's as simple as:
 ```ruby
-TestJob.perform_async({"message"=>"YES, DO THAT THING.")
+TestJob.perform_async({"message"=>"YES, DO THAT THING."})
 ```
 
 It's advisable to specify the Publisher chore uses to send messages globally, so that you can change it easily for local and test environments. To do this, you can add a configuration block to an initializer like so:
