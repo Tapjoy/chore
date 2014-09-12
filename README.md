@@ -19,31 +19,30 @@ If you also plan on using SQS, you must also bring in dalli to use for memcached
 
     gem 'dalli'
 
-Create a `chore.config` file in a suitable place, e.g. `./config`. This file controls how the consumer end of chore will operate.
+Create a `Chorefile` file in the root of your project directory. While you can configure Chore itself from this file, it's primarly used to direct the Chore binary toward the root of your application, so that it can locate all of the depdendencies and required code.
 
     --require=./<FILE_TO_LOAD>
-    --verbose
-    --concurrency 10
 
-Make sure that `--require` points to the main entry point for your app. If integrating with a Rails app, just point it to the directory of your application and it will handle loading the correct files on its own. See the help options for more details on the other settings.
-
-If you're using SQS, you'll want to add AWS keys so that Chore can authenticate with AWS.
-
-    --aws-access-key=<AWS KEY>
-    --aws-secret-key=<AWS SECRET>
+Make sure that `--require` points to the main entry point for your app. If integrating with a Rails app, just point it to the directory of your application and it will handle loading the correct files on its own. 
 
 Other options include:
 
     --concurrency 16 # number of concurrent worker processes, if using forked worker strategy
     --worker-strategy Chore::Strategy::ForkedWorkerStrategy # which worker strategy class to use
-    --consumer Chore::Queues::SQS::Consumer # which consumer class to use
-    --dedupe-servers # if using SQS and your memcache is running on something other than localhost
-    --fetcher-strategy Chore::ThreadedConsumerStrategy # fetching strategy class, are you seeing a theme here?
+    --consumer Chore::Queues::SQS::Consumer # which consumer class to use Options are SQS::Consumer and Filesystem::Consumer. Filesystem is recommended for local and testing purposes only.
+    --consumer-strategy Chore::Queues::Strategies::Consumer::ThreadedConsumerStrategy # which consuming strategy to use. Options are SingleConsumerStrategy and ThreadedConsumerStrategy. Threaded is recommended for better tuning your consuming profile
+    --threads-per-queue 4 # number of threads per queue for consuming from a given queue.
+    --dedupe-servers # if using SQS or similiar queue with at-least once delivery and your memcache is running on something other than localhost
     --batch-size 50 # how many messages are batched together before handing them to a worker
-    --threads-per-queue 4 # number of threads per queue for fetching from queue
     --queue_prefix prefixy # A prefix to prepend to queue names, mainly for development and qa testing purposes
     --max-attempts 100 # The maximum number of times a job can be attempted
     --dupe-on-cache-failure # Determines the deduping behavior when a cache connection error occurs. When set to `false`, the message is assumed not to be a duplicate. Defaults to `false`.
+    --queue-polling-size 10 # If your particular queueing system supports responding with messages in batches of a certain size, you can control that with this flag. SQS has a built in upper-limit of 10, but other systems will vary. 
+
+If you're using SQS, you'll want to add AWS keys so that Chore can authenticate with AWS.
+
+    --aws-access-key=<AWS KEY>
+    --aws-secret-key=<AWS SECRET>
 
 By default, Chore will run over all queues it detects among the required files. If you wish to change this behavior, you can use:
 
@@ -52,16 +51,35 @@ By default, Chore will run over all queues it detects among the required files. 
 
 Note that you can use one or the other but not both. Chore will quit and make fun of you if both options are specified.
 
+### Tips for configuring Chore
+
+When it comes to configuring Chore, you have 2 main use cases - as a producer of messages, or as a consumer of messages (the consumer is also able to produce messages if need be, but is running as it's own isolated instance of your application).
+
+For producers, you must do all of your Chore configuration in an intializer.
+
+For consumers, you need to either Chorefile or Chorefile + an initializer.
+
+Because you are likely to use the same app as the basis for both producing and consuming messages, you'll already have a considerable amount of configuration in your Producer - it makes sense to use Chorefile to simply provide the `require` option, and stick to the initializer for the rest of the configuration to keep things DRY.
+
+However, like many aspects of Chore, it is ultimately up to the developer to decide which use case fits their needs best. Chore is happy to let you configure it in almost any way you want.
+
+An example of how to configure chore via and initializer:
+
+```ruby
+Chore.configure do |c|
+  c.concurrency = 16
+  c.worker_strategy = Chore::Strategy::ForkedWorkerStrategy
+  c.max_attempts = 100
+  ...
+  c.batch_size = 50
+end
+```
+
 ## Integration
 
 Add an appropriate line to your `Procfile`:
 
     jobs: bundle exec chore -c config/chore.config
-
-Don't forget to start memcached if you're using SQS:
-
-    memcached &
-
 
 If your queues do not exist, you must create them before you run the application:
 
@@ -82,25 +100,35 @@ A Chore::Job is any class that includes `Chore::Job` and implements `perform(*ar
 ```ruby
 class TestJob
   include Chore::Job
-  queue_options :name => 'test_queue', :publisher => Chore::Queues::SQS::Publisher, :max_attempts => 100
+  queue_options :name => 'test_queue'
 
-  def perform(*args)
+  def perform(args={})
     Chore.logger.debug "My first async job"
   end
 
 end
 ```
 
-This job uses the included `Chore::Queues::SQS::Publisher` to remove the message from the queue once the job is completed.
-It also declares that the name of the queue it uses is `test_queue`.
+This job declares that the name of the queue it uses is `test_queue`, set in the queue_options method.
+
+### Chore::Job and perform signatures
+
+The perform method signature can have explicit argument names, but in practice this makes changing the signature more difficult later on. Once a Job is in production and is being used at a constant rate, it becomes problematic to begin mixing versions of jobs which have non-matching signatures.
+
+While this is able to be overcome with a number of techniques, such as versioning your jobs/queues, it increases the complexity of making changes.
+
+The simplest way to structure job signatures is to treat the arguments as a hash. This will allow you to maintain forwards and backwards compatibility between signature changes with the same job class.
+
+However, Chore is ultimately agnostic to your particular needs in this regard, and will let you use explicit arguments in your signatures as easily as you can use a simple hash - the choice is left to you, the developer.
+
+### Chore::Job and publishing Jobs
 
 Now that you've got a test job, if you wanted to publish to that job it's as simple as:
 ```ruby
-TestJob.perform_async("YES, DO THAT THING.")
+TestJob.perform_async({"message"=>"YES, DO THAT THING."})
 ```
 
-
-If you wish to specify a global publisher for all of your job classes, you can add a configuration block to an initializer like so:
+It's advisable to specify the Publisher chore uses to send messages globally, so that you can change it easily for local and test environments. To do this, you can add a configuration block to an initializer like so:
 
 ```ruby
 Chore.configure do |c|
@@ -152,9 +180,9 @@ Hooks can be added to a job class as so:
 ```ruby
 class TestJob
   include Chore::Job
-  queue_options :name => 'test_queue', :publisher => Chore::Queues::SQS::Publisher
+  queue_options :name => 'test_queue'
 
-  def perform(*args)
+  def perform(args={})
     Chore.logger.debug "My first sync job"
   end
 end
@@ -180,6 +208,11 @@ https://github.com/mperham/sidekiq/blob/master/lib/sidekiq/cli.rb.
 In particular, Chore handles signals in a separate thread and does so
 sequentially instead of interrupt-driven.  See Chore::Signal for more details
 on the differences between Ruby's `Signal.trap` and Chore's `Chore::Signal.trap`.
+
+Chore will respond to the following Signals:
+
+* INT , TERM, QUIT - Chore will begin shutting down, taking steps to safely terminate workers and not interrupt jobs in progress unless it believes they may be hung
+* USR1 - Re-opens logfiles, useful for handling log rotations
 
 ## Timeouts
 
@@ -215,15 +248,13 @@ A reasonable timeout would be based on the maximum amount of time you expect any
 job in your system to run.  Keep in mind that the process running the job may
 get killed if the job is running for too long.
 
-## Contributing to chore
+## Plugins
 
-* Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet.
-* Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it.
-* Fork the project.
-* Start a feature/bugfix branch.
-* Commit and push until you are happy with your contribution.
-* Make sure to add tests for it. This is important so I don't break it in a future version unintentionally.
-* Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.
+Chore has several plugin gems available, which extend it's core functionality
+
+[New Relic](https://github.com/Tapjoy/chore-new_relic) - Integrating Chore with New Relic
+
+[Airbrake](https://github.com/Tapjoy/chore-airbrake) - Integrating Chore with Airbrake
 
 ## Copyright
 
