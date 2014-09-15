@@ -1,5 +1,5 @@
 module Chore
-  class DuplicateDetector
+  class DuplicateDetector #:nodoc:
 
     def initialize(opts={})
       # Make it optional. Only required when we use it.
@@ -26,6 +26,9 @@ module Chore
       @memcached_client      = opts.fetch(:memcached_client) { Dalli::Client.new(@servers, memcached_options) }
     end
 
+    # Checks the message against the configured dedupe server to see if the message is unique or not
+    # Unique messages will return false
+    # Duplicated messages will return true
     def found_duplicate?(msg)
       return false unless msg && msg.respond_to?(:queue) && msg.queue
       timeout = self.queue_timeout(msg.queue)
@@ -42,6 +45,9 @@ module Chore
       end
     end
 
+    # Retrieves the timeout for the given queue. The timeout is the window of time in seconds that
+    # we would consider the message to be non-unique, before we consider it dead in the water
+    # After that timeout, we would consider the next copy of the message received to be unique, and process it.
     def queue_timeout(queue)
       @timeouts[queue.url] ||= queue.visibility_timeout || @timeout
     end

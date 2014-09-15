@@ -2,7 +2,7 @@ require 'chore/signal'
 
 module Chore
   module Strategy
-    class ForkedWorkerStrategy
+    class ForkedWorkerStrategy #:nodoc:
       attr_accessor :workers
 
       def initialize(manager)

@@ -3,10 +3,14 @@ require 'chore/queues/filesystem/filesystem_queue'
 module Chore
   module Queues
     module Filesystem
+
+      # Publisher for writing jobs to the local filesystem. Useful for testing in offline environments or
+      # when queuing implementations are irrelevent to the task at hand, such as local development of new jobs.
       class Publisher < Chore::Publisher
         # See the top of FilesystemConsumer for comments on how this works
         include FilesystemQueue
 
+        # Mutex for holding a lock over the files for this queue while they are in process
         FILE_MUTEX = Mutex.new
 
         # use of mutex and file locking should make this both threadsafe and safe for multiple

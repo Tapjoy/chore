@@ -7,8 +7,11 @@ require 'set'
 
 require 'chore/manager'
 
-module Chore
+module Chore #:nodoc:
 
+  # Class that handles the command line interactions in Chore.
+  # It primarily is responsible for invoking the Chore process with the provided configuration
+  # to begin processing jobs.
   class CLI
     include Singleton
     include Util
@@ -38,20 +41,20 @@ module Chore
       instance.register_option(key,*args,&blk)
     end
 
-    def register_option(key,*args,&blk) #:nodoc:#
+    def register_option(key,*args,&blk) #:nodoc:
       registered_opts[key] = {:args => args}
       registered_opts[key].merge!(:block => blk) if blk
     end
 
-    #
     # Start up the consuming side of the application. This calls Chore::Manager#start.
-    #
     def run!(args=ARGV)
       parse(args)
       @manager = Chore::Manager.new
       @manager.start
     end
 
+    # Begins the Chore shutdown process. This will call Chore::Manager#shutdown if it is not already in the process of stopping
+    # Exits with code 0
     def shutdown
       unless @stopping
         @stopping = true
@@ -60,13 +63,13 @@ module Chore
       end
     end
 
-    def parse_config_file(file) #:nodoc:#
+    def parse_config_file(file) #:nodoc:
       data = File.read(file)
       data = ERB.new(data).result
       parse_opts(data.split(/\s/).map!(&:chomp).map!(&:strip))
     end
 
-    def parse(args=ARGV) #:nodoc:#
+    def parse(args=ARGV) #:nodoc:
       Chore.configuring = true
       setup_options
 
@@ -87,7 +90,7 @@ module Chore
 
 
     private
-    def setup_options
+    def setup_options #:nodoc:
       register_option "queues", "-q", "--queues QUEUE1,QUEUE2", "Names of queues to process (default: all known)" do |arg|
         options[:queues] = arg.split(",")
       end
@@ -133,7 +136,7 @@ module Chore
 
     end
 
-    def parse_opts(argv)
+    def parse_opts(argv) #:nodoc:
       @options ||= {}
       @parser = OptionParser.new do |o|
         registered_opts.each do |key,opt|
@@ -160,11 +163,11 @@ module Chore
     end
 
 
-    def detected_environment
+    def detected_environment #:nodoc:
       options[:environment] ||= ENV['RAILS_ENV'] || ENV['RACK_ENV'] || 'development'
     end
 
-    def boot_system
+    def boot_system #:nodoc:
       ENV['RACK_ENV'] = ENV['RAILS_ENV'] = detected_environment
 
       raise ArgumentError, "#{options[:require]} does not exist" unless File.exist?(options[:require])
@@ -179,7 +182,7 @@ module Chore
       end
     end
 
-    def detect_queues
+    def detect_queues #:nodoc:
       if (options[:queues] && options[:except_queues])
         raise ArgumentError, "Cannot specify both --except and --queues"
       end
@@ -204,12 +207,12 @@ module Chore
       raise ArgumentError, "No queues specified. Either include classes that include Chore::Job, or specify the --queues option" if options[:queues].empty?
     end
 
-    def missing_option!(option)
+    def missing_option!(option) #:nodoc:
       puts "Missing argument: #{option}"
       exit(255)
     end
 
-    def validate!
+    def validate! #:nodoc:
 
       missing_option!("--require [PATH|DIR]") unless options[:require]
 

@@ -1,5 +1,9 @@
 module Chore
+
+  # Collection of utilities and helpers used by Chore internally
   module Util
+    
+    # To avoid bringing in all of active_support, we implemented constantize here
     def constantize(camel_cased_word)
       names = camel_cased_word.split('::')
       names.shift if names.empty? || names.first.empty?

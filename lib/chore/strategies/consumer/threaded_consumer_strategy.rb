@@ -1,7 +1,7 @@
 require 'chore/strategies/consumer/batcher'
 module Chore
   module Strategy
-    class ThreadedConsumerStrategy
+    class ThreadedConsumerStrategy #:nodoc
       attr_accessor :batcher
 
       Chore::CLI.register_option 'batch_size', '--batch-size SIZE', Integer, 'Number of items to collect for a single worker to process'
@@ -15,6 +15,9 @@ module Chore
         @running = true
       end
 
+      # Begins fetching from queues by spinning up the configured +:threads_per_queue:+ count of threads
+      # for each queue you're consuming from.
+      # Once all threads are spun up and running, the threads are then joined.
       def fetch
         Chore.logger.debug "Starting up consumer strategy: #{self.class.name}"
         threads = []
@@ -29,6 +32,9 @@ module Chore
         threads.each(&:join)
       end
       
+      # If the ThreadedConsumerStrategy is currently running <tt>stop!</tt> will begin signalling it to stop
+      # It will stop the batcher from forking more work, as well as set a flag which will disable it's own consuming
+      # threads once they finish with their current work.
       def stop!
         if running?
           Chore.logger.info "Shutting down fetcher: #{self.class.name.to_s}"
@@ -37,11 +43,14 @@ module Chore
         end
       end
 
+      # Returns whether or not the ThreadedConsumerStrategy is running or not
       def running?
         @running
       end
 
       private 
+      # Starts a consumer thread for polling the given +queue+.
+      # If <tt>stop!<tt> is called, the threads will shut themsevles down.
       def start_consumer_thread(queue)
         t = Thread.new(queue) do |tQueue|
           begin

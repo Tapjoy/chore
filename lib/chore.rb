@@ -20,7 +20,7 @@ require 'chore/publisher'
   Dir[File.join(File.dirname(__FILE__),'chore',p,'*.rb')].each {|f| require f}
 end
 
-module Chore
+module Chore #:nodoc:
   VERSION = Chore::Version::STRING #:nodoc:
 
   # The default configuration options for Chore.
@@ -199,17 +199,17 @@ module Chore
     @config ||= self.configure
   end
 
-  #
   # Helper flag for rails/web app chore initializers to use so that chore does not re-load itself during requirement loading
-  #
   def self.configuring?
     @configuring ||= false
   end
 
+  # Setter for chore to indicate that it's in the middle of configuring itself
   def self.configuring=(value)
     @configuring = value
   end
 
+  # List of queue_names as configured via Chore::Job including their prefix, if set.
   def self.prefixed_queue_names
     Chore::Job.job_classes.collect {|klass| c = klass.constantize; c.prefixed_queue_name}
   end
