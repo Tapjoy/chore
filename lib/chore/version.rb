@@ -1,5 +1,5 @@
 module Chore
-  module Version
+  module Version #:nodoc:
     MAJOR = 1
     MINOR = 5
     PATCH = 1

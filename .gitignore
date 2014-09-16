@@ -1,3 +1,6 @@
 tmp/*
+*.yardoc
 Gemfile.lock
 *.gem
+doc/*
+.DS_Store

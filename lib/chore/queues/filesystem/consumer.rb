@@ -4,7 +4,7 @@ require 'chore/queues/filesystem/filesystem_queue'
 module Chore
   module Queues
     module Filesystem
-      ##
+
       # This is the consuming side of the file system queue. This class consumes jobs created by
       # FilesystemPublisher#publish.  The root of the file system queue is configured in
       # Chore.config.fs_queue_root. In there a directory will be created for each queue name.
@@ -97,7 +97,7 @@ module Chore
           move_job(File.join(@in_progress_dir, job), File.join(@new_dir, "#{basename}.#{previous_attempts + 1}.job"))
         end
         
-        # moves job file to inprogress directory and returns the full path
+        # Moves job file to inprogress directory and returns the full path
         def move_job(from, to)
           f = File.open(from, "r")
           # wait on the lock a publisher in another process might have.
