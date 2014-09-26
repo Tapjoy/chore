@@ -1,0 +1,427 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Class: Chore::Signal
+  
+    &mdash; Documentation by YARD 0.8.7.4
+  
+</title>
+
+  <link rel="stylesheet" href="../css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '../';
+  framesUrl = "../frames.html#!Chore/Signal.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="../_index.html">Index (S)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../Chore.html" title="Chore (module)">Chore</a></span></span>
+     &raquo; 
+    <span class="title">Signal</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="../method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="../file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Class: Chore::Signal
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+    <dt class="r1">Inherits:</dt>
+    <dd class="r1">
+      <span class="inheritName">Object</span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next">Chore::Signal</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+      </dd>
+    
+  
+  
+    
+  
+    
+  
+  
+  
+    <dt class="r2 last">Defined in:</dt>
+    <dd class="r2 last">lib/chore/signal.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>Provides smarter signal handling capabilities than Ruby's built-in Signal
+class.  Specifically it runs callbacks in a separate thread since:</p>
+
+<pre class="code ruby"><code class="ruby">(1) Ruby 2.0 cannot obtain locks in the main Signal thread
+(2) Doing so can result in deadlocks in Ruby 1.9.x.</code></pre>
+
+<p>Ruby's core implementation can be found at: <a
+href="http://ruby-doc.org/core-1.9.3/Signal.html">ruby-doc.org/core-1.9.3/Signal.html</a></p>
+
+<h2 id="label-Differences">Differences</h2>
+
+<p>There are a few important differences with the way signals trapped through
+this class behave than through Ruby's Signal class.</p>
+
+<h3 id="label-Sequential+processing">Sequential processing</h3>
+
+<p>In Ruby, signals are interrupt-driven -- the thread is executing at the
+time will be interrupted at that point in the call stack and start
+executing the signal handler.  This increases the potential for deadlocks
+if mutexes are in use by both the thread and the signal handler.</p>
+
+<p>In Chore, signal handlers are executed sequentially.  When a handler is
+started, it must complete before the next signal is processed.  These
+handlers are also executed in their own thread and, therefore, will compete
+for resources with the rest of the application.</p>
+
+<h3 id="label-Forking">Forking</h3>
+
+<p>In Ruby, forking does not disrupt the ability to process signals.  Signals
+trapped in the master process will continue to be trapped in forked child
+processes.</p>
+
+<p>In Chore, this is not the case.  When a process is forked, any trapped
+signals will no longer get processed.  This is because the thread that
+processes those incoming signals gets killed.</p>
+
+<p>In order to process these signals, `Chore::Signal.reset` must be called,
+followed by additional calls to re-register those signal handlers.</p>
+
+<h2 id="label-Signal+ordering">Signal ordering</h2>
+
+<p>It is important to note that in Ruby, signals are essentially processed as
+LIFO (Last-In, First-Out) since they are interrupt driven.  Similar
+behaviors is present in Chore's implementation.</p>
+
+<p>Having LIFO behavior is the reason why this class uses a queue for tracking
+the list of incoming signals, instead of writing them out to a pipe.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+  <h2>Constant Summary</h2>
+  
+    <dl class="constants">
+      
+        <dt id="PRIORITIES-constant" class="">PRIORITIES =
+          <div class="docstring">
+  <div class="discussion">
+    
+<p>The priorities of signals to handle.  If not defined, the signal is
+considered high-priority.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='lbrace'>{</span>
+  <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>CHLD</span><span class='tstring_end'>'</span></span> <span class='op'>=&gt;</span> <span class='symbol'>:secondary</span>
+<span class='rbrace'>}</span></pre></dd>
+      
+    </dl>
+  
+
+
+
+
+
+
+
+  
+    <h2>
+      Class Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#reset-class_method" title="reset (class method)">+ (Object) <strong>reset</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Resets signals and handlers back to their defaults.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#trap-class_method" title="trap (class method)">+ (Object) <strong>trap</strong>(signal, command = nil, &amp;block) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Traps the given signal and runs the block when the signal is sent to this
+process.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="class_method_details" class="method_details_list">
+    <h2>Class Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="reset-class_method">
+  
+    + (<tt>Object</tt>) <strong>reset</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Resets signals and handlers back to their defaults.  Any unprocessed
+signals will be discarded.</p>
+
+<p>This should be called after forking a processing in order to ensure that
+signals continue to get processed.  <strong>Note</strong>, however, that
+new handlers must get registered after forking.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/signal.rb', line 106</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_reset'>reset</span>
+  <span class='comment'># Reset traps back to their default behavior.  Note that this *must*
+</span>  <span class='comment'># be done first in order to prevent trap handlers from being called
+</span>  <span class='comment'># while the wake pipe / listener are being reset.  If this is run
+</span>  <span class='comment'># out of order, then it's possible for those callbacks to hit errors.
+</span>  <span class='ivar'>@handlers</span><span class='period'>.</span><span class='id identifier rubyid_keys'>keys</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_signal'>signal</span><span class='op'>|</span> <span class='id identifier rubyid_trap'>trap</span><span class='lparen'>(</span><span class='id identifier rubyid_signal'>signal</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>DEFAULT</span><span class='tstring_end'>'</span></span><span class='rparen'>)</span><span class='rbrace'>}</span>
+
+  <span class='comment'># Reset signals back to their empty state
+</span>  <span class='ivar'>@listener</span> <span class='op'>=</span> <span class='kw'>nil</span>
+  <span class='ivar'>@primary_signals</span><span class='period'>.</span><span class='id identifier rubyid_clear'>clear</span>
+  <span class='ivar'>@secondary_signals</span><span class='period'>.</span><span class='id identifier rubyid_clear'>clear</span>
+  <span class='ivar'>@wake_out</span><span class='period'>.</span><span class='id identifier rubyid_close'>close</span>
+  <span class='ivar'>@wake_in</span><span class='period'>.</span><span class='id identifier rubyid_close'>close</span>
+  <span class='ivar'>@wake_in</span><span class='comma'>,</span> <span class='ivar'>@wake_out</span> <span class='op'>=</span> <span class='const'>IO</span><span class='period'>.</span><span class='id identifier rubyid_pipe'>pipe</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="trap-class_method">
+  
+    + (<tt>Object</tt>) <strong>trap</strong>(signal, command = nil, &amp;block) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Traps the given signal and runs the block when the signal is sent to this
+process.  This will run the block outside of the trap thread.</p>
+
+<p>Only a single handler can be registered for a signal at any point.  If a
+signal has already been trapped, a warning will be generated and the
+previous handler for the signal will be returned.</p>
+
+<p>See ::Signal#trap @ <a
+href="http://ruby-doc.org/core-1.9.3/Signal.html#method-c-trap">ruby-doc.org/core-1.9.3/Signal.html#method-c-trap</a>
+for more information.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/signal.rb', line 77</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_trap'>trap</span><span class='lparen'>(</span><span class='id identifier rubyid_signal'>signal</span><span class='comma'>,</span> <span class='id identifier rubyid_command'>command</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_command'>command</span>
+    <span class='comment'># Command given for Ruby to interpret -- pass it directly onto Signal
+</span>    <span class='ivar'>@handlers</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span><span class='lparen'>(</span><span class='id identifier rubyid_signal'>signal</span><span class='rparen'>)</span>
+    <span class='op'>::</span><span class='const'>Signal</span><span class='period'>.</span><span class='id identifier rubyid_trap'>trap</span><span class='lparen'>(</span><span class='id identifier rubyid_signal'>signal</span><span class='comma'>,</span> <span class='id identifier rubyid_command'>command</span><span class='rparen'>)</span>
+  <span class='kw'>else</span>
+    <span class='comment'># Ensure we're listening for signals
+</span>    <span class='id identifier rubyid_listen'>listen</span>
+
+    <span class='kw'>if</span> <span class='ivar'>@handlers</span><span class='lbracket'>[</span><span class='id identifier rubyid_signal'>signal</span><span class='rbracket'>]</span>
+      <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_signal'>signal</span><span class='rbrace'>}</span><span class='tstring_content'> signal has been overwritten:\n</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_caller'>caller</span> <span class='op'>*</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>end</span>
+
+    <span class='comment'># Wrap handlers so they run in the listener thread
+</span>    <span class='id identifier rubyid_signals'>signals</span> <span class='op'>=</span> <span class='const'>PRIORITIES</span><span class='lbracket'>[</span><span class='id identifier rubyid_signal'>signal</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='symbol'>:secondary</span> <span class='op'>?</span> <span class='ivar'>@secondary_signals</span> <span class='op'>:</span> <span class='ivar'>@primary_signals</span>
+    <span class='ivar'>@handlers</span><span class='lbracket'>[</span><span class='id identifier rubyid_signal'>signal</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_block'>block</span>
+    <span class='op'>::</span><span class='const'>Signal</span><span class='period'>.</span><span class='id identifier rubyid_trap'>trap</span><span class='lparen'>(</span><span class='id identifier rubyid_signal'>signal</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='id identifier rubyid_signals'>signals</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_signal'>signal</span>
+      <span class='id identifier rubyid_wakeup'>wakeup</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Fri Sep 26 10:20:08 2014 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.4 (ruby-1.9.3).
+</div>
+
+  </body>
+</html>

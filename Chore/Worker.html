@@ -6,7 +6,7 @@
 <title>
   Class: Chore::Worker
   
-    &mdash; Documentation by YARD 0.8.6.1
+    &mdash; Documentation by YARD 0.8.7.4
   
 </title>
 
@@ -17,7 +17,7 @@
 <script type="text/javascript" charset="utf-8">
   hasFrames = window.top.frames.main ? true : false;
   relpath = '../';
-  framesUrl = "../frames.html#!" + escape(window.location.href);
+  framesUrl = "../frames.html#!Chore/Worker.html";
 </script>
 
 
@@ -109,7 +109,7 @@
 <p>Worker is one of the core classes in Chore. It's responsible for most of
 the logic relating to actually processing a job. A given worker will take
 an amount of <code>work</code> and then process it all until either the
-worker is told to stop, or the work is  completed. Worker is completely
+worker is told to stop, or the work is completed. Worker is completely
 agnostic to the WorkerStrategy that it was called from.</p>
 
 
@@ -167,7 +167,7 @@ agnostic to the WorkerStrategy that it was called from.</p>
       <li class="public ">
   <span class="summary_signature">
     
-      <a href="#status-instance_method" title="#status (instance method)">- (Object) <strong>status</strong> </a>
+      <a href="#started_at-instance_method" title="#started_at (instance method)">- (Object) <strong>started_at</strong> </a>
     
 
     
@@ -175,6 +175,8 @@ agnostic to the WorkerStrategy that it was called from.</p>
   
   
   
+    
+      <span class="note title readonly">readonly</span>
     
     
   
@@ -185,7 +187,36 @@ agnostic to the WorkerStrategy that it was called from.</p>
 
   
     <span class="summary_desc"><div class='inline'>
-<p>Returns the value of attribute status.</p>
+<p>Returns the value of attribute started_at.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#work-instance_method" title="#work (instance method)">- (Object) <strong>work</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+      <span class="note title readonly">readonly</span>
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the value of attribute work.</p>
 </div></span>
   
 </li>
@@ -236,6 +267,54 @@ agnostic to the WorkerStrategy that it was called from.</p>
     </h2>
 
     <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#expired%3F-instance_method" title="#expired? (instance method)">- (Boolean) <strong>expired?</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Whether this worker has existed for longer than it's allowed to.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#expires_at-instance_method" title="#expires_at (instance method)">- (Object) <strong>expires_at</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>The time at which this worker expires.</p>
+</div></span>
+  
+</li>
+
       
         <li class="public ">
   <span class="summary_signature">
@@ -311,30 +390,6 @@ agnostic to the WorkerStrategy that it was called from.</p>
 </li>
 
       
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#to_json-instance_method" title="#to_json (instance method)">- (Object) <strong>to_json</strong>(*args) </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'>
-<p>This is used as part of the internal stat server.</p>
-</div></span>
-  
-</li>
-
-      
     </ul>
   
 
@@ -381,16 +436,16 @@ the Publisher who created the message.</p>
       <pre class="lines">
 
 
-23
-24
-25
-26
 27
 28
-29</pre>
+29
+30
+31
+32
+33</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/worker.rb', line 23</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/worker.rb', line 27</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_work'>work</span><span class='op'>=</span><span class='lbracket'>[</span><span class='rbracket'>]</span><span class='comma'>,</span><span class='id identifier rubyid_opts'>opts</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
   <span class='ivar'>@stopping</span> <span class='op'>=</span> <span class='kw'>false</span>
@@ -437,12 +492,12 @@ the Publisher who created the message.</p>
       <pre class="lines">
 
 
-13
-14
-15</pre>
+16
+17
+18</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/worker.rb', line 13</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/worker.rb', line 16</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_options'>options</span>
   <span class='ivar'>@options</span>
@@ -453,11 +508,11 @@ the Publisher who created the message.</p>
 </div>
     
       
-      <span id="status=-instance_method"></span>
+      <span id=""></span>
       <div class="method_details ">
-  <h3 class="signature " id="status-instance_method">
+  <h3 class="signature " id="started_at-instance_method">
   
-    - (<tt>Object</tt>) <strong>status</strong> 
+    - (<tt>Object</tt>) <strong>started_at</strong>  <span class="extras">(readonly)</span>
   
 
   
@@ -466,7 +521,7 @@ the Publisher who created the message.</p>
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>Returns the value of attribute status</p>
+<p>Returns the value of attribute started_at</p>
 
 
   </div>
@@ -480,15 +535,58 @@ the Publisher who created the message.</p>
       <pre class="lines">
 
 
-14
-15
-16</pre>
+18
+19
+20</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/worker.rb', line 14</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/worker.rb', line 18</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_status'>status</span>
-  <span class='ivar'>@status</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_started_at'>started_at</span>
+  <span class='ivar'>@started_at</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id=""></span>
+      <div class="method_details ">
+  <h3 class="signature " id="work-instance_method">
+  
+    - (<tt>Object</tt>) <strong>work</strong>  <span class="extras">(readonly)</span>
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the value of attribute work</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+17
+18
+19</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/worker.rb', line 17</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_work'>work</span>
+  <span class='ivar'>@work</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -528,12 +626,12 @@ the Publisher who created the message.</p>
       <pre class="lines">
 
 
-16
-17
-18</pre>
+20
+21
+22</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/worker.rb', line 16</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/worker.rb', line 20</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_start'>start</span><span class='lparen'>(</span><span class='id identifier rubyid_work'>work</span><span class='rparen'>)</span> <span class='comment'>#:nodoc:
 </span>  <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_work'>work</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_start'>start</span>
@@ -550,7 +648,104 @@ the Publisher who created the message.</p>
 
     
       <div class="method_details first">
-  <h3 class="signature first" id="start-instance_method">
+  <h3 class="signature first" id="expired?-instance_method">
+  
+    - (<tt>Boolean</tt>) <strong>expired?</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Whether this worker has existed for longer than it's allowed to</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+36
+37
+38</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/worker.rb', line 36</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_expired?'>expired?</span>
+  <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span> <span class='op'>&gt;</span> <span class='id identifier rubyid_expires_at'>expires_at</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="expires_at-instance_method">
+  
+    - (<tt>Object</tt>) <strong>expires_at</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>The time at which this worker expires</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+41
+42
+43
+44</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/worker.rb', line 41</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_expires_at'>expires_at</span>
+  <span class='id identifier rubyid_total_timeout'>total_timeout</span> <span class='op'>=</span> <span class='ivar'>@work</span><span class='period'>.</span><span class='id identifier rubyid_inject'>inject</span><span class='lparen'>(</span><span class='int'>0</span><span class='rparen'>)</span> <span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_sum'>sum</span><span class='comma'>,</span> <span class='id identifier rubyid_item'>item</span><span class='op'>|</span> <span class='id identifier rubyid_sum'>sum</span> <span class='op'>+=</span> <span class='id identifier rubyid_item'>item</span><span class='period'>.</span><span class='id identifier rubyid_queue_timeout'>queue_timeout</span><span class='rbrace'>}</span>
+  <span class='ivar'>@started_at</span> <span class='op'>+</span> <span class='id identifier rubyid_total_timeout'>total_timeout</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="start-instance_method">
   
     - (<tt>Object</tt>) <strong>start</strong> 
   
@@ -576,6 +771,10 @@ UnitOfWork).</p>
 <p>If unsuccessful it will call the appropriate Hooks based on the type of
 failure.</p>
 </li><li>
+<p>If unsuccessful <strong>and</strong> the maximum number of attempts for the
+job has been surpassed, it will call the permanent failure hooks and
+Consumer#complete.</p>
+</li><li>
 <p>Log the results via the Chore.logger</p>
 </li></ul>
 
@@ -591,41 +790,41 @@ failure.</p>
       <pre class="lines">
 
 
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55</pre>
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/worker.rb', line 39</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/worker.rb', line 56</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_start'>start</span>
   <span class='ivar'>@work</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_item'>item</span><span class='op'>|</span>
     <span class='kw'>return</span> <span class='kw'>if</span> <span class='ivar'>@stopping</span>
-    <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Doing: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_item'>item</span><span class='period'>.</span><span class='id identifier rubyid_inspect'>inspect</span><span class='rbrace'>}</span><span class='tstring_end'>&quot;</span></span> <span class='rbrace'>}</span>
+    <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Doing: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_item'>item</span><span class='period'>.</span><span class='id identifier rubyid_queue_name'>queue_name</span><span class='rbrace'>}</span><span class='tstring_content'> with </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_item'>item</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='rbrace'>}</span><span class='tstring_end'>&quot;</span></span> <span class='rbrace'>}</span>
     <span class='kw'>begin</span>
-      <span class='id identifier rubyid_message'>message</span> <span class='op'>=</span> <span class='id identifier rubyid_decode_job'>decode_job</span><span class='lparen'>(</span><span class='id identifier rubyid_item'>item</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_klass'>klass</span> <span class='op'>=</span> <span class='id identifier rubyid_payload_class'>payload_class</span><span class='lparen'>(</span><span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
-      <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_status'>status</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>started_at</span><span class='tstring_end'>'</span></span><span class='op'>=&gt;</span><span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span><span class='comma'>,</span><span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>class</span><span class='tstring_end'>'</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_klass'>klass</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span><span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>args</span><span class='tstring_end'>'</span></span><span class='op'>=&gt;</span><span class='id identifier rubyid_message'>message</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>args</span><span class='tstring_end'>'</span></span><span class='rbracket'>]</span><span class='rbrace'>}</span>
-      <span class='kw'>next</span> <span class='kw'>unless</span> <span class='id identifier rubyid_klass'>klass</span><span class='period'>.</span><span class='id identifier rubyid_run_hooks_for'>run_hooks_for</span><span class='lparen'>(</span><span class='symbol'>:before_perform</span><span class='comma'>,</span><span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_perform_job'>perform_job</span><span class='lparen'>(</span><span class='id identifier rubyid_item'>item</span><span class='comma'>,</span><span class='id identifier rubyid_klass'>klass</span><span class='comma'>,</span><span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_start_item'>start_item</span><span class='lparen'>(</span><span class='id identifier rubyid_item'>item</span><span class='rparen'>)</span>
     <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-      <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Failed to run job </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_item'>item</span><span class='period'>.</span><span class='id identifier rubyid_inspect'>inspect</span><span class='rbrace'>}</span><span class='tstring_content'> with error: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='rbrace'>}</span><span class='tstring_content'> </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_backtrace'>backtrace</span> <span class='op'>*</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span><span class='tstring_end'>&quot;</span></span> <span class='rbrace'>}</span>
-      <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_run_hooks_for'>run_hooks_for</span><span class='lparen'>(</span><span class='symbol'>:on_failure</span><span class='comma'>,</span><span class='id identifier rubyid_item'>item</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='comma'>,</span><span class='id identifier rubyid_e'>e</span><span class='rparen'>)</span>
-      <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_stats'>stats</span><span class='period'>.</span><span class='id identifier rubyid_add'>add</span><span class='lparen'>(</span><span class='symbol'>:failed</span><span class='comma'>,</span><span class='symbol'>:unknown</span><span class='rparen'>)</span>
+      <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Failed to run job for </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_item'>item</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='rbrace'>}</span><span class='tstring_content'> with error: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='rbrace'>}</span><span class='tstring_content'> </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_backtrace'>backtrace</span> <span class='op'>*</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span><span class='tstring_end'>&quot;</span></span> <span class='rbrace'>}</span>
+      <span class='kw'>if</span> <span class='id identifier rubyid_item'>item</span><span class='period'>.</span><span class='id identifier rubyid_current_attempt'>current_attempt</span> <span class='op'>&gt;=</span> <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_max_attempts'>max_attempts</span>
+        <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_run_hooks_for'>run_hooks_for</span><span class='lparen'>(</span><span class='symbol'>:on_permanent_failure</span><span class='comma'>,</span><span class='id identifier rubyid_item'>item</span><span class='period'>.</span><span class='id identifier rubyid_queue_name'>queue_name</span><span class='comma'>,</span><span class='id identifier rubyid_item'>item</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='comma'>,</span><span class='id identifier rubyid_e'>e</span><span class='rparen'>)</span>
+        <span class='id identifier rubyid_item'>item</span><span class='period'>.</span><span class='id identifier rubyid_consumer'>consumer</span><span class='period'>.</span><span class='id identifier rubyid_complete'>complete</span><span class='lparen'>(</span><span class='id identifier rubyid_item'>item</span><span class='period'>.</span><span class='id identifier rubyid_id'>id</span><span class='rparen'>)</span>
+      <span class='kw'>else</span>
+        <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_run_hooks_for'>run_hooks_for</span><span class='lparen'>(</span><span class='symbol'>:on_failure</span><span class='comma'>,</span><span class='id identifier rubyid_item'>item</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='comma'>,</span><span class='id identifier rubyid_e'>e</span><span class='rparen'>)</span>
+      <span class='kw'>end</span>
     <span class='kw'>end</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
@@ -660,64 +859,15 @@ failure.</p>
       <pre class="lines">
 
 
-58
-59
-60</pre>
+75
+76
+77</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/worker.rb', line 58</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/worker.rb', line 75</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_stop!'>stop!</span>
   <span class='ivar'>@stopping</span> <span class='op'>=</span> <span class='kw'>true</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="to_json-instance_method">
-  
-    - (<tt>Object</tt>) <strong>to_json</strong>(*args) 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-<p>This is used as part of the internal stat server. It let's us track the
-starting timestamp, and current status (what work is being performed) of
-each worker.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-64
-65
-66
-67
-68
-69</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/worker.rb', line 64</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_to_json'>to_json</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
-  <span class='lbrace'>{</span>
-    <span class='symbol'>:started_at</span> <span class='op'>=&gt;</span> <span class='ivar'>@started_at</span><span class='comma'>,</span>
-    <span class='symbol'>:status</span> <span class='op'>=&gt;</span> <span class='ivar'>@status</span>
-  <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -729,9 +879,9 @@ each worker.</p>
 </div>
 
     <div id="footer">
-  Generated on Mon May  6 16:25:13 2013 by
+  Generated on Fri Sep 26 10:20:08 2014 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.6.1 (ruby-1.9.3).
+  0.8.7.4 (ruby-1.9.3).
 </div>
 
   </body>

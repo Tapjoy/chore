@@ -6,7 +6,7 @@
 <title>
   Class: Chore::UnitOfWork
   
-    &mdash; Documentation by YARD 0.8.6.1
+    &mdash; Documentation by YARD 0.8.7.4
   
 </title>
 
@@ -17,7 +17,7 @@
 <script type="text/javascript" charset="utf-8">
   hasFrames = window.top.frames.main ? true : false;
   relpath = '../';
-  framesUrl = "../frames.html#!" + escape(window.location.href);
+  framesUrl = "../frames.html#!Chore/UnitOfWork.html";
 </script>
 
 
@@ -96,7 +96,7 @@
   
   
     <dt class="r2 last">Defined in:</dt>
-    <dd class="r2 last">lib/chore.rb</dd>
+    <dd class="r2 last">lib/chore/unit_of_work.rb</dd>
   
 </dl>
 <div class="clear"></div>
@@ -104,12 +104,20 @@
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
     
-<p>Simple class to hold job processing information. Has only three attributes:</p>
+<p>Simple class to hold job processing information. Has six attributes:</p>
 <ul><li>
 <p><code>:id</code> The queue implementation specific identifier for this
 message.</p>
 </li><li>
+<p><code>:queue_name</code> The name of the queue the job came from</p>
+</li><li>
+<p><code>:queue_timeout</code> The time (in seconds) before the job will get
+re-enqueued if not processed</p>
+</li><li>
 <p><code>:message</code> The actual data of the message.</p>
+</li><li>
+<p><code>:previous_attempts</code> The number of times the work has been
+attempted previously.</p>
 </li><li>
 <p><code>:consumer</code> The consumer instance used to fetch this message.
 Most queue implementations won't need access to this, but some (RabbitMQ)
@@ -214,10 +222,126 @@ the Worker for things like <code>complete</code> and
 </li>
 
     
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#previous_attempts-instance_method" title="#previous_attempts (instance method)">- (Object) <strong>previous_attempts</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the value of attribute previous_attempts.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#queue_name-instance_method" title="#queue_name (instance method)">- (Object) <strong>queue_name</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the value of attribute queue_name.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#queue_timeout-instance_method" title="#queue_timeout (instance method)">- (Object) <strong>queue_timeout</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the value of attribute queue_timeout.</p>
+</div></span>
+  
+</li>
+
+    
   </ul>
 
 
 
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#current_attempt-instance_method" title="#current_attempt (instance method)">- (Object) <strong>current_attempt</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>The current attempt number for the worker processing this message.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
 
 
   
@@ -270,12 +394,12 @@ the Worker for things like <code>complete</code> and
       <pre class="lines">
 
 
-32
-33
-34</pre>
+11
+12
+13</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore.rb', line 32</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/unit_of_work.rb', line 11</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_consumer'>consumer</span>
   <span class='ivar'>@consumer</span>
@@ -331,12 +455,12 @@ the Worker for things like <code>complete</code> and
       <pre class="lines">
 
 
-32
-33
-34</pre>
+11
+12
+13</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore.rb', line 32</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/unit_of_work.rb', line 11</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_id'>id</span>
   <span class='ivar'>@id</span>
@@ -392,12 +516,12 @@ the Worker for things like <code>complete</code> and
       <pre class="lines">
 
 
-32
-33
-34</pre>
+11
+12
+13</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore.rb', line 32</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/unit_of_work.rb', line 11</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_message'>message</span>
   <span class='ivar'>@message</span>
@@ -407,15 +531,245 @@ the Worker for things like <code>complete</code> and
 </table>
 </div>
     
+      
+      <span id="previous_attempts=-instance_method"></span>
+      <div class="method_details ">
+  <h3 class="signature " id="previous_attempts-instance_method">
+  
+    - (<tt>Object</tt>) <strong>previous_attempts</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the value of attribute previous_attempts</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the current value of previous_attempts</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+11
+12
+13</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/unit_of_work.rb', line 11</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_previous_attempts'>previous_attempts</span>
+  <span class='ivar'>@previous_attempts</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id="queue_name=-instance_method"></span>
+      <div class="method_details ">
+  <h3 class="signature " id="queue_name-instance_method">
+  
+    - (<tt>Object</tt>) <strong>queue_name</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the value of attribute queue_name</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the current value of queue_name</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+11
+12
+13</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/unit_of_work.rb', line 11</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_queue_name'>queue_name</span>
+  <span class='ivar'>@queue_name</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id="queue_timeout=-instance_method"></span>
+      <div class="method_details ">
+  <h3 class="signature " id="queue_timeout-instance_method">
+  
+    - (<tt>Object</tt>) <strong>queue_timeout</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the value of attribute queue_timeout</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the current value of queue_timeout</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+11
+12
+13</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/unit_of_work.rb', line 11</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_queue_timeout'>queue_timeout</span>
+  <span class='ivar'>@queue_timeout</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
   </div>
 
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="current_attempt-instance_method">
+  
+    - (<tt>Object</tt>) <strong>current_attempt</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>The current attempt number for the worker processing this message.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+13
+14
+15</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/unit_of_work.rb', line 13</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_current_attempt'>current_attempt</span>
+  <span class='id identifier rubyid_previous_attempts'>previous_attempts</span> <span class='op'>+</span> <span class='int'>1</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
 
 </div>
 
     <div id="footer">
-  Generated on Mon May  6 16:25:13 2013 by
+  Generated on Fri Sep 26 10:20:08 2014 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.6.1 (ruby-1.9.3).
+  0.8.7.4 (ruby-1.9.3).
 </div>
 
   </body>

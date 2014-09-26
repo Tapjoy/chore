@@ -6,7 +6,7 @@
 <title>
   Module: Chore::Job
   
-    &mdash; Documentation by YARD 0.8.6.1
+    &mdash; Documentation by YARD 0.8.7.4
   
 </title>
 
@@ -17,7 +17,7 @@
 <script type="text/javascript" charset="utf-8">
   hasFrames = window.top.frames.main ? true : false;
   relpath = '../';
-  framesUrl = "../frames.html#!" + escape(window.location.href);
+  framesUrl = "../frames.html#!Chore/Job.html";
 </script>
 
 
@@ -84,7 +84,20 @@
 </dl>
 <div class="clear"></div>
 
-<h2>Defined Under Namespace</h2>
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p><code>Chore::Job</code> is the module which gives your job classes the
+methods they need to be published and run within Chore. You cannot have a
+Job in Chore that does not include this module</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><h2>Defined Under Namespace</h2>
 <p class="children">
   
     
@@ -277,15 +290,15 @@ specific initialization that may be required.</p>
       <pre class="lines">
 
 
-14
-15
-16
-17
-18
-19</pre>
+21
+22
+23
+24
+25
+26</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/job.rb', line 14</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/job.rb', line 21</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_included'>included</span><span class='lparen'>(</span><span class='id identifier rubyid_base'>base</span><span class='rparen'>)</span> <span class='comment'>#:nodoc:
 </span>  <span class='ivar'>@classes</span> <span class='op'>||=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
@@ -324,12 +337,12 @@ specific initialization that may be required.</p>
       <pre class="lines">
 
 
-10
-11
-12</pre>
+17
+18
+19</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/job.rb', line 10</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/job.rb', line 17</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_job_classes'>job_classes</span> <span class='comment'>#:nodoc:
 </span>  <span class='ivar'>@classes</span> <span class='op'>||</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
@@ -373,11 +386,11 @@ specific initialization that may be required.</p>
       <pre class="lines">
 
 
-80
-81</pre>
+86
+87</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/job.rb', line 80</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/job.rb', line 86</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_args'>args</span><span class='op'>=</span><span class='kw'>nil</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
@@ -425,12 +438,12 @@ specific initialization that may be required.</p>
       <pre class="lines">
 
 
-86
-87
-88</pre>
+90
+91
+92</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/job.rb', line 86</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/job.rb', line 90</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_perform'>perform</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'>NotImplementedError</span>
@@ -466,20 +479,20 @@ specific initialization that may be required.</p>
       <pre class="lines">
 
 
-93
-94
 95
 96
 97
-98</pre>
+98
+99
+100</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/job.rb', line 93</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/job.rb', line 95</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_perform_async'>perform_async</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
   <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_run_hooks_for'>run_hooks_for</span><span class='lparen'>(</span><span class='symbol'>:before_publish</span><span class='comma'>,</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
   <span class='ivar'>@chore_publisher</span> <span class='op'>||=</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_options'>options</span><span class='lbracket'>[</span><span class='symbol'>:publisher</span><span class='rbracket'>]</span>
-  <span class='ivar'>@chore_publisher</span><span class='period'>.</span><span class='id identifier rubyid_publish'>publish</span><span class='lparen'>(</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_options'>options</span><span class='lbracket'>[</span><span class='symbol'>:name</span><span class='rbracket'>]</span><span class='comma'>,</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_job_hash'>job_hash</span><span class='lparen'>(</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span><span class='rparen'>)</span>
+  <span class='ivar'>@chore_publisher</span><span class='period'>.</span><span class='id identifier rubyid_publish'>publish</span><span class='lparen'>(</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_prefixed_queue_name'>prefixed_queue_name</span><span class='comma'>,</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_job_hash'>job_hash</span><span class='lparen'>(</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span><span class='rparen'>)</span>
   <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_run_hooks_for'>run_hooks_for</span><span class='lparen'>(</span><span class='symbol'>:after_publish</span><span class='comma'>,</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -492,9 +505,9 @@ specific initialization that may be required.</p>
 </div>
 
     <div id="footer">
-  Generated on Mon May  6 16:25:13 2013 by
+  Generated on Fri Sep 26 10:20:08 2014 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.6.1 (ruby-1.9.3).
+  0.8.7.4 (ruby-1.9.3).
 </div>
 
   </body>

@@ -6,7 +6,7 @@
 <title>
   Class: Chore::Manager
   
-    &mdash; Documentation by YARD 0.8.6.1
+    &mdash; Documentation by YARD 0.8.7.4
   
 </title>
 
@@ -17,7 +17,7 @@
 <script type="text/javascript" charset="utf-8">
   hasFrames = window.top.frames.main ? true : false;
   relpath = '../';
-  framesUrl = "../frames.html#!" + escape(window.location.href);
+  framesUrl = "../frames.html#!Chore/Manager.html";
 </script>
 
 
@@ -99,7 +99,19 @@
 </dl>
 <div class="clear"></div>
 
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>Manages the interactions between fetching messages (Consumer Strategy), and
+working over them (Worker Strategy)</p>
 
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
 
 
 
@@ -160,30 +172,6 @@ UnitOfWork), and pass it down for the worker strategy to process.</p>
   
     <span class="summary_desc"><div class='inline'>
 <p>A new instance of Manager.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#report-instance_method" title="#report (instance method)">- (Object) <strong>report</strong> </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'>
-<p>Generate data for the internal Chore stat server.</p>
 </div></span>
   
 </li>
@@ -255,7 +243,7 @@ UnitOfWork), and pass it down for the worker strategy to process.</p>
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>A new instance of Manager</p>
+<p>Returns a new instance of Manager</p>
 
 
   </div>
@@ -269,7 +257,6 @@ UnitOfWork), and pass it down for the worker strategy to process.</p>
       <pre class="lines">
 
 
-8
 9
 10
 11
@@ -277,10 +264,11 @@ UnitOfWork), and pass it down for the worker strategy to process.</p>
 13
 14
 15
-16</pre>
+16
+17</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/manager.rb', line 8</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/manager.rb', line 9</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='rparen'>)</span>
   <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Booting Chore </span><span class='embexpr_beg'>#{</span><span class='const'>Chore</span><span class='op'>::</span><span class='const'>VERSION</span><span class='rbrace'>}</span><span class='tstring_end'>&quot;</span></span>
@@ -321,7 +309,7 @@ UnitOfWork), and pass it down for the worker strategy to process.
 assign the work via the worker strategy, until it accepts it. It is up to
 the strategy to determine what cases it is allowed to accept work. The
 blocking semantic of this method is to prevent the Fetcher from getting
-messages off of the queue faster  than they can be consumed.</p>
+messages off of the queue faster than they can be consumed.</p>
 
 
   </div>
@@ -335,102 +323,17 @@ messages off of the queue faster  than they can be consumed.</p>
       <pre class="lines">
 
 
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59</pre>
+42
+43
+44
+45</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/manager.rb', line 47</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/manager.rb', line 42</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_assign'>assign</span><span class='lparen'>(</span><span class='id identifier rubyid_work'>work</span><span class='rparen'>)</span>
-  <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Manager#assign(</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_work'>work</span><span class='period'>.</span><span class='id identifier rubyid_inspect'>inspect</span><span class='rbrace'>}</span><span class='tstring_content'>)</span><span class='tstring_end'>&quot;</span></span> <span class='rbrace'>}</span>
-  <span class='id identifier rubyid_assigned'>assigned</span> <span class='op'>=</span> <span class='kw'>false</span>
-  <span class='kw'>until</span> <span class='id identifier rubyid_assigned'>assigned</span> 
-    <span class='kw'>break</span> <span class='kw'>if</span> <span class='ivar'>@stopping</span>
-    <span class='id identifier rubyid_assigned'>assigned</span> <span class='op'>=</span> <span class='ivar'>@worker_strategy</span><span class='period'>.</span><span class='id identifier rubyid_assign'>assign</span><span class='lparen'>(</span><span class='id identifier rubyid_work'>work</span><span class='rparen'>)</span>
-    <span class='kw'>if</span> <span class='id identifier rubyid_assigned'>assigned</span>
-      <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_stats'>stats</span><span class='period'>.</span><span class='id identifier rubyid_add'>add</span><span class='lparen'>(</span><span class='symbol'>:batches</span><span class='rparen'>)</span>
-    <span class='kw'>end</span>
-
-    <span class='id identifier rubyid_sleep'>sleep</span><span class='lparen'>(</span><span class='float'>0.2</span><span class='rparen'>)</span>
-  <span class='kw'>end</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="report-instance_method">
-  
-    - (<tt>Object</tt>) <strong>report</strong> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-<p>Generate data for the internal Chore stat server. Should return JSON data
-representing the current state of the  process. The default data set is:</p>
-<ul><li>
-<p><code>master_started_at</code>: the timestamp of when the Chore process
-started up</p>
-</li><li>
-<p><code>queues</code>: the list of queues this process is configured to
-consume</p>
-</li><li>
-<p><code>active_workers</code>: an array of Chore::Worker objects (will pass
-through a call to to_json)</p>
-</li><li>
-<p><code>stats</code>: the data inside of Chore.stats. This will include
-recently processed jobs, and other data that may be</p>
-</li></ul>
-
-<p>used to do some simple per-server graphing.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-70
-71
-72
-73
-74
-75
-76
-77</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/manager.rb', line 70</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_report'>report</span>
-  <span class='lbrace'>{</span>
-    <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>master_started_at</span><span class='tstring_end'>'</span></span> <span class='op'>=&gt;</span> <span class='ivar'>@started_at</span><span class='period'>.</span><span class='id identifier rubyid_to_i'>to_i</span><span class='comma'>,</span> 
-    <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>queues</span><span class='tstring_end'>'</span></span> <span class='op'>=&gt;</span> <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_queues'>queues</span><span class='comma'>,</span>
-    <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>active_workers</span><span class='tstring_end'>'</span></span> <span class='op'>=&gt;</span> <span class='ivar'>@worker_strategy</span><span class='period'>.</span><span class='id identifier rubyid_workers'>workers</span><span class='comma'>,</span>
-    <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>stats</span><span class='tstring_end'>'</span></span> <span class='op'>=&gt;</span> <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_stats'>stats</span>
-  <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
+  <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Manager#assign: No. of UnitsOfWork: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_work'>work</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span><span class='rbrace'>}</span><span class='tstring_content'>)</span><span class='tstring_end'>&quot;</span></span> <span class='rbrace'>}</span>
+  <span class='ivar'>@worker_strategy</span><span class='period'>.</span><span class='id identifier rubyid_assign'>assign</span><span class='lparen'>(</span><span class='id identifier rubyid_work'>work</span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='ivar'>@stopping</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -464,26 +367,26 @@ recently processed jobs, and other data that may be</p>
       <pre class="lines">
 
 
+27
+28
+29
 30
 31
 32
 33
 34
-35
-36
-37
-38</pre>
+35</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/manager.rb', line 30</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/manager.rb', line 27</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_shutdown!'>shutdown!</span>
   <span class='kw'>unless</span> <span class='ivar'>@stopping</span>
     <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Manager shutting down</span><span class='tstring_end'>&quot;</span></span>
     <span class='ivar'>@stopping</span> <span class='op'>=</span> <span class='kw'>true</span>
     <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_run_hooks_for'>run_hooks_for</span><span class='lparen'>(</span><span class='symbol'>:before_shutdown</span><span class='rparen'>)</span>
-    <span class='ivar'>@worker_strategy</span><span class='period'>.</span><span class='id identifier rubyid_stop!'>stop!</span>
     <span class='ivar'>@fetcher</span><span class='period'>.</span><span class='id identifier rubyid_stop!'>stop!</span>
+    <span class='ivar'>@worker_strategy</span><span class='period'>.</span><span class='id identifier rubyid_stop!'>stop!</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -518,14 +421,14 @@ Worker Strategy, as well as Fetcher#start.</p>
       <pre class="lines">
 
 
+20
 21
 22
 23
-24
-25</pre>
+24</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/manager.rb', line 21</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/manager.rb', line 20</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_start'>start</span>
   <span class='ivar'>@started_at</span> <span class='op'>=</span> <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span>
@@ -542,9 +445,9 @@ Worker Strategy, as well as Fetcher#start.</p>
 </div>
 
     <div id="footer">
-  Generated on Mon May  6 16:25:13 2013 by
+  Generated on Fri Sep 26 10:20:08 2014 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.6.1 (ruby-1.9.3).
+  0.8.7.4 (ruby-1.9.3).
 </div>
 
   </body>

@@ -6,7 +6,7 @@
 <title>
   Class: Chore::Publisher
   
-    &mdash; Documentation by YARD 0.8.6.1
+    &mdash; Documentation by YARD 0.8.7.4
   
 </title>
 
@@ -17,7 +17,7 @@
 <script type="text/javascript" charset="utf-8">
   hasFrames = window.top.frames.main ? true : false;
   relpath = '../';
-  framesUrl = "../frames.html#!" + escape(window.location.href);
+  framesUrl = "../frames.html#!Chore/Publisher.html";
 </script>
 
 
@@ -99,9 +99,21 @@
 </dl>
 <div class="clear"></div>
 
-<div id="subclasses">
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>Base class for Chore Publishers. Provides the bare interface one needs to
+adhere to when writing custom publishers</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><div id="subclasses">
   <h2>Direct Known Subclasses</h2>
-  <p class="children"><span class='object_link'><a href="FilesystemPublisher.html" title="Chore::FilesystemPublisher (class)">FilesystemPublisher</a></span>, <span class='object_link'><a href="SQSPublisher.html" title="Chore::SQSPublisher (class)">SQSPublisher</a></span></p>
+  <p class="children"><span class='object_link'><a href="Queues/Filesystem/Publisher.html" title="Chore::Queues::Filesystem::Publisher (class)">Queues::Filesystem::Publisher</a></span>, <span class='object_link'><a href="Queues/SQS/Publisher.html" title="Chore::Queues::SQS::Publisher (class)">Queues::SQS::Publisher</a></span></p>
 </div>
 
   <h2>Constant Summary</h2>
@@ -179,7 +191,10 @@
   
 
   
-    <span class="summary_desc"><div class='inline'></div></span>
+    <span class="summary_desc"><div class='inline'>
+<p>Publishes the provided <code>job</code> to the queue identified by the
+<code>queue_name</code>.</p>
+</div></span>
   
 </li>
 
@@ -222,7 +237,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#publish-instance_method" title="#publish (instance method)">- (Object) <strong>publish</strong>(job) </a>
+      <a href="#publish-instance_method" title="#publish (instance method)">- (Object) <strong>publish</strong>(queue_name, job) </a>
     
 
     
@@ -236,7 +251,9 @@
   
 
   
-    <span class="summary_desc"><div class='inline'></div></span>
+    <span class="summary_desc"><div class='inline'>
+<p>Raises a NotImplementedError.</p>
+</div></span>
   
 </li>
 
@@ -259,7 +276,7 @@
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>A new instance of Publisher</p>
+<p>Returns a new instance of Publisher</p>
 
 
   </div>
@@ -273,12 +290,12 @@
       <pre class="lines">
 
 
-7
 8
-9</pre>
+9
+10</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/publisher.rb', line 7</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/publisher.rb', line 8</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_opts'>opts</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
   <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_options'>options</span> <span class='op'>=</span> <span class='const'>DEFAULT_OPTIONS</span><span class='period'>.</span><span class='id identifier rubyid_merge'>merge</span><span class='lparen'>(</span><span class='id identifier rubyid_opts'>opts</span><span class='rparen'>)</span>
@@ -321,12 +338,12 @@
       <pre class="lines">
 
 
-5
 6
-7</pre>
+7
+8</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/publisher.rb', line 5</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/publisher.rb', line 6</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_options'>options</span>
   <span class='ivar'>@options</span>
@@ -352,18 +369,31 @@
   
 
   
-</h3><table class="source_code">
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Publishes the provided <code>job</code> to the queue identified by the
+<code>queue_name</code>. Not designed to be used directly, this method
+ferries to the publish method on an instance of your configured Publisher.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
   <tr>
     <td>
       <pre class="lines">
 
 
-11
-12
-13</pre>
+14
+15
+16</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/publisher.rb', line 11</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/publisher.rb', line 14</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_publish'>publish</span><span class='lparen'>(</span><span class='id identifier rubyid_queue_name'>queue_name</span><span class='comma'>,</span><span class='id identifier rubyid_job'>job</span><span class='rparen'>)</span>
   <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_publish'>publish</span><span class='lparen'>(</span><span class='id identifier rubyid_queue_name'>queue_name</span><span class='comma'>,</span><span class='id identifier rubyid_job'>job</span><span class='rparen'>)</span>
@@ -382,7 +412,7 @@
       <div class="method_details first">
   <h3 class="signature first" id="publish-instance_method">
   
-    - (<tt>Object</tt>) <strong>publish</strong>(job) 
+    - (<tt>Object</tt>) <strong>publish</strong>(queue_name, job) 
   
 
   
@@ -391,6 +421,9 @@
 </h3><div class="docstring">
   <div class="discussion">
     
+<p>Raises a NotImplementedError. This method should be overridden in your
+descendent, custom publisher class</p>
+
 
   </div>
 </div>
@@ -416,14 +449,14 @@
       <pre class="lines">
 
 
-15
-16
-17</pre>
+19
+20
+21</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/publisher.rb', line 15</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/publisher.rb', line 19</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_publish'>publish</span><span class='lparen'>(</span><span class='id identifier rubyid_job'>job</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_publish'>publish</span><span class='lparen'>(</span><span class='id identifier rubyid_queue_name'>queue_name</span><span class='comma'>,</span><span class='id identifier rubyid_job'>job</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'>NotImplementedError</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -436,9 +469,9 @@
 </div>
 
     <div id="footer">
-  Generated on Mon May  6 16:25:13 2013 by
+  Generated on Fri Sep 26 10:20:08 2014 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.6.1 (ruby-1.9.3).
+  0.8.7.4 (ruby-1.9.3).
 </div>
 
   </body>

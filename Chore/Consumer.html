@@ -6,7 +6,7 @@
 <title>
   Class: Chore::Consumer
   
-    &mdash; Documentation by YARD 0.8.6.1
+    &mdash; Documentation by YARD 0.8.7.4
   
 </title>
 
@@ -17,7 +17,7 @@
 <script type="text/javascript" charset="utf-8">
   hasFrames = window.top.frames.main ? true : false;
   relpath = '../';
-  framesUrl = "../frames.html#!" + escape(window.location.href);
+  framesUrl = "../frames.html#!Chore/Consumer.html";
 </script>
 
 
@@ -99,9 +99,21 @@
 </dl>
 <div class="clear"></div>
 
-<div id="subclasses">
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>Base class for a Chore Consumer. Provides the basic interface to adhere to
+for building custom Chore Consumers.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><div id="subclasses">
   <h2>Direct Known Subclasses</h2>
-  <p class="children"><span class='object_link'><a href="FilesystemConsumer.html" title="Chore::FilesystemConsumer (class)">FilesystemConsumer</a></span>, <span class='object_link'><a href="SQSConsumer.html" title="Chore::SQSConsumer (class)">SQSConsumer</a></span></p>
+  <p class="children"><span class='object_link'><a href="Queues/Filesystem/Consumer.html" title="Chore::Queues::Filesystem::Consumer (class)">Queues::Filesystem::Consumer</a></span>, <span class='object_link'><a href="Queues/SQS/Consumer.html" title="Chore::Queues::SQS::Consumer (class)">Queues::SQS::Consumer</a></span></p>
 </div>
 
 
@@ -142,6 +154,40 @@
 
 
 
+  
+    <h2>
+      Class Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#reset_connection%21-class_method" title="reset_connection! (class method)">+ (Object) <strong>reset_connection!</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Causes the underlying connection for all consumers of this class to be
+reset.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
   
     <h2>
       Instance Method Summary
@@ -265,7 +311,9 @@
   
 
   
-    <span class="summary_desc"><div class='inline'></div></span>
+    <span class="summary_desc"><div class='inline'>
+<p>Returns true if the Consumer is currently running.</p>
+</div></span>
   
 </li>
 
@@ -312,7 +360,7 @@
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>A new instance of Consumer</p>
+<p>Returns a new instance of Consumer</p>
 
 
   </div>
@@ -326,13 +374,13 @@
       <pre class="lines">
 
 
-6
-7
-8
-9</pre>
+14
+15
+16
+17</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/consumer.rb', line 6</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/consumer.rb', line 14</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_queue_name'>queue_name</span><span class='comma'>,</span> <span class='id identifier rubyid_opts'>opts</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
   <span class='ivar'>@queue_name</span> <span class='op'>=</span> <span class='id identifier rubyid_queue_name'>queue_name</span>
@@ -376,12 +424,12 @@
       <pre class="lines">
 
 
-4
-5
-6</pre>
+12
+13
+14</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/consumer.rb', line 4</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/consumer.rb', line 12</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_queue_name'>queue_name</span>
   <span class='ivar'>@queue_name</span>
@@ -393,6 +441,53 @@
     
   </div>
 
+
+  <div id="class_method_details" class="method_details_list">
+    <h2>Class Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="reset_connection!-class_method">
+  
+    + (<tt>Object</tt>) <strong>reset_connection!</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Causes the underlying connection for all consumers of this class to be
+reset. Useful for the case where the consumer is being used across a fork.
+Should be overriden in consumers (but is not required).</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+21
+22</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/consumer.rb', line 21</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_reset_connection!'>reset_connection!</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
 
   <div id="instance_method_details" class="method_details_list">
     <h2>Instance Method Details</h2>
@@ -438,12 +533,12 @@ returned via consume</p>
       <pre class="lines">
 
 
-31
-32
-33</pre>
+38
+39
+40</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/consumer.rb', line 31</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/consumer.rb', line 38</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_complete'>complete</span><span class='lparen'>(</span><span class='id identifier rubyid_message_id'>message_id</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'>NotImplementedError</span>
@@ -494,12 +589,12 @@ will need to be able to act on a message later (reject, complete, etc)</p>
       <pre class="lines">
 
 
-16
-17
-18</pre>
+27
+28
+29</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/consumer.rb', line 16</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/consumer.rb', line 27</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_consume'>consume</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'>NotImplementedError</span>
@@ -549,12 +644,12 @@ takes a message_id as returned via consume.</p>
       <pre class="lines">
 
 
-24
-25
-26</pre>
+33
+34
+35</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/consumer.rb', line 24</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/consumer.rb', line 33</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reject'>reject</span><span class='lparen'>(</span><span class='id identifier rubyid_message_id'>message_id</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'>NotImplementedError</span>
@@ -576,6 +671,8 @@ takes a message_id as returned via consume.</p>
 </h3><div class="docstring">
   <div class="discussion">
     
+<p>Returns true if the Consumer is currently running</p>
+
 
   </div>
 </div>
@@ -601,12 +698,12 @@ takes a message_id as returned via consume.</p>
       <pre class="lines">
 
 
-42
-43
-44</pre>
+48
+49
+50</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/consumer.rb', line 42</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/consumer.rb', line 48</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_running?'>running?</span>
   <span class='ivar'>@running</span>
@@ -642,12 +739,12 @@ takes a message_id as returned via consume.</p>
       <pre class="lines">
 
 
-38
-39
-40</pre>
+43
+44
+45</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/consumer.rb', line 38</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/consumer.rb', line 43</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_stop'>stop</span>
   <span class='ivar'>@running</span> <span class='op'>=</span> <span class='kw'>false</span>
@@ -662,9 +759,9 @@ takes a message_id as returned via consume.</p>
 </div>
 
     <div id="footer">
-  Generated on Mon May  6 16:25:13 2013 by
+  Generated on Fri Sep 26 10:20:08 2014 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.6.1 (ruby-1.9.3).
+  0.8.7.4 (ruby-1.9.3).
 </div>
 
   </body>

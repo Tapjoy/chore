@@ -4,26 +4,26 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>
-  Class: Chore::Fetcher
+  Class: Chore::Strategy::SingleWorkerStrategy
   
     &mdash; Documentation by YARD 0.8.7.4
   
 </title>
 
-  <link rel="stylesheet" href="../css/style.css" type="text/css" charset="utf-8" />
+  <link rel="stylesheet" href="../../css/style.css" type="text/css" charset="utf-8" />
 
-  <link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8" />
+  <link rel="stylesheet" href="../../css/common.css" type="text/css" charset="utf-8" />
 
 <script type="text/javascript" charset="utf-8">
   hasFrames = window.top.frames.main ? true : false;
-  relpath = '../';
-  framesUrl = "../frames.html#!Chore/Fetcher.html";
+  relpath = '../../';
+  framesUrl = "../../frames.html#!Chore/Strategy/SingleWorkerStrategy.html";
 </script>
 
 
-  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+  <script type="text/javascript" charset="utf-8" src="../../js/jquery.js"></script>
 
-  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
+  <script type="text/javascript" charset="utf-8" src="../../js/app.js"></script>
 
 
   </head>
@@ -31,10 +31,10 @@
     <div id="header">
       <div id="menu">
   
-    <a href="../_index.html">Index (F)</a> &raquo;
-    <span class='title'><span class='object_link'><a href="../Chore.html" title="Chore (module)">Chore</a></span></span>
+    <a href="../../_index.html">Index (S)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../../Chore.html" title="Chore (module)">Chore</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../Strategy.html" title="Chore::Strategy (module)">Strategy</a></span></span>
      &raquo; 
-    <span class="title">Fetcher</span>
+    <span class="title">SingleWorkerStrategy</span>
   
 
   <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
@@ -43,17 +43,17 @@
       <div id="search">
   
     <a class="full_list_link" id="class_list_link"
-        href="../class_list.html">
+        href="../../class_list.html">
       Class List
     </a>
   
     <a class="full_list_link" id="method_list_link"
-        href="../method_list.html">
+        href="../../method_list.html">
       Method List
     </a>
   
     <a class="full_list_link" id="file_list_link"
-        href="../file_list.html">
+        href="../../file_list.html">
       File List
     </a>
   
@@ -63,7 +63,7 @@
 
     <iframe id="search_frame"></iframe>
 
-    <div id="content"><h1>Class: Chore::Fetcher
+    <div id="content"><h1>Class: Chore::Strategy::SingleWorkerStrategy
   
   
   
@@ -78,7 +78,7 @@
         <ul class="fullTree">
           <li>Object</li>
           
-            <li class="next">Chore::Fetcher</li>
+            <li class="next">Chore::Strategy::SingleWorkerStrategy</li>
           
         </ul>
         <a href="#" class="inheritanceTree">show all</a>
@@ -94,7 +94,7 @@
   
   
     <dt class="r2 last">Defined in:</dt>
-    <dd class="r2 last">lib/chore/fetcher.rb</dd>
+    <dd class="r2 last">lib/chore/strategies/worker/single_worker_strategy.rb</dd>
   
 </dl>
 <div class="clear"></div>
@@ -102,7 +102,9 @@
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
     
-<p>:nodoc:</p>
+<p>Worker strategy for performing batches of work in a linear fashion. Ideally
+used for running Chore jobs locally in a development environment where
+performance or throughput may not matter.</p>
 
 
   </div>
@@ -120,7 +122,7 @@
       <li class="public ">
   <span class="summary_signature">
     
-      <a href="#consumers-instance_method" title="#consumers (instance method)">- (Object) <strong>consumers</strong> </a>
+      <a href="#worker-instance_method" title="#worker (instance method)">- (Object) <strong>worker</strong> </a>
     
 
     
@@ -140,36 +142,7 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>Returns the value of attribute consumers.</p>
-</div></span>
-  
-</li>
-
-    
-      <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#manager-instance_method" title="#manager (instance method)">- (Object) <strong>manager</strong> </a>
-    
-
-    
-  </span>
-  
-  
-  
-    
-      <span class="note title readonly">readonly</span>
-    
-    
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'>
-<p>Returns the value of attribute manager.</p>
+<p>Returns the value of attribute worker.</p>
 </div></span>
   
 </li>
@@ -191,7 +164,31 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#initialize-instance_method" title="#initialize (instance method)">- (Fetcher) <strong>initialize</strong>(manager) </a>
+      <a href="#assign-instance_method" title="#assign (instance method)">- (Object) <strong>assign</strong>(work) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Assigns work if there isn't already a worker in progress.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#initialize-instance_method" title="#initialize (instance method)">- (SingleWorkerStrategy) <strong>initialize</strong>(manager) </a>
     
 
     
@@ -208,7 +205,7 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>A new instance of Fetcher.</p>
+<p>A new instance of SingleWorkerStrategy.</p>
 </div></span>
   
 </li>
@@ -232,7 +229,7 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>Starts the fetcher with the configured Consumer Strategy.</p>
+<p>Starts the SingleWorkerStrategy.</p>
 </div></span>
   
 </li>
@@ -256,8 +253,7 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>Stops the fetcher, preventing any further messages from being pulled from
-the queue.</p>
+<p>Stops the SingleWorkerStrategy if there is a worker to stop.</p>
 </div></span>
   
 </li>
@@ -266,7 +262,7 @@ the queue.</p>
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#stopping%3F-instance_method" title="#stopping? (instance method)">- (Boolean) <strong>stopping?</strong> </a>
+      <a href="#workers_available%3F-instance_method" title="#workers_available? (instance method)">- (Boolean) <strong>workers_available?</strong> </a>
     
 
     
@@ -281,7 +277,7 @@ the queue.</p>
 
   
     <span class="summary_desc"><div class='inline'>
-<p>Determines in the fetcher is in the process of stopping.</p>
+<p>Returns true if there is currently no worker.</p>
 </div></span>
   
 </li>
@@ -296,7 +292,7 @@ the queue.</p>
     <div class="method_details first">
   <h3 class="signature first" id="initialize-instance_method">
   
-    - (<tt><span class='object_link'><a href="" title="Chore::Fetcher (class)">Fetcher</a></span></tt>) <strong>initialize</strong>(manager) 
+    - (<tt><span class='object_link'><a href="" title="Chore::Strategy::SingleWorkerStrategy (class)">SingleWorkerStrategy</a></span></tt>) <strong>initialize</strong>(manager) 
   
 
   
@@ -305,7 +301,7 @@ the queue.</p>
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>Returns a new instance of Fetcher</p>
+<p>Returns a new instance of SingleWorkerStrategy</p>
 
 
   </div>
@@ -319,19 +315,17 @@ the queue.</p>
       <pre class="lines">
 
 
-5
-6
-7
-8
-9</pre>
+10
+11
+12
+13</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/fetcher.rb', line 5</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/strategies/worker/single_worker_strategy.rb', line 10</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_manager'>manager</span><span class='rparen'>)</span>
-  <span class='ivar'>@stopping</span> <span class='op'>=</span> <span class='kw'>false</span>
   <span class='ivar'>@manager</span> <span class='op'>=</span> <span class='id identifier rubyid_manager'>manager</span>
-  <span class='ivar'>@strategy</span> <span class='op'>=</span> <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_consumer_strategy'>consumer_strategy</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='kw'>self</span><span class='rparen'>)</span>
+  <span class='ivar'>@worker</span> <span class='op'>=</span> <span class='kw'>nil</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -346,9 +340,9 @@ the queue.</p>
       
       <span id=""></span>
       <div class="method_details first">
-  <h3 class="signature first" id="consumers-instance_method">
+  <h3 class="signature first" id="worker-instance_method">
   
-    - (<tt>Object</tt>) <strong>consumers</strong>  <span class="extras">(readonly)</span>
+    - (<tt>Object</tt>) <strong>worker</strong>  <span class="extras">(readonly)</span>
   
 
   
@@ -357,7 +351,7 @@ the queue.</p>
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>Returns the value of attribute consumers</p>
+<p>Returns the value of attribute worker</p>
 
 
   </div>
@@ -371,58 +365,15 @@ the queue.</p>
       <pre class="lines">
 
 
-3
-4
-5</pre>
+8
+9
+10</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/fetcher.rb', line 3</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/strategies/worker/single_worker_strategy.rb', line 8</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_consumers'>consumers</span>
-  <span class='ivar'>@consumers</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      
-      <span id=""></span>
-      <div class="method_details ">
-  <h3 class="signature " id="manager-instance_method">
-  
-    - (<tt>Object</tt>) <strong>manager</strong>  <span class="extras">(readonly)</span>
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-<p>Returns the value of attribute manager</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-3
-4
-5</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/fetcher.rb', line 3</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_manager'>manager</span>
-  <span class='ivar'>@manager</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_worker'>worker</span>
+  <span class='ivar'>@worker</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -437,9 +388,9 @@ the queue.</p>
 
     
       <div class="method_details first">
-  <h3 class="signature first" id="start-instance_method">
+  <h3 class="signature first" id="assign-instance_method">
   
-    - (<tt>Object</tt>) <strong>start</strong> 
+    - (<tt>Object</tt>) <strong>assign</strong>(work) 
   
 
   
@@ -448,8 +399,8 @@ the queue.</p>
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>Starts the fetcher with the configured Consumer Strategy. This will begin
-consuming messages from your queue</p>
+<p>Assigns work if there isn't already a worker in progress. Otherwise, is a
+noop</p>
 
 
   </div>
@@ -463,18 +414,63 @@ consuming messages from your queue</p>
       <pre class="lines">
 
 
-12
-13
-14
-15</pre>
+24
+25
+26
+27
+28
+29
+30
+31</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/fetcher.rb', line 12</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/strategies/worker/single_worker_strategy.rb', line 24</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_start'>start</span>
-  <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Fetcher starting up</span><span class='tstring_end'>&quot;</span></span>
-  <span class='ivar'>@strategy</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_assign'>assign</span><span class='lparen'>(</span><span class='id identifier rubyid_work'>work</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_workers_available?'>workers_available?</span>
+    <span class='ivar'>@worker</span> <span class='op'>=</span> <span class='const'>Worker</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_work'>work</span><span class='rparen'>)</span>
+    <span class='ivar'>@worker</span><span class='period'>.</span><span class='id identifier rubyid_start'>start</span>
+    <span class='ivar'>@worker</span> <span class='op'>=</span> <span class='kw'>nil</span>
+    <span class='kw'>true</span>
+  <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="start-instance_method">
+  
+    - (<tt>Object</tt>) <strong>start</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Starts the <code>SingleWorkerStrategy</code>. Currently a noop</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+16</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/strategies/worker/single_worker_strategy.rb', line 16</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_start'>start</span><span class='semicolon'>;</span><span class='kw'>end</span></pre>
     </td>
   </tr>
 </table>
@@ -492,8 +488,7 @@ consuming messages from your queue</p>
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>Stops the fetcher, preventing any further messages from being pulled from
-the queue</p>
+<p>Stops the <code>SingleWorkerStrategy</code> if there is a worker to stop</p>
 
 
   </div>
@@ -507,23 +502,15 @@ the queue</p>
       <pre class="lines">
 
 
-18
 19
 20
-21
-22
-23
-24</pre>
+21</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/fetcher.rb', line 18</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/strategies/worker/single_worker_strategy.rb', line 19</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_stop!'>stop!</span>
-  <span class='kw'>unless</span> <span class='ivar'>@stopping</span>
-    <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Fetcher shutting down</span><span class='tstring_end'>&quot;</span></span>
-    <span class='ivar'>@stopping</span> <span class='op'>=</span> <span class='kw'>true</span>
-    <span class='ivar'>@strategy</span><span class='period'>.</span><span class='id identifier rubyid_stop!'>stop!</span>
-  <span class='kw'>end</span>
+  <span class='id identifier rubyid_worker'>worker</span><span class='period'>.</span><span class='id identifier rubyid_stop!'>stop!</span> <span class='kw'>if</span> <span class='id identifier rubyid_worker'>worker</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -531,9 +518,9 @@ the queue</p>
 </div>
     
       <div class="method_details ">
-  <h3 class="signature " id="stopping?-instance_method">
+  <h3 class="signature " id="workers_available?-instance_method">
   
-    - (<tt>Boolean</tt>) <strong>stopping?</strong> 
+    - (<tt>Boolean</tt>) <strong>workers_available?</strong> 
   
 
   
@@ -542,7 +529,7 @@ the queue</p>
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>Determines in the fetcher is in the process of stopping</p>
+<p>Returns true if there is currently no worker</p>
 
 
   </div>
@@ -569,15 +556,15 @@ the queue</p>
       <pre class="lines">
 
 
-27
-28
-29</pre>
+34
+35
+36</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/fetcher.rb', line 27</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/strategies/worker/single_worker_strategy.rb', line 34</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_stopping?'>stopping?</span>
-  <span class='ivar'>@stopping</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_workers_available?'>workers_available?</span>
+  <span class='ivar'>@worker</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -589,7 +576,7 @@ the queue</p>
 </div>
 
     <div id="footer">
-  Generated on Fri Sep 26 10:20:08 2014 by
+  Generated on Fri Sep 26 10:20:09 2014 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.8.7.4 (ruby-1.9.3).
 </div>

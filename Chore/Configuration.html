@@ -6,7 +6,7 @@
 <title>
   Class: Chore::Configuration
   
-    &mdash; Documentation by YARD 0.8.6.1
+    &mdash; Documentation by YARD 0.8.7.4
   
 </title>
 
@@ -17,7 +17,7 @@
 <script type="text/javascript" charset="utf-8">
   hasFrames = window.top.frames.main ? true : false;
   relpath = '../';
-  framesUrl = "../frames.html#!" + escape(window.location.href);
+  framesUrl = "../frames.html#!Chore/Configuration.html";
 </script>
 
 
@@ -96,7 +96,7 @@
   
   
     <dt class="r2 last">Defined in:</dt>
-    <dd class="r2 last">lib/chore.rb</dd>
+    <dd class="r2 last">lib/chore/configuration.rb</dd>
   
 </dl>
 <div class="clear"></div>
@@ -145,7 +145,9 @@ required opts, and validate that they're set</p>
   
 
   
-    <span class="summary_desc"><div class='inline'></div></span>
+    <span class="summary_desc"><div class='inline'>
+<p>Helper method to make merging Hashes into OpenStructs easier.</p>
+</div></span>
   
 </li>
 
@@ -169,21 +171,32 @@ required opts, and validate that they're set</p>
   
 
   
-</h3><table class="source_code">
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Helper method to make merging Hashes into OpenStructs easier</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
   <tr>
     <td>
       <pre class="lines">
 
 
-37
-38
-39
-40
-41
-42</pre>
+6
+7
+8
+9
+10
+11</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore.rb', line 37</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/configuration.rb', line 6</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_merge_hash'>merge_hash</span><span class='lparen'>(</span><span class='id identifier rubyid_hsh'>hsh</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_hsh'>hsh</span><span class='period'>.</span><span class='id identifier rubyid_keys'>keys</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_k'>k</span><span class='op'>|</span>
@@ -201,9 +214,9 @@ required opts, and validate that they're set</p>
 </div>
 
     <div id="footer">
-  Generated on Mon May  6 16:25:13 2013 by
+  Generated on Fri Sep 26 10:20:08 2014 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.6.1 (ruby-1.9.3).
+  0.8.7.4 (ruby-1.9.3).
 </div>
 
   </body>

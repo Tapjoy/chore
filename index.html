@@ -6,7 +6,7 @@
 <title>
   File: README
   
-    &mdash; Documentation by YARD 0.8.6.1
+    &mdash; Documentation by YARD 0.8.7.4
   
 </title>
 
@@ -17,7 +17,7 @@
 <script type="text/javascript" charset="utf-8">
   hasFrames = window.top.frames.main ? true : false;
   relpath = '';
-  framesUrl = "frames.html#!" + escape(window.location.href);
+  framesUrl = "frames.html#!file.README.html";
 </script>
 
 
@@ -76,7 +76,7 @@ will find integrating and using Chore to be as pleasant as we do.</p>
 
 <p>Add the chore gem to your gemfile and run <code>bundle install</code> (at some point we&#39;ll have a proper gem release):</p>
 
-<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_gem'>gem</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>chore</span><span class='tstring_end'>'</span></span><span class='comma'>,</span> <span class='symbol'>:git</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>git://github.com/Tapjoy/chore.git</span><span class='tstring_end'>'</span></span>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_gem'>gem</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>chore</span><span class='tstring_end'>'</span></span><span class='comma'>,</span> <span class='symbol'>:git</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>git@github.com:Tapjoy/chore.git</span><span class='tstring_end'>'</span></span>
 </code></pre>
 
 <p>If you also plan on using SQS, you must also bring in dalli to use for memcached:</p>
@@ -84,31 +84,32 @@ will find integrating and using Chore to be as pleasant as we do.</p>
 <pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_gem'>gem</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>dalli</span><span class='tstring_end'>'</span></span>
 </code></pre>
 
-<p>Create a <code>chore.config</code> file in a suitable place, e.g. <code>./config</code>. This file controls how the consumer end of chore will operate. </p>
+<p>Create a <code>Chorefile</code> file in the root of your project directory. While you can configure Chore itself from this file, it&#39;s primarly used to direct the Chore binary toward the root of your application, so that it can locate all of the depdendencies and required code.</p>
 
 <pre class="code ruby"><code class="ruby">--require=./&lt;FILE_TO_LOAD&gt;
---verbose
---concurrency 10
 </code></pre>
 
-<p>Make sure that <code>--require</code> points to the main entry point for your app. If integrating with a Rails app, just point it to the directory of your application and it will handle loading the correct files on its own. See the help options for more details on the other settings.</p>
+<p>Make sure that <code>--require</code> points to the main entry point for your app. If integrating with a Rails app, just point it to the directory of your application and it will handle loading the correct files on its own. </p>
+
+<p>Other options include:</p>
+
+<pre class="code ruby"><code class="ruby">--concurrency 16 # number of concurrent worker processes, if using forked worker strategy
+--worker-strategy Chore::Strategy::ForkedWorkerStrategy # which worker strategy class to use
+--consumer Chore::Queues::SQS::Consumer # which consumer class to use Options are SQS::Consumer and Filesystem::Consumer. Filesystem is recommended for local and testing purposes only.
+--consumer-strategy Chore::Queues::Strategies::Consumer::ThreadedConsumerStrategy # which consuming strategy to use. Options are SingleConsumerStrategy and ThreadedConsumerStrategy. Threaded is recommended for better tuning your consuming profile
+--threads-per-queue 4 # number of threads per queue for consuming from a given queue.
+--dedupe-servers # if using SQS or similiar queue with at-least once delivery and your memcache is running on something other than localhost
+--batch-size 50 # how many messages are batched together before handing them to a worker
+--queue_prefix prefixy # A prefix to prepend to queue names, mainly for development and qa testing purposes
+--max-attempts 100 # The maximum number of times a job can be attempted
+--dupe-on-cache-failure # Determines the deduping behavior when a cache connection error occurs. When set to `false`, the message is assumed not to be a duplicate. Defaults to `false`.
+--queue-polling-size 10 # If your particular queueing system supports responding with messages in batches of a certain size, you can control that with this flag. SQS has a built in upper-limit of 10, but other systems will vary. 
+</code></pre>
 
 <p>If you&#39;re using SQS, you&#39;ll want to add AWS keys so that Chore can authenticate with AWS.</p>
 
 <pre class="code ruby"><code class="ruby">--aws-access-key=&lt;AWS KEY&gt;
 --aws-secret-key=&lt;AWS SECRET&gt;
-</code></pre>
-
-<p>Other options include:</p>
-
-<pre class="code ruby"><code class="ruby">--stats-port 9090 # port to run the stats HTTP server on
---concurrency 16 # number of concurrent worker processes, if using forked worker strategy
---worker-strategy Chore::ForkedWorkerStrategy # which worker strategy class to use
---consumer Chore::SQSConsumer # which consumer class to use
---dedupe-servers # if using SQS and your memcache is running on something other than localhost
---fetcher-strategy Chore::ThreadedConsumerStrategy # fetching strategy class, are you seeing a theme here?
---batch-size 50 # how many messages are batched together before handing them to a worker
---threads-per-queue 4 # number of threads per queue for fetching from queue
 </code></pre>
 
 <p>By default, Chore will run over all queues it detects among the required files. If you wish to change this behavior, you can use:</p>
@@ -119,16 +120,34 @@ will find integrating and using Chore to be as pleasant as we do.</p>
 
 <p>Note that you can use one or the other but not both. Chore will quit and make fun of you if both options are specified.</p>
 
+<h3>Tips for configuring Chore</h3>
+
+<p>When it comes to configuring Chore, you have 2 main use cases - as a producer of messages, or as a consumer of messages (the consumer is also able to produce messages if need be, but is running as it&#39;s own isolated instance of your application).</p>
+
+<p>For producers, you must do all of your Chore configuration in an intializer.</p>
+
+<p>For consumers, you need to either Chorefile or Chorefile + an initializer.</p>
+
+<p>Because you are likely to use the same app as the basis for both producing and consuming messages, you&#39;ll already have a considerable amount of configuration in your Producer - it makes sense to use Chorefile to simply provide the <code>require</code> option, and stick to the initializer for the rest of the configuration to keep things DRY.</p>
+
+<p>However, like many aspects of Chore, it is ultimately up to the developer to decide which use case fits their needs best. Chore is happy to let you configure it in almost any way you want.</p>
+
+<p>An example of how to configure chore via and initializer:</p>
+
+<pre class="code ruby"><code class="ruby">Chore.configure do |c|
+  c.concurrency = 16
+  c.worker_strategy = Chore::Strategy::ForkedWorkerStrategy
+  c.max_attempts = 100
+  ...
+  c.batch_size = 50
+end
+</code></pre>
+
 <h2>Integration</h2>
 
 <p>Add an appropriate line to your <code>Procfile</code>:</p>
 
 <pre class="code ruby"><code class="ruby">jobs: bundle exec chore -c config/chore.config
-</code></pre>
-
-<p>Don&#39;t forget to start memcached if you&#39;re using SQS:</p>
-
-<pre class="code ruby"><code class="ruby">memcached &amp;
 </code></pre>
 
 <p>If your queues do not exist, you must create them before you run the application:</p>
@@ -147,19 +166,46 @@ will find integrating and using Chore to be as pleasant as we do.</p>
 
 <p>A Chore::Job is any class that includes <code>Chore::Job</code> and implements <code>perform(*args)</code> Here is an example job class:</p>
 
-<pre class="code ruby"><code class="ruby"><span class='kw'>class</span> <span class='const'>TestJob</span> 
+<pre class="code ruby"><code class="ruby"><span class='kw'>class</span> <span class='const'>TestJob</span>
   <span class='id identifier rubyid_include'>include</span> <span class='const'>Chore</span><span class='op'>::</span><span class='const'>Job</span>
-  <span class='id identifier rubyid_queue_options'>queue_options</span> <span class='symbol'>:name</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>test_queue</span><span class='tstring_end'>'</span></span><span class='comma'>,</span> <span class='symbol'>:publisher</span> <span class='op'>=&gt;</span> <span class='const'>Chore</span><span class='op'>::</span><span class='const'>SQSPublisher</span><span class='comma'>,</span> <span class='symbol'>:timeout</span> <span class='op'>=&gt;</span> <span class='int'>120</span>
+  <span class='id identifier rubyid_queue_options'>queue_options</span> <span class='symbol'>:name</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>test_queue</span><span class='tstring_end'>'</span></span>
 
-  <span class='kw'>def</span> <span class='id identifier rubyid_perform'>perform</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
+  <span class='kw'>def</span> <span class='id identifier rubyid_perform'>perform</span><span class='lparen'>(</span><span class='id identifier rubyid_args'>args</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
     <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>My first async job</span><span class='tstring_end'>&quot;</span></span>
   <span class='kw'>end</span>
 
 <span class='kw'>end</span>
 </code></pre>
 
-<p>This job uses the included <code>Chore::SQSPublisher</code> to remove the message from the queue once the job is completed.
-It also declares that the name of the queue it uses is <code>test_queue</code> and that it has a timeout of 120 seconds.</p>
+<p>This job declares that the name of the queue it uses is <code>test_queue</code>, set in the queue_options method.</p>
+
+<h3>Chore::Job and perform signatures</h3>
+
+<p>The perform method signature can have explicit argument names, but in practice this makes changing the signature more difficult later on. Once a Job is in production and is being used at a constant rate, it becomes problematic to begin mixing versions of jobs which have non-matching signatures.</p>
+
+<p>While this is able to be overcome with a number of techniques, such as versioning your jobs/queues, it increases the complexity of making changes.</p>
+
+<p>The simplest way to structure job signatures is to treat the arguments as a hash. This will allow you to maintain forwards and backwards compatibility between signature changes with the same job class.</p>
+
+<p>However, Chore is ultimately agnostic to your particular needs in this regard, and will let you use explicit arguments in your signatures as easily as you can use a simple hash - the choice is left to you, the developer.</p>
+
+<h3>Chore::Job and publishing Jobs</h3>
+
+<p>Now that you&#39;ve got a test job, if you wanted to publish to that job it&#39;s as simple as:
+<code>ruby
+TestJob.perform_async({&quot;message&quot;=&gt;&quot;YES, DO THAT THING.&quot;})
+</code></p>
+
+<p>It&#39;s advisable to specify the Publisher chore uses to send messages globally, so that you can change it easily for local and test environments. To do this, you can add a configuration block to an initializer like so:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_configure'>configure</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_c'>c</span><span class='op'>|</span>
+  <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_publisher'>publisher</span> <span class='op'>=</span> <span class='const'>Some</span><span class='op'>::</span><span class='const'>Other</span><span class='op'>::</span><span class='const'>Publisher</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<p>It is worth noting that any option that can be set via config file or command-line args can also be set in a configure block.</p>
+
+<p>If a global publisher is set, it can be overridden on a per-job basis by specifying the publisher in <code>queue_options</code>.</p>
 
 <h2>Hooks</h2>
 
@@ -171,7 +217,11 @@ It also declares that the name of the queue it uses is <code>test_queue</code> a
 <li>before_first_fork</li>
 <li>before_fork</li>
 <li>after_fork</li>
+<li>around_fork</li>
+<li>within_fork</li>
 </ul>
+
+<p>(&quot;within_fork&quot; behaves similarly to around_fork, except that it is called after the worker process has been forked. In contrast, around_fork is called by the parent process.)</p>
 
 <p>Filesystem Consumer/Publisher</p>
 
@@ -193,26 +243,21 @@ It also declares that the name of the queue it uses is <code>test_queue</code> a
 <li>before_perform(message)</li>
 <li>after_perform(message)</li>
 <li>on_rejected(message)</li>
-<li>on_timeout(message)</li>
 <li>on_failure(message, error)</li>
+<li>on_permanent_failure(queue_name, message, error)</li>
 </ul>
 
 <p>All per-job hooks can also be global hooks.</p>
 
 <p>Hooks can be added to a job class as so:</p>
 
-<pre class="code ruby"><code class="ruby"><span class='kw'>class</span> <span class='const'>TestJob</span> 
+<pre class="code ruby"><code class="ruby"><span class='kw'>class</span> <span class='const'>TestJob</span>
   <span class='id identifier rubyid_include'>include</span> <span class='const'>Chore</span><span class='op'>::</span><span class='const'>Job</span>
-  <span class='id identifier rubyid_queue_options'>queue_options</span> <span class='symbol'>:name</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>test_queue</span><span class='tstring_end'>'</span></span><span class='comma'>,</span> <span class='symbol'>:publisher</span> <span class='op'>=&gt;</span> <span class='const'>Chore</span><span class='op'>::</span><span class='const'>SQSPublisher</span><span class='comma'>,</span> <span class='symbol'>:timeout</span> <span class='op'>=&gt;</span> <span class='int'>120</span>
+  <span class='id identifier rubyid_queue_options'>queue_options</span> <span class='symbol'>:name</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>test_queue</span><span class='tstring_end'>'</span></span>
 
-  <span class='kw'>def</span> <span class='id identifier rubyid_perform'>perform</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
+  <span class='kw'>def</span> <span class='id identifier rubyid_perform'>perform</span><span class='lparen'>(</span><span class='id identifier rubyid_args'>args</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
     <span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>My first sync job</span><span class='tstring_end'>&quot;</span></span>
   <span class='kw'>end</span>
-
-  <span class='kw'>def</span> <span class='id identifier rubyid_on_timeout'>on_timeout</span><span class='lparen'>(</span><span class='id identifier rubyid_msg'>msg</span><span class='rparen'>)</span>
-    <span class='comment'># your special timeout code here
-</span>  <span class='kw'>end</span>
-
 <span class='kw'>end</span>
 </code></pre>
 
@@ -223,28 +268,78 @@ It also declares that the name of the queue it uses is <code>test_queue</code> a
 </span><span class='kw'>end</span>
 </code></pre>
 
-<h2>Contributing to chore</h2>
+<h2>Signals</h2>
+
+<p>Signal handling can get complicated when you have multiple threads, process
+forks, and both signal handlers and application code making use of mutexes.</p>
+
+<p>To simplify the complexities around this, Chore introduces some additional
+behaviors on top of Ruby&#39;s default Signal.trap implementation.  This
+functionality is primarily inspired by sidekiq&#39;s signal handling @
+<a href="https://github.com/mperham/sidekiq/blob/master/lib/sidekiq/cli.rb">https://github.com/mperham/sidekiq/blob/master/lib/sidekiq/cli.rb</a>.</p>
+
+<p>In particular, Chore handles signals in a separate thread and does so
+sequentially instead of interrupt-driven.  See Chore::Signal for more details
+on the differences between Ruby&#39;s <code>Signal.trap</code> and Chore&#39;s <code>Chore::Signal.trap</code>.</p>
+
+<p>Chore will respond to the following Signals:</p>
 
 <ul>
-<li>Check out the latest master to make sure the feature hasn&#39;t been implemented or the bug hasn&#39;t been fixed yet.</li>
-<li>Check out the issue tracker to make sure someone already hasn&#39;t requested it and/or contributed it.</li>
-<li>Fork the project.</li>
-<li>Start a feature/bugfix branch.</li>
-<li>Commit and push until you are happy with your contribution.</li>
-<li>Make sure to add tests for it. This is important so I don&#39;t break it in a future version unintentionally.</li>
-<li>Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.</li>
+<li>INT , TERM, QUIT - Chore will begin shutting down, taking steps to safely terminate workers and not interrupt jobs in progress unless it believes they may be hung</li>
+<li>USR1 - Re-opens logfiles, useful for handling log rotations</li>
 </ul>
+
+<h2>Timeouts</h2>
+
+<p>When using the forked worker strategy for processing jobs, inevitably there are
+cases in which child processes become stuck.  This could result from deadlocks,
+hung network calls, tight loops, etc.  When these jobs hang, they consume
+resources and can affect throughput.</p>
+
+<p>To mitigate this, Chore has built-in monitoring of forked child processes.
+When a fork is created to process a batch of work, that fork is assigned an
+expiration time -- if it doesn&#39;t complete by that time, the process is sent
+a KILL signal.</p>
+
+<p>Fork expiration times are determined from one of two places:
+1. The timeout associated with the queue.  For SQS, this is the visibility
+   timeout.
+2. The default queue timeout configured for Chore.  For Filesystem queues,
+   this is the value used.</p>
+
+<p>For example, if a worker is processing a batch of 5 jobs and each job&#39;s queue
+has a timeout of 60s, then the expiration time will be 5 minutes for the worker.</p>
+
+<p>To change the default queue timeout (when one can&#39;t be inferred), you can do
+the following:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='const'>Chore</span><span class='period'>.</span><span class='id identifier rubyid_configure'>configure</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_c'>c</span><span class='op'>|</span>
+  <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_default_queue_timeout'>default_queue_timeout</span> <span class='op'>=</span> <span class='int'>3600</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<p>A reasonable timeout would be based on the maximum amount of time you expect any
+job in your system to run.  Keep in mind that the process running the job may
+get killed if the job is running for too long.</p>
+
+<h2>Plugins</h2>
+
+<p>Chore has several plugin gems available, which extend it&#39;s core functionality</p>
+
+<p><a href="https://github.com/Tapjoy/chore-new_relic">New Relic</a> - Integrating Chore with New Relic</p>
+
+<p><a href="https://github.com/Tapjoy/chore-airbrake">Airbrake</a> - Integrating Chore with Airbrake</p>
 
 <h2>Copyright</h2>
 
-<p>Copyright (c) 2013 Tapjoy. See LICENSE.txt for
+<p>Copyright (c) 2013 - 2014 Tapjoy. See LICENSE.txt for
 further details.</p>
 </div></div>
 
     <div id="footer">
-  Generated on Mon May  6 16:25:13 2013 by
+  Generated on Fri Sep 26 10:20:08 2014 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.6.1 (ruby-1.9.3).
+  0.8.7.4 (ruby-1.9.3).
 </div>
 
   </body>
