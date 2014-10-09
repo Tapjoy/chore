@@ -15,27 +15,36 @@ describe Chore::Worker do
   let(:job_args) { [1,2,'3'] }
   let(:job) { SimpleJob.job_hash(job_args) }
 
-  it 'should use a default encoder' do
+  it 'should use a default payload handler' do
     worker = Chore::Worker.new
-    worker.options[:encoder].should == Chore::JsonEncoder
+    worker.options[:payload_handler].should == Chore::Job
   end
 
-  it 'should process a single job' do
-    work = Chore::UnitOfWork.new('1', 'test', 60, Chore::JsonEncoder.encode(job), 0, consumer)
-    SimpleJob.should_receive(:perform).with(*job_args)
-    consumer.should_receive(:complete).with('1')
-    w = Chore::Worker.new(work)
-    w.start
-  end
-
-  it 'should process multiple jobs' do
-    work = []
-    10.times do |i|
-      work << Chore::UnitOfWork.new(i, 'test', 60, Chore::JsonEncoder.encode(job), 0, consumer)
+  shared_examples_for "a worker" do
+    it 'processing a single job' do
+      work = Chore::UnitOfWork.new('1', 'test', 60, encoded_job, 0, consumer)
+      SimpleJob.should_receive(:perform).with(*payload)
+      consumer.should_receive(:complete).with('1')
+      w = Chore::Worker.new(work, {:payload_handler => payload_handler})
+      w.start
     end
-    SimpleJob.should_receive(:perform).exactly(10).times
-    consumer.should_receive(:complete).exactly(10).times
-    Chore::Worker.start(work)
+
+    it 'processing multiple jobs' do
+      work = []
+      10.times do |i|
+        work << Chore::UnitOfWork.new(i, 'test', 60, encoded_job, 0, consumer)
+      end
+      SimpleJob.should_receive(:perform).exactly(10).times
+      consumer.should_receive(:complete).exactly(10).times
+      Chore::Worker.start(work, {:payload_handler => payload_handler})
+    end
+  end
+
+  describe "with default payload handler" do
+    let(:encoded_job) { Chore::Encoder::JsonEncoder.encode(job) }
+    let(:payload_handler) { Chore::Job }
+    let(:payload) {job_args}
+    it_behaves_like "a worker"
   end
 
   describe 'expired?' do
@@ -43,7 +52,7 @@ describe Chore::Worker do
     let(:queue_timeouts) { [10, 20, 30] }
     let(:work) do
       queue_timeouts.map do |queue_timeout|
-        Chore::UnitOfWork.new('1', 'test', queue_timeout, Chore::JsonEncoder.encode(job), 0, consumer)
+        Chore::UnitOfWork.new('1', 'test', queue_timeout, Chore::Encoder::JsonEncoder.encode(job), 0, consumer)
       end
     end
     let(:worker) do
@@ -100,7 +109,7 @@ describe Chore::Worker do
     end
 
     context 'on perform' do
-      let(:encoded_job) { Chore::JsonEncoder.encode(job) }
+      let(:encoded_job) { Chore::Encoder::JsonEncoder.encode(job) }
       let(:parsed_job) { JSON.parse(encoded_job) }
 
       before(:each) do

@@ -38,6 +38,7 @@ end
 
 
 RSpec.configure do |config|
+  config.include Chore::Util
   config.before do
     Chore.configure do |c|
       c.aws_access_key = ""

@@ -8,7 +8,7 @@ require 'chore/configuration'
 require 'chore/cli'
 require 'chore/consumer'
 require 'chore/job'
-require 'chore/json_encoder'
+require 'chore/encoders/json_encoder'
 require 'chore/manager'
 require 'chore/publisher'
 require 'chore/util'
@@ -38,7 +38,8 @@ module Chore #:nodoc:
     :default_queue_timeout => (12 * 60 * 60), # 12 hours
     :shutdown_timeout      => (2 * 60),
     :max_attempts          => 1.0 / 0.0, # Infinity
-    :dupe_on_cache_failure => false
+    :dupe_on_cache_failure => false,
+    :payload_handler => Chore::Job
   }
 
   class << self

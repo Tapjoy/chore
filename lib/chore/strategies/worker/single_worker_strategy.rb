@@ -7,7 +7,8 @@ module Chore
 
       attr_reader :worker
 
-      def initialize(manager)
+      def initialize(manager, opts={})
+        @options = opts
         @manager = manager
         @worker = nil
       end
@@ -23,7 +24,7 @@ module Chore
       # Assigns work if there isn't already a worker in progress. Otherwise, is a noop
       def assign(work)
         if workers_available?
-          @worker = Worker.new(work)
+          @worker = Worker.new(work, @options)
           @worker.start
           @worker = nil
           true
