@@ -130,6 +130,10 @@ module Chore #:nodoc:
         options[:consumer_strategy] = constantize(arg)
       end
 
+      register_option 'payload_handler', '--payload_handler CLASS_NAME', 'Name of a class to use as the payload handler (default: Chore::Job)' do |arg|
+        options[:payload_handler] = constantize(arg)
+      end
+
       register_option 'shutdown_timeout', '--shutdown-timeout SECONDS', Float, "Upon shutdown, the number of seconds to wait before force killing worker strategies (default: #{Chore::DEFAULT_OPTIONS[:shutdown_timeout]})"
 
       register_option 'dupe_on_cache_failure', '--dupe-on-cache-failure BOOLEAN', 'Determines the deduping behavior when a cache connection error occurs. When set to false, the message is assumed not to be a duplicate. (default: false)'
