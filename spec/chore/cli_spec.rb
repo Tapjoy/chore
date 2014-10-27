@@ -138,6 +138,14 @@ describe Chore::CLI do
       end
     end
 
+    context "--payload_handler" do
+      let(:command) {["--payload_handler=Chore::Job"]}
+
+      it "should set the payload handler class" do
+        config.payload_handler.should == Chore::Job
+      end
+    end
+
     describe '--shutdown-timeout' do
       let(:command) { ["--shutdown-timeout=#{amount}"] }
       subject { config.shutdown_timeout }

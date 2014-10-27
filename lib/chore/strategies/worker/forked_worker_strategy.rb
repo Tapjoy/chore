@@ -5,7 +5,8 @@ module Chore
     class ForkedWorkerStrategy #:nodoc:
       attr_accessor :workers
 
-      def initialize(manager)
+      def initialize(manager, opts={})
+        @options = opts
         @manager = manager
         @stopped = false
         @workers = {}
@@ -57,7 +58,7 @@ module Chore
         return unless acquire_worker
 
         begin
-          w = Worker.new(work)
+          w = Worker.new(work, @options)
           Chore.run_hooks_for(:before_fork,w)
           pid = nil
           Chore.run_hooks_for(:around_fork,w) do

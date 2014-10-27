@@ -1,10 +1,13 @@
 require 'chore/hooks'
+require 'chore/util'
+require 'chore/encoders/json_encoder'
 
 module Chore
 
   # <tt>Chore::Job</tt> is the module which gives your job classes the methods they need to be published
   # and run within Chore. You cannot have a Job in Chore that does not include this module
   module Job
+    extend Util
 
     # An exception to represent a job choosing to forcibly reject a given instance of itself.
     # The reasoning behind rejecting the job and the message that spawned it are left to
@@ -23,6 +26,18 @@ module Chore
       @classes << base.name
       base.extend(ClassMethods)
       base.extend(Hooks)
+    end
+
+    def self.payload_class(message)
+      constantize(message['class'])
+    end
+
+    def self.decode(data)
+      Encoder::JsonEncoder.decode(data)
+    end
+
+    def self.payload(message)
+      message['args']
     end
 
     module ClassMethods

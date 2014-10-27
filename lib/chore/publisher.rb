@@ -1,7 +1,7 @@
 module Chore
   # Base class for Chore Publishers. Provides the bare interface one needs to adhere to when writing custom publishers
   class Publisher
-    DEFAULT_OPTIONS = { :encoder => JsonEncoder }
+    DEFAULT_OPTIONS = { :encoder => Encoder::JsonEncoder }
 
     attr_accessor :options
 
