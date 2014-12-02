@@ -26,9 +26,17 @@ class FakePublisher < Chore::Publisher
   end
 end
 
-TestMessage = Struct.new(:handle,:queue_name,:body,:receive_count) do
+TestMessage = Struct.new(:handle,:queue,:body,:receive_count) do
   def empty?
     false
+  end
+
+  def queue_name
+    self.queue.name
+  end
+
+  def id
+    self.handle
   end
 
   # Structs define a to_a behavior that is not compatible with array splatting. Remove it so that
