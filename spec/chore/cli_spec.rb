@@ -166,6 +166,34 @@ describe Chore::CLI do
       end
     end
 
+    describe '--consumer_sleep_interval' do
+      let(:command) {["--consumer-sleep-interval=#{amount}"]}
+      subject {config.consumer_sleep_interval}
+
+      context 'given an integer value' do
+        let(:amount)  { '10' }
+
+        it 'is that amount' do
+          subject.should == amount.to_i
+        end
+      end
+
+      context 'given a float value' do
+        let(:amount)  { '0.5' }
+
+        it 'is that amount' do
+          subject.should == amount.to_f
+        end
+      end
+
+      context 'given no value' do
+        let(:command) { [] }
+        it 'is the default value, nil' do
+          subject.should == nil
+        end
+      end
+    end
+
     describe '--max-attempts' do
       let(:command) { ["--max-attempts=#{amount}"] }
       subject { config.max_attempts }
