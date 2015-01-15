@@ -130,6 +130,8 @@ module Chore #:nodoc:
         options[:consumer_strategy] = constantize(arg)
       end
 
+      register_option 'consumer_sleep_interval', '--consumer-sleep-interval INTERVAL', Float, 'Length of time in seconds to sleep when the consumer does not find any messages. Defaults vary depending on consumer implementation'
+
       register_option 'payload_handler', '--payload_handler CLASS_NAME', 'Name of a class to use as the payload handler (default: Chore::Job)' do |arg|
         options[:payload_handler] = constantize(arg)
       end
