@@ -112,7 +112,7 @@ describe Chore::CLI do
       expect { cli.parse(['--except=something','--queues=something,else']) }.to raise_error(ArgumentError)
     end
 
-    context "when do queues are found" do
+    context "when no queues are found" do
       before :each do
         Chore::Job.stub(:job_classes).and_return([])
       end
