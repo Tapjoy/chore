@@ -209,7 +209,7 @@ module Chore #:nodoc:
 
       ### If we passed in a queues option, use it as our working set, otherwise use all the queues
       if options[:queues]
-        queues_to_use = options[:queues] if options[:queues]
+        queues_to_use = options[:queues]
       else
         queues_to_use = queue_map.keys
       end
