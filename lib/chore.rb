@@ -21,7 +21,7 @@ require 'chore/publisher'
 end
 
 module Chore #:nodoc:
-  include Util
+  extend Util
   VERSION = Chore::Version::STRING #:nodoc:
 
   # The default configuration options for Chore.
