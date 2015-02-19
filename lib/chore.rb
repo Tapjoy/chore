@@ -21,6 +21,7 @@ require 'chore/publisher'
 end
 
 module Chore #:nodoc:
+  include Util
   VERSION = Chore::Version::STRING #:nodoc:
 
   # The default configuration options for Chore.
@@ -212,7 +213,7 @@ module Chore #:nodoc:
 
   # List of queue_names as configured via Chore::Job including their prefix, if set.
   def self.prefixed_queue_names
-    Chore::Job.job_classes.collect {|klass| c = klass.constantize; c.prefixed_queue_name}
+    Chore::Job.job_classes.collect {|klass| c = constantize(klass); c.prefixed_queue_name}
   end
 end
 
