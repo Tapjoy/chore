@@ -2,7 +2,7 @@ module Chore
   module Version #:nodoc:
     MAJOR = 1
     MINOR = 5
-    PATCH = 6
+    PATCH = 7
 
     STRING = [ MAJOR, MINOR, PATCH ].join('.')
   end
