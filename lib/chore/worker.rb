@@ -55,7 +55,6 @@ module Chore
     def start
       @work.each do |item|
         return if @stopping
-        Chore.logger.debug { "Doing: #{item.queue_name} with #{item.message}" }
         begin
           start_item(item)
         rescue => e
