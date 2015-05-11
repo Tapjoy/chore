@@ -55,7 +55,6 @@ module Chore
     def start
       @work.each do |item|
         return if @stopping
-        Chore.logger.debug { "Doing: #{item.queue_name} with #{item.message}" }
         begin
           start_item(item)
         rescue => e
@@ -81,8 +80,10 @@ module Chore
       klass = options[:payload_handler].payload_class(message)
       return unless klass.run_hooks_for(:before_perform,message)
       begin
+        Chore.logger.info { "Running job #{klass} with params #{message}"}
         perform_job(klass,message)
         item.consumer.complete(item.id)
+        Chore.logger.info { "Finished job #{klass} with params #{message}"}
         klass.run_hooks_for(:after_perform,message)
       rescue Job::RejectMessageException
         item.consumer.reject(item.id)
