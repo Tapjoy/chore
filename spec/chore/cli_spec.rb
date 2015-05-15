@@ -79,6 +79,14 @@ describe Chore::CLI do
       end
     end
 
+    context 'when provided a queue for which there is no job class' do
+      let(:queue_options) {['--queues=test2,test3']}
+
+      it 'should raise an error' do
+        expect {cli.parse(queue_options)}.to raise_error
+      end
+    end
+
     context 'when both --queue_prefix and --queues have been provided' do
       let(:queue_options) {['--queue-prefix=prefixy', '--queues=test2']}
       before :each do
