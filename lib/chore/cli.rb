@@ -219,6 +219,7 @@ module Chore #:nodoc:
 
       ### Set options[:queues] to the prefixed value of the current working set
       options[:queues] = queues_to_use.inject([]) do |queues,k|
+        raise ArgumentError, "You have specified a queue #{k} for which you have no corresponding Job class" unless queue_map.has_key?(k)
         queues << queue_map[k]
         queues
       end
