@@ -36,8 +36,8 @@ module Chore
               messages = handle_messages(&handler)
               sleep (Chore.config.consumer_sleep_interval || 1) if messages.empty?
             rescue AWS::SQS::Errors::NonExistentQueue => e
-              Chore.logger.error "You specified a queue that does not exist. You must create the queue before starting Chore. Shutting down..."
-              raise Chore::TerribleMistake  
+              Chore.logger.error "You specified a queue '#{queue_name}' that does not exist. You must create the queue before starting Chore. Shutting down..."
+              raise Chore::TerribleMistake
             rescue => e
               Chore.logger.error { "SQSConsumer#Consume: #{e.inspect} #{e.backtrace * "\n"}" }
             end
