@@ -8,7 +8,7 @@ require 'chore/configuration'
 require 'chore/cli'
 require 'chore/consumer'
 require 'chore/job'
-require 'chore/json_encoder'
+require 'chore/encoders/json_encoder'
 require 'chore/manager'
 require 'chore/publisher'
 require 'chore/util'
@@ -21,6 +21,7 @@ require 'chore/publisher'
 end
 
 module Chore #:nodoc:
+  extend Util
   VERSION = Chore::Version::STRING #:nodoc:
 
   # The default configuration options for Chore.
@@ -38,7 +39,8 @@ module Chore #:nodoc:
     :default_queue_timeout => (12 * 60 * 60), # 12 hours
     :shutdown_timeout      => (2 * 60),
     :max_attempts          => 1.0 / 0.0, # Infinity
-    :dupe_on_cache_failure => false
+    :dupe_on_cache_failure => false,
+    :payload_handler => Chore::Job
   }
 
   class << self
@@ -211,7 +213,7 @@ module Chore #:nodoc:
 
   # List of queue_names as configured via Chore::Job including their prefix, if set.
   def self.prefixed_queue_names
-    Chore::Job.job_classes.collect {|klass| c = klass.constantize; c.prefixed_queue_name}
+    Chore::Job.job_classes.collect {|klass| c = constantize(klass); c.prefixed_queue_name}
   end
 end
 

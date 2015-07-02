@@ -9,7 +9,7 @@ describe Chore::Strategy::ForkedWorkerStrategy do
     strategy
   end
   let(:job_timeout) { 60 }
-  let(:job) { Chore::UnitOfWork.new(SecureRandom.uuid, 'test', job_timeout, Chore::JsonEncoder.encode(TestJob.job_hash([1,2,"3"])), 0) }
+  let(:job) { Chore::UnitOfWork.new(SecureRandom.uuid, 'test', job_timeout, Chore::Encoder::JsonEncoder.encode(TestJob.job_hash([1,2,"3"])), 0) }
   let!(:worker) { Chore::Worker.new(job) }
   let(:pid) { Random.rand(2048) }
 
@@ -41,7 +41,7 @@ describe Chore::Strategy::ForkedWorkerStrategy do
     end
 
     it 'should assign a job to a new worker' do
-      Chore::Worker.should_receive(:new).with(job).and_return(worker)
+      Chore::Worker.should_receive(:new).with(job, {}).and_return(worker)
       worker.should_receive(:start)
       forker.assign(job)
     end

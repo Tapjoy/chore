@@ -1,6 +1,6 @@
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
-describe Chore::JsonEncoder do
+describe Chore::Encoder::JsonEncoder do
   it 'should have an encode method' do
     subject.should respond_to :encode
   end

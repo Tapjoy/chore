@@ -1,6 +1,6 @@
 source "http://rubygems.org"
 
-gemspec
+gemspec :name=>"chore-core"
 
 group :development do
   gem 'guard-rspec'

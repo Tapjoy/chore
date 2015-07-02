@@ -29,11 +29,11 @@ module Chore
     # Checks the message against the configured dedupe server to see if the message is unique or not
     # Unique messages will return false
     # Duplicated messages will return true
-    def found_duplicate?(msg)
-      return false unless msg && msg.respond_to?(:queue) && msg.queue
-      timeout = self.queue_timeout(msg.queue)
+    def found_duplicate?(msg_data)
+      return false unless msg_data && msg_data[:queue]
+      timeout = self.queue_timeout(msg_data)
       begin
-        !@memcached_client.add(msg.id, "1",timeout)
+        !@memcached_client.add(msg_data[:id], "1",timeout)
       rescue StandardError => e
         if @dupe_on_cache_failure
           Chore.logger.error "Error accessing duplicate cache server. Assuming message is a duplicate. #{e}\n#{e.backtrace * "\n"}"
@@ -48,8 +48,8 @@ module Chore
     # Retrieves the timeout for the given queue. The timeout is the window of time in seconds that
     # we would consider the message to be non-unique, before we consider it dead in the water
     # After that timeout, we would consider the next copy of the message received to be unique, and process it.
-    def queue_timeout(queue)
-      @timeouts[queue.url] ||= queue.visibility_timeout || @timeout
+    def queue_timeout(msg_data)
+      @timeouts[msg_data[:queue]] ||= msg_data[:visibility_timeout] || @timeout
     end
 
   end

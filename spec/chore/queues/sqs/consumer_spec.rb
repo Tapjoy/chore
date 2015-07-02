@@ -4,10 +4,11 @@ describe Chore::Queues::SQS::Consumer do
   let(:queue_name) { "test" }
   let(:queue_url) { "test_url" }
   let(:queues) { double("queues") }
-  let(:queue) { double("test_queue") }
+  let(:queue) { double("test_queue", :visibility_timeout=>10, :url=>"test_queue", :name=>"test_queue") }
   let(:options) { {} }
   let(:consumer) { Chore::Queues::SQS::Consumer.new(queue_name) }
-  let(:message) { TestMessage.new("handle",queue_name,"message body", 1) }
+  let(:message) { TestMessage.new("handle",queue, "message body", 1) }
+  let(:message_data) {{:id=>message.id, :queue=>message.queue.url, :visibility_timeout=>message.queue.visibility_timeout}}
   let(:pool) { double("pool") }
   let(:sqs) { double('AWS::SQS') }
 
@@ -18,7 +19,6 @@ describe Chore::Queues::SQS::Consumer do
     queues.stub(:url_for) { queue_url }
     queues.stub(:[]) { queue }
     queue.stub(:receive_message) { message }
-    queue.stub(:visibility_timeout) { 10 }
     pool.stub(:empty!) { nil }
   end
 
@@ -72,7 +72,7 @@ describe Chore::Queues::SQS::Consumer do
     end
 
     it "should check the uniqueness of the message" do
-      Chore::DuplicateDetector.any_instance.should_receive(:found_duplicate?).with(message).and_return(false)
+      Chore::DuplicateDetector.any_instance.should_receive(:found_duplicate?).with(message_data).and_return(false)
       consumer.consume
     end
 
@@ -81,7 +81,7 @@ describe Chore::Queues::SQS::Consumer do
     end
 
     it 'should not yield for a dupe message' do
-      Chore::DuplicateDetector.any_instance.should_receive(:found_duplicate?).with(message).and_return(true)
+      Chore::DuplicateDetector.any_instance.should_receive(:found_duplicate?).with(message_data).and_return(true)
       expect {|b| consumer.consume(&b) }.not_to yield_control
     end
 

@@ -79,6 +79,14 @@ describe Chore::CLI do
       end
     end
 
+    context 'when provided a queue for which there is no job class' do
+      let(:queue_options) {['--queues=test2,test3']}
+
+      it 'should raise an error' do
+        expect {cli.parse(queue_options)}.to raise_error
+      end
+    end
+
     context 'when both --queue_prefix and --queues have been provided' do
       let(:queue_options) {['--queue-prefix=prefixy', '--queues=test2']}
       before :each do
@@ -112,9 +120,14 @@ describe Chore::CLI do
       expect { cli.parse(['--except=something','--queues=something,else']) }.to raise_error(ArgumentError)
     end
 
-    it 'should raise an exception if no queues are found' do
-      Chore::Job.job_classes.clear
-      expect { cli.parse([]) }.to raise_error(ArgumentError)
+    context "when no queues are found" do
+      before :each do
+        Chore::Job.stub(:job_classes).and_return([])
+      end
+
+      it 'should raise an exception' do
+        expect { cli.parse([]) }.to raise_error(ArgumentError)
+      end
     end
   end
 
@@ -138,6 +151,14 @@ describe Chore::CLI do
       end
     end
 
+    context "--payload_handler" do
+      let(:command) {["--payload_handler=Chore::Job"]}
+
+      it "should set the payload handler class" do
+        config.payload_handler.should == Chore::Job
+      end
+    end
+
     describe '--shutdown-timeout' do
       let(:command) { ["--shutdown-timeout=#{amount}"] }
       subject { config.shutdown_timeout }
@@ -154,6 +175,34 @@ describe Chore::CLI do
         let(:command) { [] }
         it 'is the default value, 120 seconds' do
           subject.should == 120.0
+        end
+      end
+    end
+
+    describe '--consumer_sleep_interval' do
+      let(:command) {["--consumer-sleep-interval=#{amount}"]}
+      subject {config.consumer_sleep_interval}
+
+      context 'given an integer value' do
+        let(:amount)  { '10' }
+
+        it 'is that amount' do
+          subject.should == amount.to_i
+        end
+      end
+
+      context 'given a float value' do
+        let(:amount)  { '0.5' }
+
+        it 'is that amount' do
+          subject.should == amount.to_f
+        end
+      end
+
+      context 'given no value' do
+        let(:command) { [] }
+        it 'is the default value, nil' do
+          subject.should == nil
         end
       end
     end

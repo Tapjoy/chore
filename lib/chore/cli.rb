@@ -92,7 +92,8 @@ module Chore #:nodoc:
     private
     def setup_options #:nodoc:
       register_option "queues", "-q", "--queues QUEUE1,QUEUE2", "Names of queues to process (default: all known)" do |arg|
-        options[:queues] = arg.split(",")
+        # This will remove duplicates. We ultimately force this to be a Set further below
+        options[:queues] = Set.new(arg.split(","))
       end
 
       register_option "except_queues", "-x", "--except QUEUE1,QUEUE2", "Process all queues (cannot specify --queues), except for the ones listed here" do |arg|
@@ -128,6 +129,12 @@ module Chore #:nodoc:
 
       register_option 'consumer_strategy', '--consumer-strategy CLASS_NAME', 'Name of a class to use as the consumer strategy (default: Chore::Strategy::ThreadedConsumerStrategy' do |arg|
         options[:consumer_strategy] = constantize(arg)
+      end
+
+      register_option 'consumer_sleep_interval', '--consumer-sleep-interval INTERVAL', Float, 'Length of time in seconds to sleep when the consumer does not find any messages. Defaults vary depending on consumer implementation'
+
+      register_option 'payload_handler', '--payload_handler CLASS_NAME', 'Name of a class to use as the payload handler (default: Chore::Job)' do |arg|
+        options[:payload_handler] = constantize(arg)
       end
 
       register_option 'shutdown_timeout', '--shutdown-timeout SECONDS', Float, "Upon shutdown, the number of seconds to wait before force killing worker strategies (default: #{Chore::DEFAULT_OPTIONS[:shutdown_timeout]})"
@@ -187,23 +194,36 @@ module Chore #:nodoc:
         raise ArgumentError, "Cannot specify both --except and --queues"
       end
 
-      if !options[:queues]
-        options[:queues] = Set.new
-        Chore::Job.job_classes.each do |j|
-          klazz = constantize(j)
-          options[:queues] << klazz.options[:name] if klazz.options[:name]
-          options[:queues] -= (options[:except_queues] || [])
-        end
+      ### Ensure after loading the app, that we have the prefix set (quirk of using Chore::Job#prefixed_queue_name to do the prefixing)
+      Chore.config.queue_prefix ||= options[:queue_prefix]
+
+      ### For ease, make sure except_queues is an array
+      options[:except_queues] ||= []
+
+      ### Generate a hash of all possible queues and their prefixed_names
+      queue_map = Chore::Job.job_classes.inject({}) do |hsh,j|
+        klazz = constantize(j)
+        hsh[klazz.options[:name]] = klazz.prefixed_queue_name if klazz.options[:name]
+        hsh
       end
 
-      original_queues = options[:queues].dup
-      # Now apply the prefixing
-      # Because the prefix could have been detected via the apps chore config file
-      # Lets see if that is present before we check for a CLI passed prefix
-      prefix = Chore.config.queue_prefix || options[:queue_prefix]
-      options[:queues] = Set.new.tap do |queue_set|
-        original_queues.each {|oq_name| queue_set << "#{prefix}#{oq_name}"}
+      ### If we passed in a queues option, use it as our working set, otherwise use all the queues
+      if options[:queues]
+        queues_to_use = options[:queues]
+      else
+        queues_to_use = queue_map.keys
       end
+
+      ### Remove the excepted queues from our working set
+      queues_to_use = queues_to_use - options[:except_queues]
+
+      ### Set options[:queues] to the prefixed value of the current working set
+      options[:queues] = queues_to_use.inject([]) do |queues,k|
+        raise ArgumentError, "You have specified a queue #{k} for which you have no corresponding Job class" unless queue_map.has_key?(k)
+        queues << queue_map[k]
+        queues
+      end
+
       raise ArgumentError, "No queues specified. Either include classes that include Chore::Job, or specify the --queues option" if options[:queues].empty?
     end
 

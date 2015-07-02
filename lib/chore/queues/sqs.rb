@@ -27,9 +27,14 @@ module Chore
         #This will raise an exception if AWS has not been configured by the project making use of Chore
         sqs_queues = AWS::SQS.new.queues
         Chore.prefixed_queue_names.each do |queue_name|
-          Chore.logger.info "Chore Deleting Queue: #{queue_name}"
-          url = sqs_queues.url_for(queue_name)
-          sqs_queues[url].delete
+          begin
+            Chore.logger.info "Chore Deleting Queue: #{queue_name}"
+            url = sqs_queues.url_for(queue_name)
+            sqs_queues[url].delete
+          rescue => e
+            # This could fail for a few reasons - log out why it failed, then continue on
+            Chore.logger.error "Deleting Queue: #{queue_name} failed because #{e}"
+          end
         end
         Chore.prefixed_queue_names
       end

@@ -34,10 +34,10 @@ module Chore
           while running?
             begin
               messages = handle_messages(&handler)
-              sleep 1 if messages.empty?
+              sleep (Chore.config.consumer_sleep_interval || 1) if messages.empty?
             rescue AWS::SQS::Errors::NonExistentQueue => e
-              Chore.logger.error "You specified a queue that does not exist. You must create the queue before starting Chore. Shutting down..."
-              raise Chore::TerribleMistake  
+              Chore.logger.error "You specified a queue '#{queue_name}' that does not exist. You must create the queue before starting Chore. Shutting down..."
+              raise Chore::TerribleMistake
             rescue => e
               Chore.logger.error { "SQSConsumer#Consume: #{e.inspect} #{e.backtrace * "\n"}" }
             end
@@ -61,18 +61,17 @@ module Chore
         # hook will be invoked, per message
         def handle_messages(&block)
           msg = queue.receive_messages(:limit => sqs_polling_amount, :attributes => [:receive_count])
-
           messages = *msg
           messages.each do |message|
-            block.call(message.handle, queue_name, queue_timeout, message.body, message.receive_count - 1) unless duplicate_message?(message)
+            block.call(message.handle, queue_name, queue_timeout, message.body, message.receive_count - 1) unless duplicate_message?({:id=>message.id, :queue=>message.queue.url, :visibility_timeout=>message.queue.visibility_timeout})
             Chore.run_hooks_for(:on_fetch, message.handle, message.body)
           end
           messages
         end
 
         # Checks if the given message has already been received within the timeout window for this queue
-        def duplicate_message?(message)
-          dupe_detector.found_duplicate?(message)
+        def duplicate_message?(msg_data)
+          dupe_detector.found_duplicate?(msg_data)
         end
 
         # Returns the instance of the DuplicateDetector used to ensure unique messages.
