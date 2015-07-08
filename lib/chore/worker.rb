@@ -1,5 +1,5 @@
 require 'chore/util'
-require 'chore/json_encoder'
+require 'chore/job'
 
 module Chore
   class TimeoutError < StandardError
@@ -12,24 +12,23 @@ module Chore
   class Worker
     include Util
 
-    DEFAULT_OPTIONS = { :encoder => JsonEncoder }
     attr_accessor :options
     attr_reader   :work
     attr_reader   :started_at
 
-    def self.start(work) #:nodoc:
-      self.new(work).start
+    def self.start(work, opts={}) #:nodoc:
+      self.new(work, opts).start
     end
 
     # Create a Worker. Give it an array of work (or single item), and +opts+.
-    # Currently, the only option supported by Worker is +:encoder+ which should match
-    # the +:encoder+ used by the Publisher who created the message.
+    # Currently, the only option supported by Worker is +:payload_handler+ which contains helpers
+    # for decoding the item and finding the correct payload class 
     def initialize(work=[],opts={})
       @stopping = false
       @started_at = Time.now
       @work = work
       @work = [work] unless work.kind_of?(Array)
-      self.options = DEFAULT_OPTIONS.merge(opts)
+      self.options = {:payload_handler => Chore.config.payload_handler}.merge(opts)
     end
 
     # Whether this worker has existed for longer than it's allowed to
@@ -56,7 +55,6 @@ module Chore
     def start
       @work.each do |item|
         return if @stopping
-        Chore.logger.debug { "Doing: #{item.queue_name} with #{item.message}" }
         begin
           start_item(item)
         rescue => e
@@ -76,20 +74,16 @@ module Chore
       @stopping = true
     end
 
-  protected
-    def payload_class(message)
-      constantize(message['class'])
-    end
-
   private
     def start_item(item)
-      message = decode_job(item.message)
-      klass = payload_class(message)
+      message = options[:payload_handler].decode(item.message)
+      klass = options[:payload_handler].payload_class(message)
       return unless klass.run_hooks_for(:before_perform,message)
-
       begin
+        Chore.logger.info { "Running job #{klass} with params #{message}"}
         perform_job(klass,message)
         item.consumer.complete(item.id)
+        Chore.logger.info { "Finished job #{klass} with params #{message}"}
         klass.run_hooks_for(:after_perform,message)
       rescue Job::RejectMessageException
         item.consumer.reject(item.id)
@@ -107,11 +101,7 @@ module Chore
     end
 
     def perform_job(klass, message)
-      klass.perform(*message['args'])
-    end
-
-    def decode_job(data)
-      options[:encoder].decode(data)
+      klass.perform(*options[:payload_handler].payload(message))
     end
   end
 end

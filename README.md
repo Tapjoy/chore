@@ -29,6 +29,7 @@ Other options include:
     --worker-strategy Chore::Strategy::ForkedWorkerStrategy # which worker strategy class to use
     --consumer Chore::Queues::SQS::Consumer # which consumer class to use Options are SQS::Consumer and Filesystem::Consumer. Filesystem is recommended for local and testing purposes only.
     --consumer-strategy Chore::Queues::Strategies::Consumer::ThreadedConsumerStrategy # which consuming strategy to use. Options are SingleConsumerStrategy and ThreadedConsumerStrategy. Threaded is recommended for better tuning your consuming profile
+    --consumer-sleep-interval 1.0 # The amount of time in seconds to sleep when a consumer doesn't receive any messages. Sub-second values are accepted. The default varies by consumer implementation. This is a weak form of backoff for when there is no work to do.
     --threads-per-queue 4 # number of threads per queue for consuming from a given queue.
     --dedupe-servers # if using SQS or similiar queue with at-least once delivery and your memcache is running on something other than localhost
     --batch-size 50 # how many messages are batched together before handing them to a worker
