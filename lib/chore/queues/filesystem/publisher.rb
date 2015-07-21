@@ -14,8 +14,12 @@ module Chore
         FILE_MUTEX = Mutex.new
 
         # use of mutex and file locking should make this both threadsafe and safe for multiple
-        # processes to use the same queue directory simultaneously. 
-        def publish(queue_name,job)
+        # processes to use the same queue directory simultaneously.
+        def publish(queue_name ,job, options={})
+          if options[:delay]
+            Chore.logger.warn("The Filesystem queue does not support delayed publishing! Ignoring this option.")
+          end
+
           FILE_MUTEX.synchronize do
             while true
               # keep trying to get a file with nothing in it meaning we just created it

@@ -3,7 +3,7 @@ require 'chore/publisher'
 module Chore
   module Queues
     module SQS
-      
+
       # SQS Publisher, for writing messages to SQS from Chore
       class Publisher < Chore::Publisher
         @@reset_next = true
@@ -15,9 +15,27 @@ module Chore
         end
 
         # Takes a given Chore::Job instance +job+, and publishes it by looking up the +queue_name+.
-        def publish(queue_name,job)
+        def publish(queue_name, job, options={})
+          delay_seconds = options[:delay]
+          options = {}
+
+          # SQS only supports a delay range of 0-900 seconds. Make sure we're in the range. We also only put it into the
+          # options Hash if its set to prevent any weird SQS behaviors.
+          # NOTE may be okay pushing the key with a `nil` value...
+          if delay_seconds
+            if delay_seconds < 0
+              delay_seconds = 0
+            elsif delay_seconds > 900
+              Chore.logger.warn("SQS does not support a delay longer than 15 minutes (900 seconds)! " <
+                                "Reducing the delay to the maximum supported.")
+              delay_seconds = 900
+            end
+
+            options[:delay_seconds] = delay_seconds
+          end
+
           queue = self.queue(queue_name)
-          queue.send_message(encode_job(job))
+          queue.send_message(encode_job(job), options)
         end
 
         # Sets a flag that instructs the publisher to reset the connection the next time it's used
