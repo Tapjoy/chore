@@ -35,13 +35,13 @@ module Chore
     end
 
     it 'supports SQS delayed messages feature' do
-      queue.should_receive(:send_message).with(job.to_json, {delay_seconds: 300})
-      publisher.publish(queue_name, job, delay: 300)
+      queue.should_receive(:send_message).with(job.to_json, {:delay_seconds => 300})
+      publisher.publish(queue_name, job, :delay => 300)
     end
 
     it 'forces the maximum SQS delay of 900 seconds' do
-      queue.should_receive(:send_message).with(job.to_json, {delay_seconds: 900})
-      publisher.publish(queue_name, job, delay: 1200)
+      queue.should_receive(:send_message).with(job.to_json, {:delay_seconds => 900})
+      publisher.publish(queue_name, job, :delay => 1200)
     end
 
     it 'should lookup the queue when publishing' do

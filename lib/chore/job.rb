@@ -122,7 +122,7 @@ module Chore
     # the given publisher does not support delayed jobs a warning should be issued and the job will be queued without a
     # delay.
     def perform_delayed(delay, *args)
-      push_to_publisher(args, delay: delay)
+      push_to_publisher(args, :delay => delay)
     end
 
     private
