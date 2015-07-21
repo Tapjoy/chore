@@ -16,7 +16,7 @@ module Chore
       # Throw a RejectMessageException from your job to signal that the message should be rejected.
       # The semantics of +reject+ are queue implementation dependent.
     end
-    
+
     def self.job_classes #:nodoc:
       @classes || []
     end
@@ -42,9 +42,9 @@ module Chore
 
     module ClassMethods
       DEFAULT_OPTIONS = { }
-      
+
       # Pass a hash of options to queue_options the included class's use of Chore::Job
-      # +opts+ has just the one required option. 
+      # +opts+ has just the one required option.
       # * +:name+: which should map to the name of the queue this job should be published to.
       def queue_options(opts = {})
         @chore_options = (@chore_options || DEFAULT_OPTIONS).merge(opts_from_cli).merge(opts)
@@ -68,20 +68,27 @@ module Chore
         @from_cli ||= (Chore.config.marshal_dump.select {|k,v| required_options.include? k } || {})
       end
 
-      # Execute the current job. We create an instance of the job to do the perform 
+      # Execute the current job. We create an instance of the job to do the perform
       # as this allows the jobs themselves to do initialization that might require access
       # to the parameters of the job.
       def perform(*args)
         job = self.new(args)
         job.perform(*args)
       end
-      
+
       # Publish a job using an instance of job. Similar to perform we do this so that a job
       # can perform initialization logic before the perform_async is begun. This, in addition, to
       # hooks allows for rather complex jobs to be written simply.
       def perform_async(*args)
         job = self.new(args)
         job.perform_async(*args)
+      end
+
+      # Publish a job using an instance of job with a specified delay (in seconds). Behaves exactly the same as
+      # `.perform_async` with the addition of a delay.
+      def perform_delayed(delay, *args)
+        job = self.new(args)
+        job.perform_delayed(delay, *args)
       end
 
       # Resque/Sidekiq compatible serialization. No reason to change what works
@@ -108,11 +115,22 @@ module Chore
 
     # Use the current configured publisher to send this job into a queue.
     def perform_async(*args)
-      self.class.run_hooks_for(:before_publish,*args)
-      @chore_publisher ||= self.class.options[:publisher]
-      @chore_publisher.publish(self.class.prefixed_queue_name,self.class.job_hash(args))
-      self.class.run_hooks_for(:after_publish,*args)
+      push_to_publisher(args)
     end
 
+    # Use the current configured publisher to send this job into a queue with the given delay period (in seconds). If
+    # the given publisher does not support delayed jobs a warning should be issued and the job will be queued without a
+    # delay.
+    def perform_delayed(delay, *args)
+      push_to_publisher(args, delay: delay)
+    end
+
+    private
+    def push_to_publisher(args, options={})
+      self.class.run_hooks_for(:before_publish, *args)
+      @chore_publisher ||= self.class.options[:publisher]
+      @chore_publisher.publish(self.class.prefixed_queue_name, self.class.job_hash(args), options)
+      self.class.run_hooks_for(:after_publish, *args)
+    end
   end #Job
 end #Chore

@@ -30,8 +30,18 @@ module Chore
     end
 
     it 'should create send an encoded message to the specified queue' do
-      queue.should_receive(:send_message).with(job.to_json)
+      queue.should_receive(:send_message).with(job.to_json, {})
       publisher.publish(queue_name,job)
+    end
+
+    it 'supports SQS delayed messages feature' do
+      queue.should_receive(:send_message).with(job.to_json, {delay_seconds: 300})
+      publisher.publish(queue_name, job, delay: 300)
+    end
+
+    it 'forces the maximum SQS delay of 900 seconds' do
+      queue.should_receive(:send_message).with(job.to_json, {delay_seconds: 900})
+      publisher.publish(queue_name, job, delay: 1200)
     end
 
     it 'should lookup the queue when publishing' do
@@ -58,12 +68,12 @@ module Chore
         Chore::Queues::SQS::Publisher.reset_connection!
         publisher.queue(queue_name)
       end
-  
+
       it 'should not reset the connection between calls' do
         sqs = publisher.queue(queue_name)
         sqs.should be publisher.queue(queue_name)
       end
-  
+
       it 'should reconfigure sqs' do
         Chore::Queues::SQS::Publisher.reset_connection!
         AWS::SQS.should_receive(:new)
