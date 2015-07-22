@@ -91,7 +91,7 @@ module Chore
         Chore.logger.error { "Failed to run job for #{item.message}  with error: Job raised a RejectMessageException" }
         klass.run_hooks_for(:on_rejected, message)
       rescue Job::DelayRetry
-        delayed_for = item.consumer.delay(item)
+        delayed_for = item.consumer.delay(item, klass.options[:backoff])
         Chore.logger.info { "Delaying retry by #{delayed_for} seconds for the job #{item.message}" }
         klass.run_hooks_for(:on_delay, message)
       end

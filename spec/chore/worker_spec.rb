@@ -4,7 +4,7 @@ describe Chore::Worker do
 
   class SimpleJob
     include Chore::Job
-    queue_options :name => 'test', :publisher => FakePublisher, :max_attempts => 100
+    queue_options :name => 'test', :publisher => FakePublisher, :max_attempts => 100, :backoff => lambda { |item| item.current_attempt }
 
     def perform(*args)
       return args
@@ -162,7 +162,7 @@ describe Chore::Worker do
       end
 
       it 'will delay the message' do
-        expect(consumer).to receive(:delay).with(work)
+        expect(consumer).to receive(:delay).with(work, SimpleJob.options[:backoff])
         Chore::Worker.start(work)
       end
 

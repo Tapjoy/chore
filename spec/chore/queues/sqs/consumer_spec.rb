@@ -6,7 +6,7 @@ describe Chore::Queues::SQS::Consumer do
   let(:queues) { double("queues") }
   let(:queue) { double("test_queue", :visibility_timeout=>10, :url=>"test_queue", :name=>"test_queue") }
   let(:options) { {} }
-  let(:consumer) { Chore::Queues::SQS::Consumer.new(queue_name, :backoff => backoff_func) }
+  let(:consumer) { Chore::Queues::SQS::Consumer.new(queue_name) }
   let(:message) { TestMessage.new("handle",queue, "message body", 1) }
   let(:message_data) {{:id=>message.id, :queue=>message.queue.url, :visibility_timeout=>message.queue.visibility_timeout}}
   let(:pool) { double("pool") }
@@ -112,7 +112,7 @@ describe Chore::Queues::SQS::Consumer do
 
     context 'when no backoff function is provided' do
       it 'will raise an error' do
-        expect { consumer.delay(item) }.to raise_error(ArgumentError)
+        expect { consumer.delay(item, nil) }.to raise_error(ArgumentError)
       end
     end
 
@@ -121,7 +121,7 @@ describe Chore::Queues::SQS::Consumer do
 
       it 'changes the visiblity of the message' do
         expect(queue).to receive(:batch_change_visibility).with(2, [item.id])
-        consumer.delay(item)
+        consumer.delay(item, backoff_func)
       end
     end
   end
