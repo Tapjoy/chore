@@ -91,18 +91,27 @@ module Chore
         Chore.logger.error { "Failed to run job for #{item.message}  with error: Job raised a RejectMessageException" }
         klass.run_hooks_for(:on_rejected, message)
       rescue Job::DelayRetry
-        delayed_for = item.consumer.delay(item, klass.options[:backoff])
-        Chore.logger.info { "Delaying retry by #{delayed_for} seconds for the job #{item.message}" }
-        klass.run_hooks_for(:on_delay, message)
+        attempt_to_delay(item, message, klass)
+      rescue => e
+        handle_failure(item, message, klass, e)
       end
-    # This rescue is outside above the `begin` scope so any issues with DelayThisJob handling will trigger a failure case
+    end
+
+    def attempt_to_delay(item, message, klass)
+      delayed_for = item.consumer.delay(item, klass.options[:backoff])
+      Chore.logger.info { "Delaying retry by #{delayed_for} seconds for the job #{item.message}" }
+      klass.run_hooks_for(:on_delay, message)
     rescue => e
+      handle_failure(item, message, klass, e)
+    end
+
+    def handle_failure(item, message, klass, e)
       Chore.logger.error { "Failed to run job #{item.message} with error: #{e.message} at #{e.backtrace * "\n"}" }
       if item.current_attempt >= klass.options[:max_attempts]
         klass.run_hooks_for(:on_permanent_failure,item.queue_name,message,e)
         item.consumer.complete(item.id)
       else
-        klass.run_hooks_for(:on_failure,message,e)
+        klass.run_hooks_for(:on_failure, message, e)
       end
     end
 

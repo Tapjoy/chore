@@ -148,7 +148,7 @@ describe Chore::Worker do
 
     before(:each) do
       allow(SimpleJob).to receive(:perform).and_raise(Chore::Job::DelayRetry)
-      allow(SimpleJob).to receive(:run_hooks_for).and_return(true)
+      SimpleJob.stub(:run_hooks_for).and_return(true)
     end
 
     context 'and the consumer can delay' do
@@ -183,8 +183,9 @@ describe Chore::Worker do
       end
 
       it 'triggers the failure callback' do
-        expect(SimpleJob).to receive(:run_hooks_for).with(:on_failure, parsed_job, anything())
-        Chore::Worker.start(work)
+        worker = Chore::Worker.new(work)
+        expect(worker).to receive(:handle_failure)
+        worker.start
       end
     end
   end
