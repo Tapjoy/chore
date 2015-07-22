@@ -21,6 +21,8 @@ module Chore
         end
 
         def initialize(queue_name, opts={})
+          @backoff_calc = opts[:backoff]
+
           super(queue_name, opts)
         end
 
@@ -53,6 +55,18 @@ module Chore
         def complete(id)
           Chore.logger.debug "Completing (deleting): #{id}"
           queue.batch_delete([id])
+        end
+
+        def delay(item)
+          if @backoff_calc.nil?
+            raise ArgumentError, "a backoff function is required to use the delay mechanism. Add the :backoff option to the job with a lambda that accepts a UnitOfWork."
+          end
+
+          delay = @backoff_calc.call(item)
+          Chore.logger.debug "Delaying #{item.id} by #{delay} seconds"
+          queue.batch_change_visibility(delay, [item.id])
+
+          return delay
         end
 
         private

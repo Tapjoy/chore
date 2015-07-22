@@ -16,7 +16,15 @@ module Chore
       # Throw a RejectMessageException from your job to signal that the message should be rejected.
       # The semantics of +reject+ are queue implementation dependent.
     end
-    
+
+    # When this exception is raised an attempt will be made to delay a retry of this message. If the consumer does not
+    # support delaying messages we fall through to the standard failure-retry behavior of no delay.
+    #
+    # Note that the job should have a `:backoff` option provided with a lambda that accepts a `UnitOfWork` as an
+    # argument. This allows you to calculate the backoff amount using the number of attempts.
+    class DelayRetry < Exception
+    end
+
     def self.job_classes #:nodoc:
       @classes || []
     end

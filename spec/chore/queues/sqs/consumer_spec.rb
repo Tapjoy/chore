@@ -6,11 +6,12 @@ describe Chore::Queues::SQS::Consumer do
   let(:queues) { double("queues") }
   let(:queue) { double("test_queue", :visibility_timeout=>10, :url=>"test_queue", :name=>"test_queue") }
   let(:options) { {} }
-  let(:consumer) { Chore::Queues::SQS::Consumer.new(queue_name) }
+  let(:consumer) { Chore::Queues::SQS::Consumer.new(queue_name, :backoff => backoff_func) }
   let(:message) { TestMessage.new("handle",queue, "message body", 1) }
   let(:message_data) {{:id=>message.id, :queue=>message.queue.url, :visibility_timeout=>message.queue.visibility_timeout}}
   let(:pool) { double("pool") }
   let(:sqs) { double('AWS::SQS') }
+  let(:backoff_func) { nil }
 
   before do
     allow(AWS::SQS).to receive(:new).and_return(sqs)
@@ -102,6 +103,25 @@ describe Chore::Queues::SQS::Consumer do
       it 'should not sleep' do
         expect(consumer).to_not receive(:sleep)
         consumer.consume
+      end
+    end
+  end
+
+  describe '#delay' do
+    let(:item) { Chore::UnitOfWork.new(message.id, message.queue, 60, message.body, 0, consumer) }
+
+    context 'when no backoff function is provided' do
+      it 'will raise an error' do
+        expect { consumer.delay(item) }.to raise_error(ArgumentError)
+      end
+    end
+
+    context 'with a backoff function' do
+      let(:backoff_func) { lambda { |item| 2 } }
+
+      it 'changes the visiblity of the message' do
+        expect(queue).to receive(:batch_change_visibility).with(2, [item.id])
+        consumer.delay(item)
       end
     end
   end
