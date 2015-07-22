@@ -22,7 +22,7 @@ module Chore
 
     # Create a Worker. Give it an array of work (or single item), and +opts+.
     # Currently, the only option supported by Worker is +:payload_handler+ which contains helpers
-    # for decoding the item and finding the correct payload class 
+    # for decoding the item and finding the correct payload class
     def initialize(work=[],opts={})
       @stopping = false
       @started_at = Time.now

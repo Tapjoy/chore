@@ -42,9 +42,9 @@ module Chore
 
     module ClassMethods
       DEFAULT_OPTIONS = { }
-      
+
       # Pass a hash of options to queue_options the included class's use of Chore::Job
-      # +opts+ has just the one required option. 
+      # +opts+ has just the one required option.
       # * +:name+: which should map to the name of the queue this job should be published to.
       def queue_options(opts = {})
         @chore_options = (@chore_options || DEFAULT_OPTIONS).merge(opts_from_cli).merge(opts)
@@ -68,14 +68,14 @@ module Chore
         @from_cli ||= (Chore.config.marshal_dump.select {|k,v| required_options.include? k } || {})
       end
 
-      # Execute the current job. We create an instance of the job to do the perform 
+      # Execute the current job. We create an instance of the job to do the perform
       # as this allows the jobs themselves to do initialization that might require access
       # to the parameters of the job.
       def perform(*args)
         job = self.new(args)
         job.perform(*args)
       end
-      
+
       # Publish a job using an instance of job. Similar to perform we do this so that a job
       # can perform initialization logic before the perform_async is begun. This, in addition, to
       # hooks allows for rather complex jobs to be written simply.
