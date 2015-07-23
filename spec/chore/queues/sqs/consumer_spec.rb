@@ -109,20 +109,11 @@ describe Chore::Queues::SQS::Consumer do
 
   describe '#delay' do
     let(:item) { Chore::UnitOfWork.new(message.id, message.queue, 60, message.body, 0, consumer) }
+    let(:backoff_func) { lambda { |item| 2 } }
 
-    context 'when no backoff function is provided' do
-      it 'will raise an error' do
-        expect { consumer.delay(item, nil) }.to raise_error(ArgumentError)
-      end
-    end
-
-    context 'with a backoff function' do
-      let(:backoff_func) { lambda { |item| 2 } }
-
-      it 'changes the visiblity of the message' do
-        expect(queue).to receive(:batch_change_visibility).with(2, [item.id])
-        consumer.delay(item, backoff_func)
-      end
+    it 'changes the visiblity of the message' do
+      expect(queue).to receive(:batch_change_visibility).with(2, [item.id])
+      consumer.delay(item, backoff_func)
     end
   end
 

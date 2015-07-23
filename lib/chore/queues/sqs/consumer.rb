@@ -56,10 +56,6 @@ module Chore
         end
 
         def delay(item, backoff_calc)
-          if backoff_calc.nil?
-            raise ArgumentError, "a backoff function is required to use the delay mechanism. Add the :backoff option to the job with a lambda that accepts a UnitOfWork."
-          end
-
           delay = backoff_calc.call(item)
           Chore.logger.debug "Delaying #{item.id} by #{delay} seconds"
           queue.batch_change_visibility(delay, [item.id])
