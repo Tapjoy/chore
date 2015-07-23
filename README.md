@@ -141,8 +141,8 @@ If a global publisher is set, it can be overridden on a per-job basis by specify
 
 ## Retry Backoff Strategy
 
-Chore has basic support delaying the of a job using a step function. Currently the only queue that supports this
-functionality is SQS, all others will simply ignore the delay setting.
+Chore has basic support for delaying retries  of a failed job using a step function. Currently the only queue that
+supports this functionality is SQS, all others will simply ignore the delay setting.
 
 ### Setup
 
@@ -174,8 +174,17 @@ Something else to consider is the `RetentionPeriod` of a queue. If the `Retentio
 message continues to retry through that hour, it will suddenly disappear! That is to say: the `Retentionperiod` starts
 counting down from the moment the message is *first* sent, and does not reset.
 
+And finally, if the queue has a `DeliveryDelay` configured any delay applied by the backoff function will be *in
+addition* to the `DeliveryDelay` when the message is removed from its "in flight" status.
+
 All of this should be taken into consideration when using this feature. In general, any queue requiring this will likely
 need to run as its own Facet and not share workers with other queues.
+
+#### Further Reading
+
+ * [SQS VisiblityTimeout](http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/AboutVT.html)
+ * [SQS Delay Queues](http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-delay-queues.html)
+ * [SQS Message Lifecycle](http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/MessageLifecycle.html)
 
 ## Hooks
 
