@@ -21,7 +21,7 @@ Create a `Chorefile` file in the root of your project directory. While you can c
 
     --require=./<FILE_TO_LOAD>
 
-Make sure that `--require` points to the main entry point for your app. If integrating with a Rails app, just point it to the directory of your application and it will handle loading the correct files on its own. 
+Make sure that `--require` points to the main entry point for your app. If integrating with a Rails app, just point it to the directory of your application and it will handle loading the correct files on its own.
 
 Other options include:
 
@@ -36,7 +36,7 @@ Other options include:
     --queue_prefix prefixy # A prefix to prepend to queue names, mainly for development and qa testing purposes
     --max-attempts 100 # The maximum number of times a job can be attempted
     --dupe-on-cache-failure # Determines the deduping behavior when a cache connection error occurs. When set to `false`, the message is assumed not to be a duplicate. Defaults to `false`.
-    --queue-polling-size 10 # If your particular queueing system supports responding with messages in batches of a certain size, you can control that with this flag. SQS has a built in upper-limit of 10, but other systems will vary. 
+    --queue-polling-size 10 # If your particular queueing system supports responding with messages in batches of a certain size, you can control that with this flag. SQS has a built in upper-limit of 10, but other systems will vary.
 
 If you're using SQS, you'll want to add AWS keys so that Chore can authenticate with AWS.
 
@@ -139,6 +139,43 @@ It is worth noting that any option that can be set via config file or command-li
 
 If a global publisher is set, it can be overridden on a per-job basis by specifying the publisher in `queue_options`.
 
+## Retry Backoff Strategy
+
+Chore has basic support delaying the of a job using a step function. Currently the only queue that supports this
+functionality is SQS, all others will simply ignore the delay setting.
+
+### Setup
+
+The `:backoff` option for a queue expects a lambda that takes a single `UnitOfWork` argument. The return should be a
+number of seconds to delay the next attempt.
+
+```ruby
+queue_options :name => 'nameOfQueue',
+  :backoff => lambda { |work| work.current_attempt ** 2 } # Exponential backoff
+```
+
+### Using the Backoff
+
+If there is a `:backoff` option supplied, any failures will delay the next attempt by the result of that lambda.
+
+### Notes on SQS and Delays
+
+We handle delays in SQS by changing the `VisiblityTimeout` of the in flight message. This operation is *additive*,
+meaning if you have a Queue with a default `VisiblityTimeout` of 5 minutes, the message is processed then fails 1
+minute after the message is sent, and the step function returns 60 seconds, the new `VisiblityTimeout` of the message
+will be at 5 minutes.
+
+This means small steps will not behave as you might expect, unless you have a `VisiblityTimeout` of 0. However, a
+`VisiblityTimeout` of 0 would cause the message to never remain in flight and would likely break the entire world. You
+want the default `VisiblityTimeout` to be as low as possible, but not low enough that it could be waiting in a Chore
+batch when the timeout hits 0 (causing the job to process twice!).
+
+Something else to consider is the `RetentionPeriod` of a queue. If the `RetentionPeriod` is 1 hour, and an initial
+message continues to retry through that hour, it will suddenly disappear! That is to say: the `Retentionperiod` starts
+counting down from the moment the message is *first* sent, and does not reset.
+
+All of this should be taken into consideration when using this feature. In general, any queue requiring this will likely
+need to run as its own Facet and not share workers with other queues.
 
 ## Hooks
 
