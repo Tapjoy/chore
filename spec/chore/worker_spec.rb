@@ -4,7 +4,9 @@ describe Chore::Worker do
 
   class SimpleJob
     include Chore::Job
-    queue_options :name => 'test', :publisher => FakePublisher, :max_attempts => 100, :backoff => lambda { |item| item.current_attempt }
+    queue_options :name => 'test',
+      :publisher => FakePublisher,
+      :max_attempts => 100
 
     def perform(*args)
       return args
@@ -147,7 +149,9 @@ describe Chore::Worker do
     let(:work) { Chore::UnitOfWork.new(2, 'test', 60, encoded_job, 0, consumer) }
 
     before(:each) do
-      allow(SimpleJob).to receive(:perform).and_raise(Chore::Job::DelayRetry)
+      SimpleJob.options[:backoff] = lambda { |work| work.current_attempt }
+
+      allow(SimpleJob).to receive(:perform).and_raise(RuntimeError)
       SimpleJob.stub(:run_hooks_for).and_return(true)
     end
 

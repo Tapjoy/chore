@@ -90,10 +90,12 @@ module Chore
         item.consumer.reject(item.id)
         Chore.logger.error { "Failed to run job for #{item.message}  with error: Job raised a RejectMessageException" }
         klass.run_hooks_for(:on_rejected, message)
-      rescue Job::DelayRetry
-        attempt_to_delay(item, message, klass)
       rescue => e
-        handle_failure(item, message, klass, e)
+        if klass.options[:backoff]
+          attempt_to_delay(item, message, klass)
+        else
+          handle_failure(item, message, klass, e)
+        end
       end
     end
 
