@@ -48,8 +48,17 @@ module Chore
       # * +:name+: which should map to the name of the queue this job should be published to.
       def queue_options(opts = {})
         @chore_options = (@chore_options || DEFAULT_OPTIONS).merge(opts_from_cli).merge(opts)
+
         required_options.each do |k|
           raise ArgumentError.new("#{self.to_s} :#{k} is a required option for Chore::Job") unless @chore_options[k]
+        end
+
+        if @chore_options.key?(:backoff)
+          if !@chore_options[:backoff].is_a?(Proc)
+            raise ArgumentError, "#{self.to_s}: backoff must be a lambda or Proc"
+          elsif @chore_options[:backoff].arity != 1
+            raise ArgumentError, "#{self.to_s}: backoff must accept a single argument"
+          end
         end
       end
 
