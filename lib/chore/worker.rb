@@ -91,7 +91,7 @@ module Chore
         Chore.logger.error { "Failed to run job for #{item.message}  with error: Job raised a RejectMessageException" }
         klass.run_hooks_for(:on_rejected, message)
       rescue => e
-        if klass.options[:backoff].is_a?(Proc)
+        if klass.has_backoff?
           attempt_to_delay(item, message, klass)
         else
           handle_failure(item, message, klass, e)

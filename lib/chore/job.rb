@@ -102,6 +102,12 @@ module Chore
       def prefixed_queue_name
         "#{Chore.config.queue_prefix}#{self.options[:name]}"
       end
+
+      # We require a proc for the backoff strategy, but as we check for it in `.queue_options` we can simply check for
+      # the key at this point.
+      def has_backoff?
+        self.options.key?(:backoff)
+      end
     end #ClassMethods
 
     # This is handy to override in an included job to be able to do job setup that requires
