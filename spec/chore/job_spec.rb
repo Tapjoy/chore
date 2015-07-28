@@ -46,13 +46,17 @@ describe Chore::Job do
       expect { TestJob.queue_options(options) }.to raise_error(ArgumentError)
     end
 
-    it 'must accept one argument' do
+    it 'rejects a lambda with no arguments' do
       options = config.merge(:backoff => lambda { })
       expect { TestJob.queue_options(options) }.to raise_error(ArgumentError)
+    end
 
+    it 'allows a lambda with one argument' do
       options = config.merge(:backoff => lambda { |a| })
       expect { TestJob.queue_options(options) }.not_to raise_error
+    end
 
+    it 'rejects a lambda with two arguments' do
       options = config.merge(:backoff => lambda { |a,b| })
       expect { TestJob.queue_options(options) }.to raise_error(ArgumentError)
     end
