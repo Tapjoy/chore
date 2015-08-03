@@ -11,7 +11,7 @@ The full docs for Chore can always be found at http://tapjoy.github.io/chore.
 
 Chore can be integrated with any Ruby-based project by following these instructions:
 
-    gem 'chore-core', '~> 1.5'
+    gem 'chore-core', '~> 1.6.0'
 
 If you also plan on using SQS, you must also bring in dalli to use for memcached:
 
