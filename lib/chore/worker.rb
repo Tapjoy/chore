@@ -22,7 +22,7 @@ module Chore
 
     # Create a Worker. Give it an array of work (or single item), and +opts+.
     # Currently, the only option supported by Worker is +:payload_handler+ which contains helpers
-    # for decoding the item and finding the correct payload class 
+    # for decoding the item and finding the correct payload class
     def initialize(work=[],opts={})
       @stopping = false
       @started_at = Time.now
@@ -79,24 +79,41 @@ module Chore
       message = options[:payload_handler].decode(item.message)
       klass = options[:payload_handler].payload_class(message)
       return unless klass.run_hooks_for(:before_perform,message)
+
       begin
         Chore.logger.info { "Running job #{klass} with params #{message}"}
         perform_job(klass,message)
         item.consumer.complete(item.id)
         Chore.logger.info { "Finished job #{klass} with params #{message}"}
-        klass.run_hooks_for(:after_perform,message)
+        klass.run_hooks_for(:after_perform, message)
       rescue Job::RejectMessageException
         item.consumer.reject(item.id)
         Chore.logger.error { "Failed to run job for #{item.message}  with error: Job raised a RejectMessageException" }
         klass.run_hooks_for(:on_rejected, message)
       rescue => e
-        Chore.logger.error { "Failed to run job #{item.message} with error: #{e.message} at #{e.backtrace * "\n"}" }
-        if item.current_attempt >= klass.options[:max_attempts]
-          klass.run_hooks_for(:on_permanent_failure,item.queue_name,message,e)
-          item.consumer.complete(item.id)
+        if klass.has_backoff?
+          attempt_to_delay(item, message, klass)
         else
-          klass.run_hooks_for(:on_failure,message,e)
+          handle_failure(item, message, klass, e)
         end
+      end
+    end
+
+    def attempt_to_delay(item, message, klass)
+      delayed_for = item.consumer.delay(item, klass.options[:backoff])
+      Chore.logger.info { "Delaying retry by #{delayed_for} seconds for the job #{item.message}" }
+      klass.run_hooks_for(:on_delay, message)
+    rescue => e
+      handle_failure(item, message, klass, e)
+    end
+
+    def handle_failure(item, message, klass, e)
+      Chore.logger.error { "Failed to run job #{item.message} with error: #{e.message} at #{e.backtrace * "\n"}" }
+      if item.current_attempt >= klass.options[:max_attempts]
+        klass.run_hooks_for(:on_permanent_failure,item.queue_name,message,e)
+        item.consumer.complete(item.id)
+      else
+        klass.run_hooks_for(:on_failure, message, e)
       end
     end
 

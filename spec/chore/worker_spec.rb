@@ -4,7 +4,9 @@ describe Chore::Worker do
 
   class SimpleJob
     include Chore::Job
-    queue_options :name => 'test', :publisher => FakePublisher, :max_attempts => 100
+    queue_options :name => 'test',
+      :publisher => FakePublisher,
+      :max_attempts => 100
 
     def perform(*args)
       return args
@@ -137,6 +139,57 @@ describe Chore::Worker do
           consumer.should_receive(:complete).with(2)
           Chore::Worker.start(work)
         end
+      end
+    end
+  end
+
+  describe 'delaying retries' do
+    let(:encoded_job) { Chore::Encoder::JsonEncoder.encode(job) }
+    let(:parsed_job) { JSON.parse(encoded_job) }
+    let(:work) { Chore::UnitOfWork.new(2, 'test', 60, encoded_job, 0, consumer) }
+
+    before(:each) do
+      SimpleJob.options[:backoff] = lambda { |work| work.current_attempt }
+
+      allow(SimpleJob).to receive(:perform).and_raise(RuntimeError)
+      SimpleJob.stub(:run_hooks_for).and_return(true)
+    end
+
+    context 'and the consumer can delay' do
+      before(:each) do
+        allow(consumer).to receive(:delay).and_return(0)
+      end
+
+      it 'will not complete the message' do
+        expect(consumer).not_to receive(:complete)
+        Chore::Worker.start(work)
+      end
+
+      it 'will delay the message' do
+        expect(consumer).to receive(:delay).with(work, SimpleJob.options[:backoff])
+        Chore::Worker.start(work)
+      end
+
+      it 'triggers the on_delay callback' do
+        expect(SimpleJob).to receive(:run_hooks_for).with(:on_delay, parsed_job)
+        Chore::Worker.start(work)
+      end
+    end
+
+    context 'and the consumer cannot delay' do
+      before(:each) do
+        allow(consumer).to receive(:delay).and_raise(NoMethodError)
+      end
+
+      it 'will not complete the item' do
+        expect(consumer).not_to receive(:complete)
+        Chore::Worker.start(work)
+      end
+
+      it 'triggers the failure callback' do
+        worker = Chore::Worker.new(work)
+        expect(worker).to receive(:handle_failure)
+        worker.start
       end
     end
   end

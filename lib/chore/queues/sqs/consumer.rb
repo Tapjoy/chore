@@ -55,6 +55,14 @@ module Chore
           queue.batch_delete([id])
         end
 
+        def delay(item, backoff_calc)
+          delay = backoff_calc.call(item)
+          Chore.logger.debug "Delaying #{item.id} by #{delay} seconds"
+          queue.batch_change_visibility(delay, [item.id])
+
+          return delay
+        end
+
         private
 
         # Requests messages from SQS, and invokes the provided +&block+ over each one. Afterwards, the :on_fetch
@@ -63,15 +71,17 @@ module Chore
           msg = queue.receive_messages(:limit => sqs_polling_amount, :attributes => [:receive_count])
           messages = *msg
           messages.each do |message|
-            block.call(message.handle, queue_name, queue_timeout, message.body, message.receive_count - 1) unless duplicate_message?({:id=>message.id, :queue=>message.queue.url, :visibility_timeout=>message.queue.visibility_timeout})
+            unless duplicate_message?(message)
+              block.call(message.handle, queue_name, queue_timeout, message.body, message.receive_count - 1)
+            end
             Chore.run_hooks_for(:on_fetch, message.handle, message.body)
           end
           messages
         end
 
         # Checks if the given message has already been received within the timeout window for this queue
-        def duplicate_message?(msg_data)
-          dupe_detector.found_duplicate?(msg_data)
+        def duplicate_message?(message)
+          dupe_detector.found_duplicate?(:id=>message.id, :queue=>message.queue.url, :visibility_timeout=>message.queue.visibility_timeout)
         end
 
         # Returns the instance of the DuplicateDetector used to ensure unique messages.

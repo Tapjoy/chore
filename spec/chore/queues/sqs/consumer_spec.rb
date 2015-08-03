@@ -11,6 +11,7 @@ describe Chore::Queues::SQS::Consumer do
   let(:message_data) {{:id=>message.id, :queue=>message.queue.url, :visibility_timeout=>message.queue.visibility_timeout}}
   let(:pool) { double("pool") }
   let(:sqs) { double('AWS::SQS') }
+  let(:backoff_func) { nil }
 
   before do
     allow(AWS::SQS).to receive(:new).and_return(sqs)
@@ -103,6 +104,16 @@ describe Chore::Queues::SQS::Consumer do
         expect(consumer).to_not receive(:sleep)
         consumer.consume
       end
+    end
+  end
+
+  describe '#delay' do
+    let(:item) { Chore::UnitOfWork.new(message.id, message.queue, 60, message.body, 0, consumer) }
+    let(:backoff_func) { lambda { |item| 2 } }
+
+    it 'changes the visiblity of the message' do
+      expect(queue).to receive(:batch_change_visibility).with(2, [item.id])
+      consumer.delay(item, backoff_func)
     end
   end
 

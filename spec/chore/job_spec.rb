@@ -9,7 +9,8 @@ describe Chore::Job do
   end
 
   after(:each) do
-    TestJob.queue_options config
+    # Reset the config
+    TestJob.instance_variable_set(:@chore_options, nil)
   end
 
   it 'should have an perform_async method' do
@@ -38,7 +39,30 @@ describe Chore::Job do
     TestJob.options[:name].should == 'test_queue'
   end
 
-  describe(:perform_async) do 
+  describe 'the backoff config' do
+    it 'must be a Proc instance' do
+      options = config.merge(:backoff => 'abc')
+
+      expect { TestJob.queue_options(options) }.to raise_error(ArgumentError)
+    end
+
+    it 'rejects a lambda with no arguments' do
+      options = config.merge(:backoff => lambda { })
+      expect { TestJob.queue_options(options) }.to raise_error(ArgumentError)
+    end
+
+    it 'allows a lambda with one argument' do
+      options = config.merge(:backoff => lambda { |a| })
+      expect { TestJob.queue_options(options) }.not_to raise_error
+    end
+
+    it 'rejects a lambda with two arguments' do
+      options = config.merge(:backoff => lambda { |a,b| })
+      expect { TestJob.queue_options(options) }.to raise_error(ArgumentError)
+    end
+  end
+
+  describe(:perform_async) do
     it 'should call an instance of the queue_options publisher' do
       args = [1,2,{:h => 'ash'}]
       TestJob.queue_options(:publisher => Chore::Publisher)
