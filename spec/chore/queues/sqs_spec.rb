@@ -32,6 +32,23 @@ module Chore
         expect(fake_queue).to receive(:delete)
         Chore::Queues::SQS.delete_queues!
       end
+
+      context 'and checking for existing queues' do
+        it 'checks for existing queues' do
+          expect(described_class).to receive(:existing_queues).and_return([])
+          Chore::Queues::SQS.create_queues!(true)
+        end
+
+        it 'raises an error if a queue does exist' do
+          allow(described_class).to receive(:existing_queues).and_return([queue_name])
+          expect{Chore::Queues::SQS.create_queues!(true)}.to raise_error(RuntimeError)
+        end
+
+        it 'does not raise an error if a queue does not exist' do
+          allow(described_class).to receive(:existing_queues).and_return([])
+          expect{Chore::Queues::SQS.create_queues!(true)}.not_to raise_error
+        end
+      end
     end
   end
 end
