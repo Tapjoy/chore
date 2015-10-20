@@ -16,7 +16,7 @@ module Chore
       # Throw a RejectMessageException from your job to signal that the message should be rejected.
       # The semantics of +reject+ are queue implementation dependent.
     end
-    
+
     def self.job_classes #:nodoc:
       @classes || []
     end
@@ -42,14 +42,23 @@ module Chore
 
     module ClassMethods
       DEFAULT_OPTIONS = { }
-      
+
       # Pass a hash of options to queue_options the included class's use of Chore::Job
-      # +opts+ has just the one required option. 
+      # +opts+ has just the one required option.
       # * +:name+: which should map to the name of the queue this job should be published to.
       def queue_options(opts = {})
         @chore_options = (@chore_options || DEFAULT_OPTIONS).merge(opts_from_cli).merge(opts)
+
         required_options.each do |k|
           raise ArgumentError.new("#{self.to_s} :#{k} is a required option for Chore::Job") unless @chore_options[k]
+        end
+
+        if @chore_options.key?(:backoff)
+          if !@chore_options[:backoff].is_a?(Proc)
+            raise ArgumentError, "#{self.to_s}: backoff must be a lambda or Proc"
+          elsif @chore_options[:backoff].arity != 1
+            raise ArgumentError, "#{self.to_s}: backoff must accept a single argument"
+          end
         end
       end
 
@@ -68,14 +77,14 @@ module Chore
         @from_cli ||= (Chore.config.marshal_dump.select {|k,v| required_options.include? k } || {})
       end
 
-      # Execute the current job. We create an instance of the job to do the perform 
+      # Execute the current job. We create an instance of the job to do the perform
       # as this allows the jobs themselves to do initialization that might require access
       # to the parameters of the job.
       def perform(*args)
         job = self.new(args)
         job.perform(*args)
       end
-      
+
       # Publish a job using an instance of job. Similar to perform we do this so that a job
       # can perform initialization logic before the perform_async is begun. This, in addition, to
       # hooks allows for rather complex jobs to be written simply.
@@ -92,6 +101,12 @@ module Chore
       # The name of the configured queue, combined with an optional prefix
       def prefixed_queue_name
         "#{Chore.config.queue_prefix}#{self.options[:name]}"
+      end
+
+      # We require a proc for the backoff strategy, but as we check for it in `.queue_options` we can simply check for
+      # the key at this point.
+      def has_backoff?
+        self.options.key?(:backoff)
       end
     end #ClassMethods
 
