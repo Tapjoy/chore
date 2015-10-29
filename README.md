@@ -279,5 +279,5 @@ Chore has several plugin gems available, which extend it's core functionality
 
 ## Copyright
 
-Copyright (c) 2013 - 2014 Tapjoy. See LICENSE.txt for
+Copyright (c) 2013 - 2015 Tapjoy. See LICENSE.txt for
 further details.
