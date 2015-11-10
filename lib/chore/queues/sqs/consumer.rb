@@ -118,7 +118,7 @@ module Chore
             :access_key_id => Chore.config.aws_access_key,
             :secret_access_key => Chore.config.aws_secret_key,
             :logger => Chore.logger,
-            :log_level => :debug)
+            :log_level => Chore.config.log_level)
         end
 
         def sqs_polling_amount
