@@ -34,9 +34,7 @@ describe Chore::Queues::SQS::Consumer do
 
       expect(AWS::SQS).to receive(:new).with(
         :access_key_id => 'key',
-        :secret_access_key => 'secret',
-        :logger => Chore.logger,
-        :log_level => :debug
+        :secret_access_key => 'secret'
       ).and_return(sqs)
       consumer.consume
     end
@@ -141,6 +139,28 @@ describe Chore::Queues::SQS::Consumer do
       allow(AWS::SQS).to receive(:new).and_return(sqs)
 
       expect(consumer).to receive(:running?).and_return(true, false)
+      consumer.consume
+    end
+  end
+
+  describe 'aws logging' do
+    it 'should not set AWS logging if Chore log level is info' do
+      allow(Chore.config).to receive(:log_level).and_return(Logger::INFO)
+
+      allow(consumer).to receive(:running?).and_return(true, false)
+      allow(queue).to receive(:receive_messages).and_return(message)
+
+      expect(AWS::SQS).to receive(:new).with(hash_not_including(:logger => Chore.logger, :log_level => :debug))
+      consumer.consume
+    end
+
+    it 'should set the AWS logging if Chore log level is debug' do
+      allow(Chore.config).to receive(:log_level).and_return(Logger::DEBUG)
+
+      allow(consumer).to receive(:running?).and_return(true, false)
+      allow(queue).to receive(:receive_messages).and_return(message)
+
+      expect(AWS::SQS).to receive(:new).with(hash_including(:logger => Chore.logger, :log_level => :debug))
       consumer.consume
     end
   end
