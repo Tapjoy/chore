@@ -1,7 +1,14 @@
 namespace :chore do
-  desc "Create all defined queues"
-  task :create do
-    Chore::Queues::SQS.create_queues!
+  desc <<-DESC.gsub(/^\s+/, '')
+  Create all defined queues. If the halt_on_existing argument is set (defaults to off) the task will abort if a single
+  queue already exists without attempting to create any.
+
+  This flag is specifically provided for our integration testing platform to ensure we don't deploy to an incorrect environment.
+  DESC
+  task :create, :halt_on_existing do |t, args|
+    halt_on_existing = %w(1 true yes t y).include?(args[:halt_on_existing])
+
+    Chore::Queues::SQS.create_queues!(halt_on_existing)
   end
 
   desc "Remove all defined queues"
