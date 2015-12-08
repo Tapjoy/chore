@@ -62,7 +62,7 @@ Because you are likely to use the same app as the basis for both producing and c
 
 However, like many aspects of Chore, it is ultimately up to the developer to decide which use case fits their needs best. Chore is happy to let you configure it in almost any way you want.
 
-An example of how to configure chore via and initializer:
+An example of how to configure chore via an initializer:
 
 ```ruby
 Chore.configure do |c|
