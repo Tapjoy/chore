@@ -204,7 +204,11 @@ class TestJob
   queue_options :name => 'test_queue'
 
   def perform(args={})
-    Chore.logger.debug "My first sync job"
+    # Do something cool
+  end
+  
+  def before_perform_log(message)
+    Chore.logger.debug "About to do something cool with: #{message.inspect}"
   end
 end
 ```
