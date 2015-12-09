@@ -206,7 +206,7 @@ class TestJob
   def perform(args={})
     # Do something cool
   end
-  
+
   def before_perform_log(message)
     Chore.logger.debug "About to do something cool with: #{message.inspect}"
   end
@@ -281,6 +281,72 @@ Chore has several plugin gems available, which extend it's core functionality
 
 [Airbrake](https://github.com/Tapjoy/chore-airbrake) - Integrating Chore with Airbrake
 
+## Managing Chore processes
+
+### Sample Upstart
+
+There are lots of ways to create upstart scripts, so it's difficult to give a prescriptive
+example of the "right" way to do it. However, here are some ideas from how we run it in production
+at Tapjoy:
+
+You should have a specific user that the process runs under, for security reasons. Swap to
+this user at the beginning of your exec line
+
+```bash
+su - $USER --command '...'
+```
+
+For the command to run Chore itself keeping all of the necessary environment variables in an env
+file that your upstart can source on it's exec line, to prevent having to mix changing environment
+variables with having to change the upstart script itself
+
+```bash
+source $PATHTOENVVARS ;
+```
+
+After that, you'll want to make sure you're running Chore under the right ruby version. Additionally,
+we like to redirect STDOUT and STDERR to logger, with an app name. This makes it easy to find
+information in syslog later on. Putting that all together looks like:
+
+```bash
+rvm use $RUBYVERSION do  bundle exec chore -c Chorefile  2>&1 | logger -t $APPNAME
+```
+
+There are many other ways you could manage the Upstart file, but these are a few of the ways we
+prefer to do it. Putting it all together, it looks something like:
+
+```bash
+exec su - special_user --command 'source /the/path/to/env ; rvm use ruby-1.9.3-p484 do bundle exec chore -c Chorefile 2>&1 | logger chore-app'
+```
+
+### Locating Processes
+
+As Chore does not keep a PIDfile, and has both a master and a potential number of workers,
+you may find it difficult to isolate the exact PID for the master process.
+
+To find Chore master processes via ```ps```, you can run the following:
+
+```bash
+ps aux | grep bin/chore
+```
+
+or
+
+```bash
+pgrep -f bin/chore
+```
+
+To find a list of only Chore worker processes:
+
+```bash
+ps aux | grep chore-
+```
+
+or
+
+```bash
+pgrep -f chore-
+```
 ## Copyright
 
 Copyright (c) 2013 - 2015 Tapjoy. See LICENSE.txt for
