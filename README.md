@@ -52,11 +52,32 @@ Note that you can use one or the other but not both. Chore will quit and make fu
 
 ### Tips for configuring Chore
 
+For Rails, it can be necessary to add the directory you store your jobs in to the eager loading path,
+found in application.rb. You likely need a similar approach for most apps using jobs, unless you places
+them into a directory that is already eager loaded by default. One example of this might be:
+
+```ruby
+config.eager_load_paths += File.join(config.root, "app", "jobs")
+```
+
+However, due to the way eager_load_paths works in Rails, this may only solve the issue
+in your production environment. You might also find it useful for other environments
+to throw soemthing like this in an config/initializers/chore.rb file, although you
+can choose to load the job files in any way you like:
+
+```ruby
+Dir["#{Rails.root}/app/jobs/**/*"].each do |file|
+  require file unless File.directory?(file)
+end unless Rails.env.production?
+```
+
+### Producing and Consuming Jobs
+
 When it comes to configuring Chore, you have 2 main use cases - as a producer of messages, or as a consumer of messages (the consumer is also able to produce messages if need be, but is running as it's own isolated instance of your application).
 
 For producers, you must do all of your Chore configuration in an intializer.
 
-For consumers, you need to either Chorefile or Chorefile + an initializer.
+For consumers, you need to either use a Chorefile or Chorefile + an initializer.
 
 Because you are likely to use the same app as the basis for both producing and consuming messages, you'll already have a considerable amount of configuration in your Producer - it makes sense to use Chorefile to simply provide the `require` option, and stick to the initializer for the rest of the configuration to keep things DRY.
 
