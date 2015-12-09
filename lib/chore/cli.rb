@@ -144,6 +144,7 @@ module Chore #:nodoc:
 
       register_option 'dupe_on_cache_failure', '--dupe-on-cache-failure BOOLEAN', 'Determines the deduping behavior when a cache connection error occurs. When set to false, the message is assumed not to be a duplicate. (default: false)'
 
+      register_option 'process_in_batches', '--process-in-batches BOOLEAN', 'Determines if the Worker should hand each message to a single instance of a Job, or if the Jobs are intended to make multiple messages and work over all of them. (default: false)'
     end
 
     def parse_opts(argv, ignore_errors = false) #:nodoc:
@@ -270,4 +271,3 @@ module Chore #:nodoc:
     end
   end
 end
-
