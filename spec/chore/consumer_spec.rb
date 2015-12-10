@@ -22,6 +22,10 @@ describe Chore::Consumer do
     Chore::Consumer.should respond_to :reset_connection!
   end
 
+  it 'should have a class level cleanup method' do
+    Chore::Consumer.should respond_to :cleanup
+  end
+
   it 'should not have an implemented consume method' do
     expect { consumer.consume }.to raise_error(NotImplementedError)
   end
