@@ -63,10 +63,10 @@ module Chore #:nodoc:
       end
     end
 
-    def parse_config_file(file) #:nodoc:
+    def parse_config_file(file, ignore_errors = false) #:nodoc:
       data = File.read(file)
       data = ERB.new(data).result
-      parse_opts(data.split(/\s/).map!(&:chomp).map!(&:strip))
+      parse_opts(data.split(/\s/).map!(&:chomp).map!(&:strip), ignore_errors)
     end
 
     def parse(args=ARGV) #:nodoc:
@@ -74,13 +74,16 @@ module Chore #:nodoc:
       setup_options
 
       # parse once to load the config file & require options
-      parse_opts(args)
-      parse_config_file(@options[:config_file]) if @options[:config_file]
+      # any invalid options are ignored the first time around since booting the
+      # system may register additional options from 3rd-party libs
+      parse_opts(args, true)
+      parse_config_file(@options[:config_file], true) if @options[:config_file]
 
       validate!
       boot_system
 
       # parse again to pick up options required by loaded classes
+      # any invalid options will raise an exception this time
       parse_opts(args)
       parse_config_file(@options[:config_file]) if @options[:config_file]
       detect_queues
@@ -143,7 +146,7 @@ module Chore #:nodoc:
 
     end
 
-    def parse_opts(argv) #:nodoc:
+    def parse_opts(argv, ignore_errors = false) #:nodoc:
       @options ||= {}
       @parser = OptionParser.new do |o|
         registered_opts.each do |key,opt|
@@ -164,7 +167,22 @@ module Chore #:nodoc:
         exit 1
       end
 
-      @parser.parse!(argv)
+      # This will parse arguments in order, continuing even if invalid options
+      # are encountered
+      argv = argv.dup
+      begin
+        @parser.parse(argv)
+      rescue OptionParser::InvalidOption => ex
+        if ignore_errors
+          # Drop everything up to (and including) the invalid argument
+          # and start parsing again
+          invalid_arg = ex.args[0]
+          argv = argv.drop(argv.index(invalid_arg) + 1)
+          retry
+        else
+          raise
+        end
+      end
 
       @options
     end
@@ -185,6 +203,9 @@ module Chore #:nodoc:
         require File.expand_path("#{options[:require]}/config/environment.rb")
         ::Rails.application.eager_load!
       else
+        # Pre-load any Bundler dependencies now, so that the CLI parser has them loaded
+        # prior to intrpretting the command line args for things like consumers/producers
+        Bundler.require if defined?(Bundler)
         require File.expand_path(options[:require])
       end
     end

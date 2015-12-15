@@ -22,9 +22,6 @@ Chore::Signal.trap "USR1" do
 end
 
 begin
-  # Pre-load any Bundler dependencies now, so that the CLI parser has them loaded
-  # prior to intrpretting the command line args for things like consumers/producers
-  Bundler.require if defined?(Bundler)
   cli = Chore::CLI.instance
   cli.run!(ARGV)
 rescue => e
