@@ -35,4 +35,15 @@ describe Chore::Fetcher do
       fetcher.start
     end
   end
+
+  describe "cleaning up" do
+    before(:each) do
+      manager.stub(:assign)
+    end
+    
+    it "should run cleanup on each queue" do
+      consumer.should_receive(:cleanup).with('test')
+      fetcher.start
+    end
+  end
 end
