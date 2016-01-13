@@ -194,7 +194,7 @@ module Chore
     end
 
     def perform_batch_job(klass, messages)
-      klass.perform(messages.map {|m|options[:payload_handler].payload(m)})
+      klass.perform(messages.flat_map {|m|options[:payload_handler].payload(m)})
     end
   end
 end
