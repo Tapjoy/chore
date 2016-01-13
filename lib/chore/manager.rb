@@ -10,10 +10,7 @@ module Chore
       Chore.logger.info "Booting Chore #{Chore::VERSION}"
       Chore.logger.debug { Chore.config.inspect }
       @started_at = nil
-      worker_opts = {
-        :process_in_batches=>Chore.config.process_in_batches
-      }
-      @worker_strategy = Chore.config.worker_strategy.new(self, worker_opts)
+      @worker_strategy = Chore.config.worker_strategy.new(self)
       @fetcher = Chore.config.fetcher.new(self)
       @processed = 0
       @stopping = false
