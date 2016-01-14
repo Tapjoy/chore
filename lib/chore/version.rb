@@ -4,6 +4,6 @@ module Chore
     MINOR = 8
     PATCH = 0
 
-    STRING = [ MAJOR, MINOR, PATCH ].join('.')
+    STRING = [ MAJOR, MINOR, PATCH ].join('.') + '-profiling'
   end
 end
