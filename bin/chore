@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+require 'ruby-prof'
+RubyProf.start
 require 'chore'
 require 'chore/cli'
 require 'chore/signal'
@@ -13,6 +15,11 @@ require 'resolv-replace'
 
 ["INT","TERM","QUIT"].each do |sig|
   Chore::Signal.trap sig do
+    result = RubyProf.stop
+    printer = RubyProf::CallStackPrinter.new(result)
+    File.open('./profile_out.html', 'w') do |file|
+      printer.print(file, {})
+    end
     Chore::CLI.instance.shutdown
   end
 end
