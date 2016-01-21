@@ -5,13 +5,14 @@ module Chore
       attr_accessor :batcher
 
       Chore::CLI.register_option 'batch_size', '--batch-size SIZE', Integer, 'Number of items to collect for a single worker to process'
+      Chore::CLI.register_option 'batch_timeout', '--batch-timeout TIMEOUT', Integer, 'Maximum amount of time in seconds to spend collecting items in a batch, if the batch_size is not reached'
       Chore::CLI.register_option 'threads_per_queue', '--threads-per-queue NUM_THREADS', Integer, 'Number of threads to create for each named queue'
 
       def initialize(fetcher)
         @fetcher = fetcher
         @batcher = Batcher.new(Chore.config.batch_size)
         @batcher.callback = lambda { |batch| @fetcher.manager.assign(batch) }
-        @batcher.schedule
+        @batcher.schedule(Chore.config.batch_timeout)
         @running = true
       end
 

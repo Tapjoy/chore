@@ -22,7 +22,7 @@ module Chore
       # If the +batch_timeout+ has elapsed, as soon as the next message enters the batch, it will be executed.
       # 
       # Calling <tt>stop</tt> will cause the thread to finish it's current check, and exit
-      def schedule(batch_timeout=20)
+      def schedule(batch_timeout)
         @thread = Thread.new(batch_timeout) do |timeout|
           Chore.logger.info "Batching timeout thread starting"
           while @running do
