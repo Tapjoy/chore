@@ -33,6 +33,7 @@ module Chore #:nodoc:
     :consumer              => Queues::SQS::Consumer,
     :fetcher               => Fetcher,
     :consumer_strategy     => Strategy::ThreadedConsumerStrategy,
+    :batch_timeout         => 20,
     :batch_size            => 50,
     :log_level             => Logger::WARN,
     :log_path              => STDOUT,
