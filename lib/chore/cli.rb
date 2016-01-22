@@ -270,4 +270,3 @@ module Chore #:nodoc:
     end
   end
 end
-

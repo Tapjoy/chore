@@ -85,6 +85,12 @@ module Chore
         job.perform(*args)
       end
 
+      # Execute the current job in batch mode. This is only used with a batching worker strategy.
+      def perform_batch(*args)
+        job = self.new(args)
+        job.perform_batch(*args)
+      end
+
       # Publish a job using an instance of job. Similar to perform we do this so that a job
       # can perform initialization logic before the perform_async is begun. This, in addition, to
       # hooks allows for rather complex jobs to be written simply.
@@ -118,6 +124,10 @@ module Chore
 
     # This needs to be overriden by the object that is including this module.
     def perform(*args)
+      raise NotImplementedError
+    end
+
+    def perform_batch(*args)
       raise NotImplementedError
     end
 

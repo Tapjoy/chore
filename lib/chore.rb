@@ -13,6 +13,7 @@ require 'chore/manager'
 require 'chore/publisher'
 require 'chore/util'
 require 'chore/worker'
+require 'chore/batched_worker'
 require 'chore/publisher'
 
 # We have a number of things that can live here. I don't want to track
