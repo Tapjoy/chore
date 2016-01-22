@@ -15,7 +15,13 @@ module Chore
 
   private
     def hooks_for(event)
-      (self.methods - Object.methods).grep(/^#{event}/).sort
+      candidate_methods.grep(/^#{event}/).sort
+    end
+
+    # NOTE: Any hook methods defined after this is first referenced (i.e.,
+    # after chore begins processing jobs) will not be called.
+    def candidate_methods
+      @_chore_hooks_candidate_methods ||= (self.methods - Object.methods)
     end
 
     def global_hooks_for(event)
