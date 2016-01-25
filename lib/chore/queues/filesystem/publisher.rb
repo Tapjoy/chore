@@ -24,6 +24,9 @@ module Chore
               if f.flock(File::LOCK_EX | File::LOCK_NB) && f.size == 0
                 begin
                   f.write(job.to_json)
+                rescue StandardError => e
+                  Chore.logger.error "#{e.class.name}: #{e.message}. Could not write #{job[:class]} job to #{queue_name} file.\n#{e.stacktrace}"
+                  raise e
                 ensure
                   f.flock(File::LOCK_UN)
                   break
