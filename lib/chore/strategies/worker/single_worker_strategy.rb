@@ -27,7 +27,7 @@ module Chore
       def assign(work)
         if workers_available?
           begin
-            @worker = Worker.new(work, @options)
+            @worker = worker_klass.new(work, @options)
             @worker.start
             true
           ensure
@@ -36,6 +36,10 @@ module Chore
         else
           Chore.logger.error { "#{self.class}#assign: single worker is unavailable, but assign has been re-entered: #{caller * "\n"}" }
         end
+      end
+
+      def worker_klass
+        Worker
       end
 
       # Returns true if there is currently no worker
