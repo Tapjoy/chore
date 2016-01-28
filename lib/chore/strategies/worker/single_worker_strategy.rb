@@ -21,14 +21,25 @@ module Chore
         worker.stop! if worker
       end
 
-      # Assigns work if there isn't already a worker in progress. Otherwise, is a noop
+      # Assigns work if there isn't already a worker in progress. In this, the
+      # single worker strategy, this should never be called if the worker is in
+      # progress.
       def assign(work)
         if workers_available?
-          @worker = Worker.new(work, @options)
-          @worker.start
-          @worker = nil
-          true
+          begin
+            @worker = worker_klass.new(work, @options)
+            @worker.start
+            true
+          ensure
+            @worker = nil
+          end
+        else
+          Chore.logger.error { "#{self.class}#assign: single worker is unavailable, but assign has been re-entered: #{caller * "\n"}" }
         end
+      end
+
+      def worker_klass
+        Worker
       end
 
       # Returns true if there is currently no worker
