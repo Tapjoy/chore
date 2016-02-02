@@ -18,6 +18,7 @@ module Chore
 
     # Start the Manager. This calls both the #start method of the configured Worker Strategy, as well as Fetcher#start.
     def start
+      Chore.run_hooks_for(:before_start)
       @started_at = Time.now
       @worker_strategy.start
       @fetcher.start

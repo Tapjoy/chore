@@ -189,11 +189,13 @@ A number of hooks, both global and per-job, exist in Chore for your convenience.
 
 Global Hooks:
 
+* before_start
 * before_first_fork
 * before_fork
 * after_fork
 * around_fork
 * within_fork
+* before_shutdown
 
 ("within_fork" behaves similarly to around_fork, except that it is called after the worker process has been forked. In contrast, around_fork is called by the parent process.)
 
