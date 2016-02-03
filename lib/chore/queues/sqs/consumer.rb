@@ -116,9 +116,7 @@ module Chore
         def sqs
           @sqs ||= AWS::SQS.new(
             :access_key_id => Chore.config.aws_access_key,
-            :secret_access_key => Chore.config.aws_secret_key,
-            :logger => Chore.logger,
-            :log_level => :debug)
+            :secret_access_key => Chore.config.aws_secret_key)
         end
 
         def sqs_polling_amount

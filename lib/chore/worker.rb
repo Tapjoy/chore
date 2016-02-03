@@ -58,6 +58,7 @@ module Chore
         begin
           item.decoded_message = options[:payload_handler].decode(item.message)
           item.klass = options[:payload_handler].payload_class(item.decoded_message)
+          Chore.run_hooks_for(:worker_to_start, item)
           start_item(item)
         rescue => e
           Chore.logger.error { "Failed to run job for #{item.message} with error: #{e.message} #{e.backtrace * "\n"}" }
@@ -89,6 +90,7 @@ module Chore
         item.consumer.complete(item.id)
         Chore.logger.info { "Finished job #{klass} with params #{message}"}
         klass.run_hooks_for(:after_perform, message)
+        Chore.run_hooks_for(:worker_ended, item)
       rescue Job::RejectMessageException
         item.consumer.reject(item.id)
         Chore.logger.error { "Failed to run job for #{item.message}  with error: Job raised a RejectMessageException" }

@@ -1,0 +1,14 @@
+#Chore utils
+alias cchore="pgrep -f '^chore-'"
+alias ctop="watch  -d -n1  'pgrep -f ^chore- | xargs ps -o user,tt,pid,lwp,nlwp,state,%cpu,%mem,start,etime,pri,flags,vsz,rss,wchan,command -Mp'"
+#
+##Workers
+alias cworkers="pgrep -f '^chore-worker'"
+alias cwtop="watch -d -n1  'pgrep -f ^chore-worker| xargs ps -o user,tt,pid,lwp,nlwp,state,%cpu,%mem,start,etime,pri,flags,vsz,rss,wchan,command -Mp'"
+alias cwkill="pgrep -f '^chore-worker'| xargs kill -9"
+alias cwquit="pgrep -f '^chore-worker'| xargs kill -QUIT"
+##masters
+alias cmaster="pgrep -f '^chore-master'"
+alias cmtop="watch -d -n1  'pgrep -f ^chore-master| xargs ps -o user,tt,pid,lwp,nlwp,state,%cpu,%mem,start,etime,pri,flags,vsz,rss,wchan,command -Mp'"
+alias cmkill="pgrep -f '^chore-master'| xargs kill -9"
+alias cmquit="pgrep -f '^chore-master'| xargs kill -QUIT"
