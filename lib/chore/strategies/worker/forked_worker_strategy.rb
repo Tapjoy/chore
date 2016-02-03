@@ -3,6 +3,7 @@ require 'chore/signal'
 module Chore
   module Strategy
     class ForkedWorkerStrategy #:nodoc:
+      include Util
       attr_accessor :workers
 
       def initialize(manager, opts={})
@@ -63,6 +64,9 @@ module Chore
           pid = nil
           Chore.run_hooks_for(:around_fork,w) do
             pid = fork do
+              work.each do | item |
+                Chore.run_hooks_for(:fetched_off_internal_q, item)
+              end
               after_fork(w)
               Chore.run_hooks_for(:within_fork,w) do
                 Chore.run_hooks_for(:after_fork,w)
@@ -132,7 +136,7 @@ module Chore
       def after_fork(worker)
         # Immediately swap out the process name so that it doesn't look like
         # the master process
-        procline("Started:#{Time.now}")
+        procline("chore-worker-#{Chore::VERSION}:Started:#{Time.now}")
 
         clear_child_signals
         trap_child_signals(worker)
@@ -200,11 +204,6 @@ module Chore
       # Wrapper around fork for specs.
       def fork(&block)
         Kernel.fork(&block)
-      end
-
-      def procline(str)
-        Chore.logger.info str
-        $0 = "chore-#{Chore::VERSION}:#{str}"
       end
 
       def signal_children(sig, pids_to_signal = pids)

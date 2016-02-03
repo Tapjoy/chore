@@ -53,5 +53,10 @@ module Chore
     def running?
       @running
     end
+
+    # returns up to n work
+    def provide_work(n)
+      raise NotImplementedError
+    end
   end
 end

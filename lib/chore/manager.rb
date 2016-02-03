@@ -5,14 +5,15 @@ require 'chore/fetcher'
 module Chore
   # Manages the interactions between fetching messages (Consumer Strategy), and working over them (Worker Strategy)
   class Manager
+    include Util
 
     def initialize()
       Chore.logger.info "Booting Chore #{Chore::VERSION}"
       Chore.logger.debug { Chore.config.inspect }
+      procline("chore-master-#{Chore::VERSION}:Started:#{Time.now}")
       @started_at = nil
       @worker_strategy = Chore.config.worker_strategy.new(self)
       @fetcher = Chore.config.fetcher.new(self)
-      @processed = 0
       @stopping = false
     end
 
@@ -42,7 +43,15 @@ module Chore
     # than they can be consumed.
     def assign(work)
       Chore.logger.debug { "Manager#assign: No. of UnitsOfWork: #{work.length})" }
+      work.each do | item |
+        Chore.run_hooks_for(:before_send_to_worker, item)
+      end
       @worker_strategy.assign(work) unless @stopping
+    end
+
+    # returns up to n from the throttled consumer queue
+    def fetch_work(n)
+      @fetcher.provide_work(n)
     end
   end
 end
