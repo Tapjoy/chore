@@ -17,7 +17,7 @@ module Chore
         # processes to use the same queue directory simultaneously. 
         def publish(queue_name,job)
           # First try encoding the job to avoid writing empty job files if this fails
-          encoded_job = job.to_json
+          encoded_job = encode_job(job)
 
           FILE_MUTEX.synchronize do
             while true
