@@ -27,9 +27,6 @@ module Chore
               if f.flock(File::LOCK_EX | File::LOCK_NB) && f.size == 0
                 begin
                   f.write(encoded_job)
-                rescue StandardError => e
-                  Chore.logger.error "#{e.class.name}: #{e.message}. Could not write #{job[:class]} job to '#{queue_name}' queue file."
-                  Chore.logger.error e.backtrace.join("\n")
                 ensure
                   f.flock(File::LOCK_UN)
                 end
