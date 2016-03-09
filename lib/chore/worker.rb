@@ -66,6 +66,7 @@ module Chore
             item.consumer.complete(item.id)
           else
             Chore.run_hooks_for(:on_failure,item.message,e)
+            item.consumer.reject(item.id)
           end
         end
       end
@@ -116,6 +117,7 @@ module Chore
         item.consumer.complete(item.id)
       else
         klass.run_hooks_for(:on_failure, message, e)
+        item.consumer.reject(item.id)
       end
     end
 

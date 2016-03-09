@@ -13,7 +13,7 @@ describe Chore::Worker do
     end
   end
 
-  let(:consumer) { double('consumer', :complete => nil) }
+  let(:consumer) { double('consumer', :complete => nil, :reject => nil) }
   let(:job_args) { [1,2,'3'] }
   let(:job) { SimpleJob.job_hash(job_args) }
 
@@ -91,6 +91,12 @@ describe Chore::Worker do
         Chore::Worker.start(work)
       end
 
+      it 'should reject job' do
+        work = Chore::UnitOfWork.new(2,'test',60,job,0,consumer)
+        consumer.should_receive(:reject).with(2)
+        Chore::Worker.start(work)
+      end
+
       context 'more than the maximum allowed times' do
         before(:each) do
           Chore.config.stub(:max_attempts).and_return(10)
@@ -123,6 +129,13 @@ describe Chore::Worker do
         work = Chore::UnitOfWork.new(2,'test',60,encoded_job,0,consumer)
         consumer.should_not_receive(:complete)
         SimpleJob.should_receive(:run_hooks_for).with(:on_failure, parsed_job, anything())
+
+        Chore::Worker.start(work)
+      end
+
+      it 'should reject job' do
+        work = Chore::UnitOfWork.new(2,'test',60,encoded_job,0,consumer)
+        consumer.should_receive(:reject).with(2)
 
         Chore::Worker.start(work)
       end
