@@ -11,27 +11,27 @@ module Chore
         @size = size
         @batch = []
         @mutex = Mutex.new
-        @last_message = nil
         @callback = nil
         @running = true
       end
 
       # The main entry point of the Batcher, <tt>schedule</tt> begins a thread with the provided +batch_timeout+ 
       # as the only argument. While the Batcher is running, it will attempt to check if either the batch is full, 
-      # or if the +batch_timeout+ has elapsed since the last batch was executed. If the batch is full, it will be executed.
-      # If the +batch_timeout+ has elapsed, as soon as the next message enters the batch, it will be executed.
+      # or if the +batch_timeout+ has elapsed since the oldest message was added. If either case is true, the
+      # items in the batch will be executed.
       # 
       # Calling <tt>stop</tt> will cause the thread to finish it's current check, and exit
-      def schedule(batch_timeout=20)
+      def schedule(batch_timeout)
         @thread = Thread.new(batch_timeout) do |timeout|
           Chore.logger.info "Batching timeout thread starting"
           while @running do
             begin 
-              Chore.logger.debug "Last message added to batch: #{@last_message}: #{@batch.size}"
-              if @last_message && Time.now > (@last_message + timeout)
-                Chore.logger.debug "Batching timeout reached (#{@last_message + timeout}), current size: #{@batch.size}"
+              oldest_item = @batch.first
+              timestamp = oldest_item && oldest_item.created_at
+              Chore.logger.debug "Oldest message in batch: #{timestamp}, size: #{@batch.size}"
+              if timestamp && Time.now > (timestamp + timeout)
+                Chore.logger.debug "Batching timeout reached (#{timestamp + timeout}), current size: #{@batch.size}"
                 self.execute(true)
-                @last_message = nil
               end
               sleep(1) 
             rescue => e
@@ -44,7 +44,6 @@ module Chore
       # Adds the +item+ to the current batch
       def add(item)
         @batch << item
-        @last_message = Time.now
         execute if ready?
       end
 

@@ -90,4 +90,54 @@ describe Chore::Strategy::Batcher do
       subject.batch.should == ['test']
     end
   end
+
+  describe 'schedule' do
+    let(:timeout) { 5 }
+    let(:batch) { [] }
+
+    before(:each) do
+      Thread.stub(:new) do |&block|
+        # Stop the batcher on the next iteration
+        subject.stub(:sleep) { subject.stop }
+
+        # Run the scheduling thread
+        block.call(timeout)
+      end
+
+      subject.batch = batch.dup
+    end
+
+    context 'with no items' do
+      it 'should not invoke the callback' do
+        callback.should_not_receive(:call)
+        subject.schedule(timeout)
+      end
+    end
+
+    context 'with new items' do
+      let(:batch) do
+        [
+          Chore::UnitOfWork.new.tap {|work| work.created_at = Time.now - 2}
+        ]
+      end
+
+      it 'should not invoke the callback' do
+        callback.should_not_receive(:call).with(batch)
+        subject.schedule(timeout)
+      end
+    end
+
+    context 'with old items' do
+      let(:batch) do
+        [
+          Chore::UnitOfWork.new.tap {|work| work.created_at = Time.now - 6}
+        ]
+      end
+
+      it 'should invoke the callback' do
+        callback.should_receive(:call).with(batch)
+        subject.schedule(timeout)
+      end
+    end
+  end
 end
