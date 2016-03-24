@@ -51,6 +51,7 @@ describe Chore::Strategy::ThreadedConsumerStrategy do
       work.message.should == "test"
       work.previous_attempts.should == 0
       work.current_attempt.should == 1
+      work.created_at.should_not be_nil
     end
   end
 

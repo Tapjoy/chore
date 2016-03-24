@@ -33,6 +33,7 @@ Other options include:
     --threads-per-queue 4 # number of threads per queue for consuming from a given queue.
     --dedupe-servers # if using SQS or similiar queue with at-least once delivery and your memcache is running on something other than localhost
     --batch-size 50 # how many messages are batched together before handing them to a worker
+    --batch-timeout 20 # maximum number of seconds to wait until handing a message over to a worker
     --queue_prefix prefixy # A prefix to prepend to queue names, mainly for development and qa testing purposes
     --max-attempts 100 # The maximum number of times a job can be attempted
     --dupe-on-cache-failure # Determines the deduping behavior when a cache connection error occurs. When set to `false`, the message is assumed not to be a duplicate. Defaults to `false`.
@@ -92,6 +93,7 @@ Chore.configure do |c|
   c.max_attempts = 100
   ...
   c.batch_size = 50
+  c.batch_timeout = 20
 end
 ```
 

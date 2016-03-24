@@ -34,6 +34,7 @@ module Chore #:nodoc:
     :fetcher               => Fetcher,
     :consumer_strategy     => Strategy::ThreadedConsumerStrategy,
     :batch_size            => 50,
+    :batch_timeout         => 20,
     :log_level             => Logger::WARN,
     :log_path              => STDOUT,
     :default_queue_timeout => (12 * 60 * 60), # 12 hours
@@ -186,6 +187,7 @@ module Chore #:nodoc:
   #   Chore.configure do |c|
   #     c.consumer = Chore::Queues::SQS::Consumer
   #     c.batch_size = 50
+  #     c.batch_timeout = 20
   #   end
   def self.configure(opts={})
     @config = (@config ? @config.merge_hash(opts) : Chore::Configuration.new(DEFAULT_OPTIONS.merge(opts)))
