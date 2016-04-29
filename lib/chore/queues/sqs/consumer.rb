@@ -114,11 +114,12 @@ module Chore
 
         # Access to the configured SQS connection object
         def sqs
-          @sqs ||= AWS::SQS.new(
+          sqs_options = {
             :access_key_id => Chore.config.aws_access_key,
-            :secret_access_key => Chore.config.aws_secret_key,
-            :logger => Chore.logger,
-            :log_level => :debug)
+            :secret_access_key => Chore.config.aws_secret_key
+          }
+          sqs_options.merge!(:logger => Chore.logger, :log_level => :debug) if Chore.config.log_level == Logger::DEBUG
+          @sqs ||= AWS::SQS.new(sqs_options)
         end
 
         def sqs_polling_amount
