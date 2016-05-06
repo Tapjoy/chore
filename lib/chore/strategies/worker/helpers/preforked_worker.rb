@@ -41,10 +41,10 @@ module Chore
 
           # Get the work from the connection to master
           work = read_msg(connection)
-          
+
           # When the Master (manager process) dies, the sockets are set to
           # readable, but there is no data in the socket. In this case we check
-          # to see if the manager is actually dead, and in that case, we exit. 
+          # to see if the manager is actually dead, and in that case, we exit.
           if work.nil? && is_orphan?
             Chore.logger.info "PFW: Manager no longer alive; Shutting down"
             break
@@ -100,7 +100,7 @@ module Chore
         work = [work] unless work.is_a?(Array)
         work.each do |item|
           item.consumer = consumer(item.queue_name)
-          begin 
+          begin
             Timeout.timeout( item.queue_timeout ) do
               worker = Worker.new(item)
               worker.start
@@ -117,6 +117,7 @@ module Chore
       # each one.
       def consumer(queue)
         unless @consumer_cache.key?(queue)
+          raise Chore::TerribleMistake if @consumer_cache.size >= Chore.config.queues.size
           @consumer_cache[queue] = Chore.config.consumer.new(queue)
         end
         @consumer_cache[queue]

@@ -78,6 +78,7 @@ module Chore
             WorkDistributor.fetch_and_assign_jobs(workers, @manager)
           end
         end
+        delete_socket_file
       end
 
       # Wrapper need around running to help writing specs for worker_assignment_loop
