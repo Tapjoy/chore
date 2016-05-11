@@ -32,7 +32,7 @@ module Chore
       def worker(connection)
         while running?
           # Select on the connection to the master and the self pipe
-          readables, _, _ex = select_sockets(connection,nil, Chore.config.shutdown_timeout)
+          readables, _, _ex = select_sockets(connection, nil, Chore.config.shutdown_timeout)
 
           if readables.nil? # timeout
             Chore.logger.info "PFW: Shutting down due to timeout"

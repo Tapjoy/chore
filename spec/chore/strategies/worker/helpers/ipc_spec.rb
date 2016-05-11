@@ -10,30 +10,36 @@ describe Chore::Strategy::Ipc do
     @dummy_instance = DummyClass.new
   end
 
-  let(:socket) { double('socket') }
-  let(:connection) { double('socket') }
-  let(:message) { "test message" }
+  let(:socket)          { double('socket') }
+  let(:connection)      { double('socket') }
+  let(:message)         { "test message" }
   let(:encoded_message) { "#{[Marshal.dump(message).size].pack('L>')}#{Marshal.dump(message)}" }
+  let(:socket_base)     { './prefork_worker_sock-' }
+  let(:pid)             { '1' }
+  let(:socket_file)     { socket_base + pid }
 
   describe '#create_master_socket' do
+    before(:each) do
+      allow(Process).to receive(:pid).and_return(pid)
+    end
 
     it 'deletes socket file, if it already exists' do
-      allow(File).to receive(:exist?).with(Chore::Strategy::Ipc::UNIX_SOCKET).and_return(true)
+      allow(File).to receive(:exist?).with(socket_file).and_return(true)
       allow(UNIXServer).to receive(:new).and_return(socket)
       allow(socket).to receive(:setsockopt).and_return(true)
-      expect(File).to receive(:delete).with(Chore::Strategy::Ipc::UNIX_SOCKET)
+      expect(File).to receive(:delete).with(socket_file)
       @dummy_instance.create_master_socket
     end
 
     it 'should create and return a new UnixServer object' do
-      allow(File).to receive(:exist?).with(Chore::Strategy::Ipc::UNIX_SOCKET).and_return(false)
+      allow(File).to receive(:exist?).with(socket_file).and_return(false)
       allow(UNIXServer).to receive(:new).and_return(socket)
       allow(socket).to receive(:setsockopt).and_return(true)
       expect(@dummy_instance.create_master_socket).to eq(socket)
     end
 
     it 'should set the required socket options' do
-      allow(File).to receive(:exist?).with(Chore::Strategy::Ipc::UNIX_SOCKET).and_return(false)
+      allow(File).to receive(:exist?).with(socket_file).and_return(false)
       allow(UNIXServer).to receive(:new).and_return(socket)
       expect(socket).to receive(:setsockopt).with(:SOCKET, :REUSEADDR, true)
       @dummy_instance.create_master_socket
@@ -59,6 +65,10 @@ describe Chore::Strategy::Ipc do
   end
 
   context '#read_msg' do
+    before(:each) do
+      allow(IO).to receive(:select).with([socket], nil, nil, 0.5).and_return([[socket], [], []])
+    end
+
     it 'should return nil if the message size is missing' do
       allow(socket).to receive(:recv).and_return(nil)
       expect(@dummy_instance.read_msg(socket)).to eq(nil)
@@ -74,7 +84,7 @@ describe Chore::Strategy::Ipc do
     it 'should create and return a new UnixSocket object' do
       allow(UNIXSocket).to receive(:new).and_return(socket)
       allow(socket).to receive(:setsockopt).and_return(true)
-      expect(@dummy_instance.add_worker_socket).to eq(socket) 
+      expect(@dummy_instance.add_worker_socket).to eq(socket)
     end
 
     it 'should set the required socket options' do
@@ -100,8 +110,8 @@ describe Chore::Strategy::Ipc do
 
   context '#select_sockets' do
     it 'should return a readable socket if one is found' do
-      allow(IO).to receive(:select).with([socket], nil, nil, 0.5).and_return(socket)
-      @dummy_instance.select_sockets(socket, nil)
+      allow(IO).to receive(:select).with([socket], nil, nil, 0.5).and_return([[socket], [], []])
+      expect(@dummy_instance.select_sockets([socket], nil, 0.5)).to eq([[socket], [], []])
     end
 
     it 'should timeout and return no sockets if none are found within the timeout window' do
@@ -109,4 +119,4 @@ describe Chore::Strategy::Ipc do
     end
   end
 end
- 
+

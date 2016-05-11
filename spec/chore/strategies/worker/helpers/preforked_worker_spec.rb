@@ -4,14 +4,16 @@ describe Chore::Strategy::PreforkedWorker do
   before(:each) do
     allow_any_instance_of(Chore::Strategy::PreforkedWorker).to receive(:post_fork_setup)
   end
+
   let(:preforkedworker) { Chore::Strategy::PreforkedWorker.new }
-  let(:socket) { double("socket") }
-  let(:work) { double("work") }
-  let(:consumer) { double("consumer") }
-  let(:worker) { double("worker") }
-  let(:config) { double("config") }
+  let(:socket)          { double("socket") }
+  let(:work)            { double("work") }
+  let(:consumer)        { double("consumer") }
+  let(:worker)          { double("worker") }
+  let(:config)          { double("config") }
+  let(:queues)          { double("queues") }
   let(:consumer_object) { double("consumer_object") }
-  let(:signals) { { '1' => 'QUIT' } }
+  let(:signals)         { { '1' => 'QUIT' } }
 
   context '#start_worker' do
     it 'should connect to the master to signal that it is ready, and process messages with the worker' do
@@ -160,16 +162,20 @@ describe Chore::Strategy::PreforkedWorker do
     before(:each) do
       preforkedworker.instance_variable_set(:@consumer_cache, {key_1: :value_1})
       allow(Chore).to receive(:config).and_return(config)
+      allow(config).to receive(:queues).and_return(queues)
+      allow(queues).to receive(:size).and_return(2)
       allow(config).to receive(:consumer).and_return(consumer)
       allow(consumer).to receive(:new).and_return(:value_2)
     end
 
     it 'should fetch a consumer object if it was created previously for this queue' do
+      preforkedworker.instance_variable_set(:@consumer_cache, {key_1: :value_1})
       res = preforkedworker.send(:consumer,:key_1)
       expect(res).to eq(:value_1)
     end
 
     it 'should create and return a new consumer object if one does not exist for this queue' do
+      preforkedworker.instance_variable_set(:@consumer_cache, {})
       expect(consumer).to receive(:new)
       res = preforkedworker.send(:consumer,:key_2)
       expect(res).to eq(:value_2)

@@ -99,7 +99,7 @@ module Chore
         Chore.logger.info "WM: Started attaching #{num} workers"
 
         create_worker_sockets(num).each do |socket|
-          reported_pid = read_from_worker(socket)
+          reported_pid = read_msg(socket)
           Chore.logger.debug "WM: Connected #{reported_pid} with #{socket}"
 
           next if reported_pid.nil?

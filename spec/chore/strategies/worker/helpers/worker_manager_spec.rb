@@ -186,7 +186,7 @@ describe Chore::Strategy::WorkerManager do
   context '#attach_workers' do
     before(:each) do
       allow(worker_manager).to receive(:create_worker_sockets).and_return([socket_1, socket_2])
-      allow(worker_manager).to receive(:read_from_worker).and_return(worker_pid_1, worker_pid_2)
+      allow(worker_manager).to receive(:read_msg).and_return(worker_pid_1, worker_pid_2)
       allow(worker_manager).to receive(:kill_unattached_workers).and_return(true)
       worker_manager.instance_variable_set(:@pid_to_worker, pid_to_worker)
       worker_manager.instance_variable_set(:@socket_to_worker, {})
@@ -195,7 +195,7 @@ describe Chore::Strategy::WorkerManager do
     end
 
     it 'should add as many sockets as the number passed to it as a param' do
-      expect(worker_manager).to receive(:read_from_worker).twice
+      expect(worker_manager).to receive(:read_msg).twice
       worker_manager.send(:attach_workers, 2)
     end
 
@@ -271,6 +271,6 @@ describe Chore::Strategy::WorkerManager do
      allow(Process).to receive(:wait).and_raise(Errno::ECHILD)
      res = worker_manager.send(:reap_process, worker_pid_1)
      expect(res).to eq(true)
-   end   
+   end
  end
 end

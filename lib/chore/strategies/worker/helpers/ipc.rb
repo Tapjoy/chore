@@ -27,19 +27,17 @@ module Chore
       end
 
       # read a message from socket (must be a connected socket)
-      def read_msg(socket)
-        encoded_size = socket.recv(4, Socket::MSG_PEEK)
-        return nil if encoded_size.nil? || encoded_size == ""
-        size = encoded_size.unpack(BIG_ENDIAN).first
-        encoded_message = socket.recv(4 + size)
-        Marshal.load(encoded_message[4..-1])
-      end
-
-      # read a message from socket (must be a connected socket)
-      def read_from_worker(socket)
-        readable, _, _ = IO.select([socket], nil, nil, 2)
+      def read_msg(socket, timeout = 0.5)
+        readable, _, _ = IO.select([socket], nil, nil, timeout)
         return if readable.nil?
-        read_msg(readable[0])
+        w_socket = readable.first
+
+        encoded_size = w_socket.recv(4, Socket::MSG_PEEK)
+        return if encoded_size.nil? || encoded_size == ""
+
+        size = encoded_size.unpack(BIG_ENDIAN).first
+        encoded_message = w_socket.recv(4 + size)
+        Marshal.load(encoded_message[4..-1])
       end
 
       def add_worker_socket
