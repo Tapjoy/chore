@@ -91,6 +91,16 @@ describe Chore::Strategy::PreforkedWorker do
         expect(e.status).to eq(0)
       end
     end
+
+    it 'should exit the process if the connection to master is closed' do
+      allow(preforkedworker).to receive(:running?).and_return(true)
+      allow(preforkedworker).to receive(:read_msg).and_raise(Errno::ECONNRESET)
+      begin
+        preforkedworker.send(:worker, socket)
+      rescue SystemExit=>e
+        expect(e.status).to eq(0)
+      end
+    end
   end
 
   context '#connect_to_master' do

@@ -99,15 +99,27 @@ module Chore
         Chore.logger.info "WM: Started attaching #{num} workers"
 
         create_worker_sockets(num).each do |socket|
-          reported_pid = read_msg(socket)
-          Chore.logger.debug "WM: Connected #{reported_pid} with #{socket}"
+          begin
+            readable, _, _ = select_sockets(socket, nil, 2)
 
-          next if reported_pid.nil?
+            if readable.empty?
+              socket.close
+              next
+            end
 
-          assigned_worker = @pid_to_worker[reported_pid]
-          assigned_worker.socket = socket
+            r_socket = readable.first
+            reported_pid = read_msg(r_socket)
 
-          @socket_to_worker[socket] = assigned_worker
+            assigned_worker = @pid_to_worker[reported_pid]
+            assigned_worker.socket = socket
+            @socket_to_worker[socket] = assigned_worker
+
+            Chore.logger.debug "WM: Connected #{reported_pid} with #{r_socket}"
+          rescue Errno::ECONNRESET
+            Chore.logger.info "WM: A worker failed to connect to #{socket}"
+            socket.close
+            next
+          end
         end
 
         # If the connection from a worker times out, we are unable to associate

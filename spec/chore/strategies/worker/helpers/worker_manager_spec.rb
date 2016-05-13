@@ -192,10 +192,16 @@ describe Chore::Strategy::WorkerManager do
       worker_manager.instance_variable_set(:@socket_to_worker, {})
       allow(worker_info_1).to receive(:socket=)
       allow(worker_info_2).to receive(:socket=)
+      allow(worker_manager).to receive(:select_sockets).and_return([[socket_1], [], []], [[socket_2], [], []])
     end
 
     it 'should add as many sockets as the number passed to it as a param' do
       expect(worker_manager).to receive(:read_msg).twice
+      worker_manager.send(:attach_workers, 2)
+    end
+
+    it 'should select on each socket to make sure its readable' do
+      expect(worker_manager).to receive(:select_sockets).twice
       worker_manager.send(:attach_workers, 2)
     end
 
@@ -206,6 +212,21 @@ describe Chore::Strategy::WorkerManager do
 
     it 'should kill any unattached workers' do
       expect(worker_manager).to receive(:kill_unattached_workers)
+      worker_manager.send(:attach_workers, 2)
+    end
+
+    it 'should close sockets that failed to get a connection by timing out' do
+      allow(worker_manager).to receive(:select_sockets).and_return([[socket_1], [], []], [[], [], []])
+      expect(socket_1).not_to receive(:close)
+      expect(socket_2).to receive(:close)
+      worker_manager.send(:attach_workers, 2)
+    end
+
+    it 'should close sockets that failed to get a connection by econnreset' do
+      allow(worker_manager).to receive(:select_sockets).with(socket_1, nil, 2).and_return([[socket_1], [], []])
+      allow(worker_manager).to receive(:select_sockets).with(socket_2, nil, 2).and_raise(Errno::ECONNRESET)
+      expect(socket_1).not_to receive(:close)
+      expect(socket_2).to receive(:close)
       worker_manager.send(:attach_workers, 2)
     end
   end

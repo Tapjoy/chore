@@ -32,15 +32,17 @@ module Chore
       def worker(connection)
         while running?
           # Select on the connection to the master and the self pipe
-          readables, _, _ex = select_sockets(connection, nil, Chore.config.shutdown_timeout)
+          readables, _, ex = select_sockets(connection, nil, Chore.config.shutdown_timeout)
 
           if readables.nil? # timeout
             Chore.logger.info "PFW: Shutting down due to timeout"
             break
           end
 
+          read_socket = readables.first
+
           # Get the work from the connection to master
-          work = read_msg(connection)
+          work = read_msg(read_socket)
 
           # When the Master (manager process) dies, the sockets are set to
           # readable, but there is no data in the socket. In this case we check
@@ -54,10 +56,13 @@ module Chore
             # Do the work
             process_work(work)
             # Alert master that worker is ready to receive more work
-            signal_ready(connection)
+            signal_ready(read_socket)
           end
         end
         Chore.logger.debug "PFW: Master process terminating"
+        exit(true)
+      rescue Errno::ECONNRESET, Errno::EPIPE
+        Chore.logger.info "PFW: Worker-#{Process.pid} lost connection to master, shutting down"
         exit(true)
       end
 

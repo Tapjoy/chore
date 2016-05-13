@@ -78,6 +78,11 @@ describe Chore::Strategy::Ipc do
       allow(socket).to receive(:recv).and_return(encoded_message)
       expect(@dummy_instance.read_msg(socket)).to eq(message)
     end
+
+    it 'should raise an exception if the connection was dropped' do
+      allow(socket).to receive(:recv).and_raise(Errno::ECONNRESET)
+      expect { @dummy_instance.read_msg(socket) }.to raise_error(Errno::ECONNRESET)
+    end
   end
 
   context '#add_worker_socket' do
@@ -110,7 +115,7 @@ describe Chore::Strategy::Ipc do
 
   context '#select_sockets' do
     it 'should return a readable socket if one is found' do
-      allow(IO).to receive(:select).with([socket], nil, nil, 0.5).and_return([[socket], [], []])
+      allow(IO).to receive(:select).with([socket], nil, [socket], 0.5).and_return([[socket], [], []])
       expect(@dummy_instance.select_sockets([socket], nil, 0.5)).to eq([[socket], [], []])
     end
 
