@@ -3,13 +3,13 @@ require 'socket'
 module Chore
   module Strategy
     module Ipc #:nodoc:
-
       BIG_ENDIAN = 'L>'.freeze
+      MSG_BYTES = 4
 
       def create_master_socket
         File.delete socket_file if File.exist? socket_file
         UNIXServer.new(socket_file).tap do | socket |
-          set_socket_options(socket)
+          socket_options(socket)
         end
       end
 
@@ -19,7 +19,7 @@ module Chore
 
       # Sending a message to a socket (must be a connected socket)
       def send_msg(socket, msg)
-        raise "send_msg cannot send empty messages" if msg.nil? || msg.size == 0
+        raise 'send_msg cannot send empty messages' if msg.nil? || msg.size == 0
         message = Marshal.dump(msg)
         encoded_size = [message.size].pack(BIG_ENDIAN)
         encoded_message = "#{encoded_size}#{message}"
@@ -27,22 +27,21 @@ module Chore
       end
 
       # read a message from socket (must be a connected socket)
-      def read_msg(socket, timeout = 0.5)
-        readable, _, _ = IO.select([socket], nil, nil, timeout)
-        return if readable.nil?
-        w_socket = readable.first
-
-        encoded_size = w_socket.recv(4, Socket::MSG_PEEK)
-        return if encoded_size.nil? || encoded_size == ""
+      def read_msg(socket)
+        encoded_size = socket.recv(MSG_BYTES, Socket::MSG_PEEK)
+        return if encoded_size.nil? || encoded_size == ''
 
         size = encoded_size.unpack(BIG_ENDIAN).first
-        encoded_message = w_socket.recv(4 + size)
-        Marshal.load(encoded_message[4..-1])
+        encoded_message = socket.recv(MSG_BYTES + size)
+        Marshal.load(encoded_message[MSG_BYTES..-1])
+      rescue Errno::ECONNRESET => ex
+        Chore.logger.info "IPC: Connection was closed on socket #{socket}"
+        raise ex
       end
 
       def add_worker_socket
         UNIXSocket.new(socket_file).tap do | socket |
-          set_socket_options(socket)
+          socket_options(socket)
         end
       end
 
@@ -52,15 +51,18 @@ module Chore
 
       def signal_ready(socket)
         socket.puts 'R'
+      rescue Errno::EPIPE => ex
+        Chore.logger.info 'IPC: Connection was shutdown by master'
+        raise ex
       end
 
       def select_sockets(sockets, self_pipe = nil, timeout = 0.5)
-        all_socks = [ sockets, self_pipe ].flatten.compact
-        IO.select(all_socks, nil, nil, timeout)
+        all_socks = [sockets, self_pipe].flatten.compact
+        IO.select(all_socks, nil, all_socks, timeout)
       end
 
       def delete_socket_file
-        Chore.logger.info "IPC: Removing socket file"
+        Chore.logger.info 'IPC: Removing socket file'
         File.unlink(socket_file)
       end
 
@@ -71,12 +73,12 @@ module Chore
 
       private
 
-      #TODO do we need this as a optional param
+      # TODO do we need this as a optional param
       def socket_file
         "./prefork_worker_sock-#{Process.pid}"
       end
 
-      def set_socket_options(socket)
+      def socket_options(socket)
         socket.setsockopt(:SOCKET, :REUSEADDR, true)
       end
     end
