@@ -16,8 +16,6 @@ module Chore
         @consumer_cache = {}
         @running = true
         post_fork_setup
-
-        @worker_killer = WorkerKiller.new
       end
 
       def start_worker(master_socket)
