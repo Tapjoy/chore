@@ -102,7 +102,7 @@ module Chore
           begin
             readable, _, _ = select_sockets(socket, nil, 2)
 
-            if readable.empty?
+            if readable.nil?
               socket.close
               next
             end

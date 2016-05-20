@@ -30,6 +30,7 @@ module Chore
       private
 
       def worker(connection)
+        worker_killer = WorkerKiller.new
         while running?
           # Select on the connection to the master and the self pipe
           readables, _, ex = select_sockets(connection, nil, Chore.config.shutdown_timeout)
@@ -55,6 +56,10 @@ module Chore
           unless work.nil?
             # Do the work
             process_work(work)
+
+            worker_killer.check_requests
+            worker_killer.check_memory
+
             # Alert master that worker is ready to receive more work
             signal_ready(read_socket)
           end

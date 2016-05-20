@@ -41,7 +41,7 @@ module Chore #:nodoc:
     :shutdown_timeout      => (2 * 60),
     :max_attempts          => 1.0 / 0.0, # Infinity
     :dupe_on_cache_failure => false,
-    :payload_handler => Chore::Job
+    :payload_handler       => Chore::Job
   }
 
   class << self
@@ -111,9 +111,9 @@ module Chore #:nodoc:
   #   add_hook(:before_fork) {|worker| puts 1 }
   #   add_hook(:before_fork) {|worker| puts 2 }
   #   add_hook(:before_fork) {|worker| puts 3 }
-  #   
+  #
   #   run_hooks_for(:before_fork, worker)
-  #   
+  #
   #   # ...will produce the following output
   #   => 1
   #   => 2
@@ -130,9 +130,9 @@ module Chore #:nodoc:
   #   add_hook(:around_fork) {|worker, &block| puts 'before 1'; block.call; puts 'after 1'}
   #   add_hook(:around_fork) {|worker, &block| puts 'before 2'; block.call; puts 'after 2'}
   #   add_hook(:around_fork) {|worker, &block| puts 'before 3'; block.call; puts 'after 3'}
-  #   
+  #
   #   run_hooks_for(:around_fork, worker) { puts 'block' }
-  #   
+  #
   #   # ...will produce the following output
   #   => before 1
   #   => before 2
