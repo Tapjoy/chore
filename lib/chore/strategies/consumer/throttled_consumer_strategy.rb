@@ -74,7 +74,7 @@ module Chore
         t = Thread.new(consumer) do |th|
           begin
             create_work_units(th)
-          rescue Chore::TerribleMistake
+          rescue Chore::TerribleMistake => e
             Chore.logger.error 'Terrible mistake, shutting down Chore'
             Chore.logger.error "#{e.inspect} at #{e.backtrace}"
             @fetcher.manager.shutdown!

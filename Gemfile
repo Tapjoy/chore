@@ -13,3 +13,4 @@ group :development do
 end
 
 gem 'ci_reporter', '~> 1.9.0'
+gem 'get_process_mem', '~> 0.2.0'

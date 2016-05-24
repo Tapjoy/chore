@@ -216,7 +216,7 @@ describe Chore::Strategy::WorkerManager do
     end
 
     it 'should close sockets that failed to get a connection by timing out' do
-      allow(worker_manager).to receive(:select_sockets).and_return([[socket_1], [], []], [[], [], []])
+      allow(worker_manager).to receive(:select_sockets).and_return([[socket_1], [], []], [nil, nil, nil])
       expect(socket_1).not_to receive(:close)
       expect(socket_2).to receive(:close)
       worker_manager.send(:attach_workers, 2)
