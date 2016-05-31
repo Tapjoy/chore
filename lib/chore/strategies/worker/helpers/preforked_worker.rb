@@ -36,8 +36,8 @@ module Chore
           readables, _, ex = select_sockets(connection, nil, Chore.config.shutdown_timeout)
 
           if readables.nil? # timeout
-            Chore.logger.info "PFW: Shutting down due to timeout"
-            break
+            # Chore.logger.info "PFW: Shutting down due to timeout"
+            next
           end
 
           read_socket = readables.first
@@ -62,6 +62,7 @@ module Chore
 
             # Alert master that worker is ready to receive more work
             signal_ready(read_socket)
+
           end
         end
         Chore.logger.debug "PFW: Master process terminating"
