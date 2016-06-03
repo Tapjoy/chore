@@ -89,6 +89,7 @@ module Chore #:nodoc:
       detect_queues
       Chore.configure(options)
       Chore.configuring = false
+      validate_strategy!
     end
 
 
@@ -254,7 +255,6 @@ module Chore #:nodoc:
     end
 
     def validate! #:nodoc:
-
       missing_option!("--require [PATH|DIR]") unless options[:require]
 
       if !File.exist?(options[:require]) ||
@@ -266,7 +266,25 @@ module Chore #:nodoc:
         puts @parser
         exit(1)
       end
+    end
 
+    def validate_strategy!
+      consumer_strategy = Chore.config.consumer_strategy.to_s
+      worker_strategy = Chore.config.worker_strategy.to_s
+
+      throttled_consumer = 'Chore::Strategy::ThrottledConsumerStrategy'
+      preforked_worker = 'Chore::Strategy::PreForkedWorkerStrategy'
+
+      if consumer_strategy == throttled_consumer || worker_strategy == preforked_worker
+        unless consumer_strategy == throttled_consumer && worker_strategy == preforked_worker
+          puts "=================================================================="
+          puts "  PreForkedWorkerStrategy may only be paired with   "
+          puts "  ThrottledConsumerStrategy or vice versa  "
+          puts "  Please check your configurations "
+          puts "=================================================================="
+          exit(1)
+        end
+      end
     end
   end
 end

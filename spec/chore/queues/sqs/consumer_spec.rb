@@ -34,9 +34,7 @@ describe Chore::Queues::SQS::Consumer do
 
       expect(AWS::SQS).to receive(:new).with(
         :access_key_id => 'key',
-        :secret_access_key => 'secret',
-        :logger => Chore.logger,
-        :log_level => :debug
+        :secret_access_key => 'secret'
       ).and_return(sqs)
       consumer.consume
     end

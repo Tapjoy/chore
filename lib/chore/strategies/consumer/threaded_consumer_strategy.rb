@@ -64,6 +64,7 @@ module Chore
               Chore.logger.debug { "Got message: #{id}"}
 
               work = UnitOfWork.new(id, queue_name, queue_timeout, body, previous_attempts, consumer)
+              Chore.run_hooks_for(:consumed_from_source, work)
               @batcher.add(work)
             end
           rescue Chore::TerribleMistake

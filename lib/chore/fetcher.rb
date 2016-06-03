@@ -33,5 +33,10 @@ module Chore
     def stopping?
       @stopping
     end
+
+    # returns upto n work units
+    def provide_work(n)
+      @strategy.provide_work(n)
+    end
   end
 end
