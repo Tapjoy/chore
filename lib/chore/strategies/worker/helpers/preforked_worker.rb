@@ -104,6 +104,7 @@ module Chore
         # It is possible for this to be nil due to configuration woes with chore
         config.publisher.reset_connection! if Chore.config.publisher
 
+        Chore.run_hooks_for(:after_fork,self)
         trap_signals(NUM_TO_SIGNAL)
       end
 

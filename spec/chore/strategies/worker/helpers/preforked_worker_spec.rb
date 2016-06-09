@@ -135,6 +135,13 @@ describe Chore::Strategy::PreforkedWorker do
       expect(preforkedworker).to receive(:trap_signals)
       preforkedworker.send(:post_fork_setup)
     end
+
+    it "should run after_fork hooks" do
+      hook_called = false
+      Chore.add_hook(:after_fork) { hook_called = true }
+      preforkedworker.send(:post_fork_setup)
+      expect(hook_called).to be true
+    end
   end
 
   context '#process_work' do
