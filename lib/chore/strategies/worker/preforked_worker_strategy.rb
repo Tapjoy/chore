@@ -13,7 +13,8 @@ module Chore
       NUM_TO_SIGNAL = {  '1' => :CHLD,
                          '2' => :INT,
                          '3' => :QUIT,
-                         '4' => :TERM
+                         '4' => :TERM,
+                         '5' => :USR1
                       }.freeze
 
       def initialize(manager, opts = {})
@@ -88,7 +89,7 @@ module Chore
 
       def handle_signal
         signal = NUM_TO_SIGNAL[@self_read.read_nonblock(1)]
-        Chore.logger.debug "PWS: recv #{signal}"
+        Chore.logger.info "PWS: recv #{signal}"
 
         case signal
         when :CHLD
@@ -97,6 +98,9 @@ module Chore
           Signal.reset
           @worker_manager.stop_workers(signal)
           @manager.shutdown!
+        when :USR1
+          Chore.reopen_logs
+          Chore.logger.info "PFS: Master process reopened log"
         end
       end
 

@@ -131,6 +131,12 @@ describe Chore::Strategy::PreForkedWorkerStrategy do
       strategy.send(:handle_signal)
     end
 
+    it 'should reset logs on a USR1 signal' do
+      allow(pipe).to receive(:read_nonblock).and_return('5')
+      expect(Chore).to receive(:reopen_logs)
+      strategy.send(:handle_signal)
+    end
+
     it 'should not preform any task when an unhandled signal is called' do
       allow(pipe).to receive(:read_nonblock).and_return('9')
       expect(worker_manager).to receive(:respawn_terminated_workers!).exactly(0).times

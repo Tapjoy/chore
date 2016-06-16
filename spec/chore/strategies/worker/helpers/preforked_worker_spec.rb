@@ -13,7 +13,6 @@ describe Chore::Strategy::PreforkedWorker do
   let(:config)          { double("config") }
   let(:queues)          { double("queues") }
   let(:consumer_object) { double("consumer_object") }
-  let(:signals)         { { '1' => 'QUIT' } }
 
   context '#start_worker' do
     it 'should connect to the master to signal that it is ready, and process messages with the worker' do
@@ -202,14 +201,19 @@ describe Chore::Strategy::PreforkedWorker do
   context '#trap_signals' do
     it 'should reset signals' do
       allow(Chore::Signal).to receive(:reset)
+      allow(Chore::Signal).to receive(:trap)
       expect(Chore::Signal).to receive(:reset)
-      preforkedworker.send(:trap_signals, {})
+      preforkedworker.send(:trap_signals)
     end
 
     it 'should trap the signals passed to it' do
       allow(Chore::Signal).to receive(:reset)
-      expect(Chore::Signal).to receive(:trap).with('QUIT').once
-      preforkedworker.send(:trap_signals, signals)
+      allow(Chore::Signal).to receive(:trap)
+      expect(Chore::Signal).to receive(:trap).with(:INT).once
+      expect(Chore::Signal).to receive(:trap).with(:QUIT).once
+      expect(Chore::Signal).to receive(:trap).with(:TERM).once
+      expect(Chore::Signal).to receive(:trap).with(:USR1).once
+      preforkedworker.send(:trap_signals)
     end
   end
 
