@@ -21,7 +21,7 @@ module Chore
 
       # Reap dead workers and create new ones to replace them
       def respawn_terminated_workers!
-        Chore.logger.debug 'WM: Respawning terminated workers'
+        Chore.logger.info 'WM: Respawning terminated workers'
         reap_workers
         create_and_attach_workers
       end
@@ -114,7 +114,7 @@ module Chore
             assigned_worker.socket = socket
             @socket_to_worker[socket] = assigned_worker
 
-            Chore.logger.debug "WM: Connected #{reported_pid} with #{r_socket}"
+            Chore.logger.info "WM: Connected #{reported_pid} with #{r_socket}"
           rescue Errno::ECONNRESET
             Chore.logger.info "WM: A worker failed to connect to #{socket}"
             socket.close
@@ -153,7 +153,7 @@ module Chore
         dead_workers.each do |pid, worker|
           dead_worker = @pid_to_worker.delete(pid)
           @socket_to_worker.delete(dead_worker.socket)
-          Chore.logger.debug "WM: Removed preforked worker:#{worker.pid} - #{worker.socket}"
+          Chore.logger.info "WM: Removed preforked worker:#{worker.pid} - #{worker.socket}"
         end
       end
 

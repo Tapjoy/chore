@@ -9,8 +9,6 @@ module Chore
       include Util
       include Ipc
 
-      NUM_TO_SIGNAL = {'2' => :INT, '3' => :QUIT, '4' => :TERM}.freeze
-
       def initialize(_opts = {})
         @manager_pid = Process.ppid
         @consumer_cache = {}
@@ -65,7 +63,7 @@ module Chore
 
           end
         end
-        Chore.logger.debug "PFW: Master process terminating"
+        Chore.logger.info "PFW: Worker process terminating"
         exit(true)
       rescue Errno::ECONNRESET, Errno::EPIPE
         Chore.logger.info "PFW: Worker-#{Process.pid} lost connection to master, shutting down"
@@ -104,8 +102,11 @@ module Chore
         # It is possible for this to be nil due to configuration woes with chore
         config.publisher.reset_connection! if Chore.config.publisher
 
+        # Ensure that all signals are handled before we hand off a hook to the
+        # application. 
+        trap_signals
+
         Chore.run_hooks_for(:after_fork,self)
-        trap_signals(NUM_TO_SIGNAL)
       end
 
       def process_work(work)
@@ -135,18 +136,22 @@ module Chore
         @consumer_cache[queue]
       end
 
-      # In the event of a trapped signal, write to the self-pipe
-      def trap_signals(signal_hash)
+      def trap_signals
         Signal.reset
 
-        signal_hash.each do |sig_num, signal|
+        [:INT, :QUIT, :TERM].each do |signal|
           Signal.trap(signal) do
-            Chore.logger.debug "PFW: received signal: #{signal}"
+            Chore.logger.info "PFW: received signal: #{signal}"
             @running = false
             sleep(Chore.config.shutdown_timeout)
-            Chore.logger.debug "PFW: Worker process terminating"
+            Chore.logger.info "PFW: Worker process terminating"
             exit(true)
           end
+        end
+
+        Signal.trap(:USR1) do
+          Chore.reopen_logs
+          Chore.logger.info "PFW: Worker process reopened log"
         end
       end
 
