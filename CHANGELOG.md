@@ -1,9 +1,19 @@
 # Change Log
 
 ## [v2.0.2](https://github.com/Tapjoy/chore/tree/v2.0.2) (2016-06-16)
+**Fixed bugs**
+- Added handling for USR1 signal for Preforked worker strategy
+
+**Cleanups**
+- Changed log statements for startup protocol for better debugging
+
 [Full Changelog](https://github.com/Tapjoy/chore/compare/v2.0.1...v2.0.2)
 
 ## [v2.0.1](https://github.com/Tapjoy/chore/tree/v2.0.1) (2016-06-09)
+
+**Fixed bugs**
+- Added handling for after_fork hook for Preforked worker strategy
+
 [Full Changelog](https://github.com/Tapjoy/chore/compare/v2.0.0...v2.0.1)
 
 ## [v2.0.0](https://github.com/Tapjoy/chore/tree/v2.0.0) (2016-06-03)
