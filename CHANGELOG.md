@@ -17,6 +17,11 @@
 [Full Changelog](https://github.com/Tapjoy/chore/compare/v2.0.0...v2.0.1)
 
 ## [v2.0.0](https://github.com/Tapjoy/chore/tree/v2.0.0) (2016-06-03)
+
+**Features**
+1. Added preforked worker strategy
+2. Added throttled consumer strategy
+
 [Full Changelog](https://github.com/Tapjoy/chore/compare/v1.10.0...v2.0.0)
 
 ## [v1.10.0](https://github.com/Tapjoy/chore/tree/v1.10.0) (2016-03-24)
