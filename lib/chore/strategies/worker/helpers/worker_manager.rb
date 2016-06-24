@@ -7,6 +7,7 @@ module Chore
 
       def initialize(master_socket)
         @master_socket = master_socket
+        @num_connection_failures = 0
         @pid_to_worker = {}
         @socket_to_worker = {}
       end
@@ -14,8 +15,8 @@ module Chore
       # Create num of missing workers and sockets and attach them for the
       # master
       def create_and_attach_workers
-        create_workers do |num_workers|
-          attach_workers(num_workers)
+        create_sockets do |sockets|
+          attach_workers(sockets)
         end
       end
 
@@ -28,13 +29,11 @@ module Chore
 
       # Stop children with the given kill signal and wait for them to die
       def stop_workers(sig)
-        @pid_to_worker.each do |pid, worker|
-          begin
-            Chore.logger.info { "WM: Sending #{sig} to: #{pid}" }
-            Process.kill(sig, pid)
-          rescue Errno::ESRCH => e
-            Chore.logger.error "WM: Signal to children error: #{e}"
-          end
+        begin
+          Chore.logger.info { "WM: Sending #{sig} to workers" }
+          Process.kill(sig, 0)
+        rescue Errno::ESRCH => e
+          Chore.logger.error "WM: Signal to children error: #{e}"
         end
         # TODO: Sleep for the shutdown timeout and kill any remaining workers
         reap_workers
@@ -56,15 +55,20 @@ module Chore
 
       private
 
-      # Creates worker processes until we have the number of workers defined
-      # by the configuration. Initializes and starts a worker instance in each
-      # of the new processes.
-      # +block+:: Block can be provided to run tasks on the number of newly
-      # created worker processes.
-      def create_workers(&block)
-        num_created_workers = 0
+      def create_sockets(&block)
+        num_new_sockets = Chore.config.num_workers - @pid_to_worker.size
+        new_sockets = []
 
-        while @pid_to_worker.size < Chore.config.num_workers
+        num_new_sockets.times do
+          new_sockets << add_worker_socket
+        end
+
+        yield new_sockets if block_given?
+        new_sockets
+      end
+
+      def create_workers(num)
+        num.times do
           pid = fork do
             run_worker_instance
           end
@@ -72,13 +76,52 @@ module Chore
           Chore.logger.info "WM: created_worker #{pid}"
           # Keep track of the new worker process
           @pid_to_worker[pid] = WorkerInfo.new(pid)
-          num_created_workers += 1
         end
 
         raise 'WM: Not enough workers' if inconsistent_worker_number
-        Chore.logger.info "WM: created #{num_created_workers} workers"
-        yield num_created_workers if block_given?
-        num_created_workers
+        Chore.logger.info "WM: created #{num} new workers"
+      end
+
+      def attach_workers(sockets)
+        create_workers(sockets.size)
+
+        sockets.each do |socket|
+          begin
+            readable, _, _ = select_sockets(socket, nil, 2)
+
+            if readable.nil?
+              socket.close
+              @num_connection_failures += 1
+              next
+            end
+
+            r_socket = readable.first
+            reported_pid = read_msg(r_socket)
+
+            assigned_worker = @pid_to_worker[reported_pid]
+            assigned_worker.socket = socket
+            @socket_to_worker[socket] = assigned_worker
+            @num_connection_failures = 0
+
+            Chore.logger.info "WM: Connected #{reported_pid} with #{r_socket}"
+          rescue Errno::ECONNRESET
+            Chore.logger.info "WM: A worker failed to connect to #{socket}"
+            socket.close
+            @num_connection_failures += 1
+            next
+          end
+        end
+
+        check_connection_failures
+        kill_unattached_workers
+        Chore.logger.info 'WM: Finished attaching workers'
+      end
+
+      def check_connection_failures
+        if @num_connection_failures >= Chore.config.num_workers * 2
+          Chore.logger.info "WM: #{@num_connection_failures} failed connections, exiting chore"
+          exit(false)
+        end
       end
 
       # Check that number of workers registered in master match the config
@@ -91,48 +134,6 @@ module Chore
         PreforkedWorker.new.start_worker(@master_socket)
       ensure
         exit!(true)
-      end
-
-      # Creates individual sockets for each worker to use and attaches them to
-      # the correct worker
-      def attach_workers(num)
-        Chore.logger.info "WM: Started attaching #{num} workers"
-
-        create_worker_sockets(num).each do |socket|
-          begin
-            readable, _, _ = select_sockets(socket, nil, 2)
-
-            if readable.nil?
-              socket.close
-              next
-            end
-
-            r_socket = readable.first
-            reported_pid = read_msg(r_socket)
-
-            assigned_worker = @pid_to_worker[reported_pid]
-            assigned_worker.socket = socket
-            @socket_to_worker[socket] = assigned_worker
-
-            Chore.logger.info "WM: Connected #{reported_pid} with #{r_socket}"
-          rescue Errno::ECONNRESET
-            Chore.logger.info "WM: A worker failed to connect to #{socket}"
-            socket.close
-            next
-          end
-        end
-
-        # If the connection from a worker times out, we are unable to associate
-        # the process with a connection and so we kill the worker process
-        kill_unattached_workers
-        Chore.logger.info 'WM: Finished attaching workers'
-      end
-
-      # Create num amount of sockets that are available for worker connections
-      def create_worker_sockets(num)
-        Array.new(num) do
-          add_worker_socket
-        end
       end
 
       # Kill workers that failed to connect to the master

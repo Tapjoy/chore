@@ -4,9 +4,9 @@ module Chore
       # Holds meta information about the worker: pid, and connection socket
       attr_accessor :pid, :socket
 
-      def initialize(pid)
-        @pid = pid
-        @socket = nil
+      def initialize(socket)
+        @pid = nil
+        @socket = socket
       end
     end
   end
