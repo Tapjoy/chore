@@ -36,7 +36,7 @@ module Chore
           clear_ready(worker.socket)
           send_msg(worker.socket, job)
         rescue => e
-          Chore.logger.error "DW: Could not assign job #{job.inspect}"
+          Chore.logger.error "DW: Could not assign job #{job.inspect}\nException #{e.message} #{e.backtrace * "\n"}"
         end
 
         private
