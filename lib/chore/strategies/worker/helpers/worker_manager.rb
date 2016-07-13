@@ -56,11 +56,8 @@ module Chore
       private
 
       def create_sockets(&block)
-        num_new_sockets = Chore.config.num_workers - @pid_to_worker.size
-        new_sockets = []
-
-        num_new_sockets.times do
-          new_sockets << add_worker_socket
+        new_sockets = Array.new(Chore.config.num_workers - @pid_to_worker.size) do
+          add_worker_socket
         end
 
         yield new_sockets if block_given?
