@@ -48,7 +48,7 @@ describe Chore::Strategy::Ipc do
 
   context '#child_connection' do
     it 'should accept a connection and return the connection socket' do
-      expect(socket).to receive(:accept).and_return(connection)
+      expect(socket).to receive(:accept_nonblock).and_return(connection)
       expect(@dummy_instance.child_connection(socket)).to eq connection
     end
   end

@@ -14,7 +14,7 @@ module Chore
       end
 
       def child_connection(socket)
-        socket.accept
+        socket.accept_nonblock
       end
 
       # Sending a message to a socket (must be a connected socket)

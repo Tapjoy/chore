@@ -47,17 +47,17 @@ describe Chore::Strategy::WorkerManager do
 
   context '#create_and_attach_workers' do
     before(:each) do
-      allow(worker_manager).to receive(:create_workers).and_yield(2)
+      allow(worker_manager).to receive(:create_sockets).and_yield([socket_1, socket_2])
       allow(worker_manager).to receive(:attach_workers).and_return(true)
     end
 
     it 'should call to create replacement workers' do
-      expect(worker_manager).to receive(:create_workers)
+      expect(worker_manager).to receive(:create_sockets)
       worker_manager.create_and_attach_workers
     end
 
     it 'should create a map between new workers to new sockets' do
-      expect(worker_manager).to receive(:attach_workers).with(2)
+      expect(worker_manager).to receive(:attach_workers).with([socket_1, socket_2])
       worker_manager.create_and_attach_workers
     end
   end
@@ -87,10 +87,8 @@ describe Chore::Strategy::WorkerManager do
       worker_manager.instance_variable_set(:@pid_to_worker, pid_sock_hash)
     end
 
-    it 'should forward the signal received to each of the child processes' do
-      pid_sock_hash.each do |pid, sock|
-        expect(Process).to receive(:kill).with(signal, pid)
-      end
+    it 'should forward the signal received to the process group' do
+      expect(Process).to receive(:kill).with(signal, 0)
       worker_manager.stop_workers(signal)
     end
 
@@ -130,24 +128,37 @@ describe Chore::Strategy::WorkerManager do
       allow(Chore).to receive(:config).and_return(config)
     end
 
-    it 'should fork it running process till we have the right optimized number of workers and return the number of workers it created' do
+    it 'should fork the running process  the number of times specified return the number of workers it created' do
       allow(config).to receive(:num_workers).and_return(1)
       expect(worker_manager).to receive(:fork).once
       expect(worker_manager).to receive(:run_worker_instance).once
-      worker_manager.send(:create_workers)
+      worker_manager.send(:create_workers, 1)
     end
 
     it 'should raise an exception if an inconsistent number of workers are created' do
       allow(config).to receive(:num_workers).and_return(0)
       allow(worker_manager).to receive(:inconsistent_worker_number).and_return(true)
       expect(worker_manager).to receive(:inconsistent_worker_number)
-      expect { worker_manager.send(:create_workers) }.to raise_error(RuntimeError)
+      expect { worker_manager.send(:create_workers, 1) }.to raise_error(RuntimeError)
+    end
+  end
+
+  context "#create_sockets" do
+    before(:each) do
+      allow(Chore).to receive(:config).and_return(config)
     end
 
-    it 'should call the block passed to it with the number of workers it created' do
-      allow(config).to receive(:num_workers).and_return(0)
-      allow(worker_manager).to receive(:inconsistent_worker_number).and_return(false)
-      expect { |b| worker_manager.send(:create_workers, &b) }.to yield_control.once
+    it 'should return an array of sockets equal to the number of missing workers' do
+      allow(worker_manager).to receive(:add_worker_socket).and_return(socket_1, socket_2)
+      allow(config).to receive(:num_workers).and_return(2)
+      res = worker_manager.send(:create_sockets)
+      expect(res).to eq([socket_1, socket_2])
+    end
+
+    it 'should call the block passed to it with the number of sockets it created' do
+      allow(worker_manager).to receive(:add_worker_socket).and_return(socket_1, socket_2)
+      allow(config).to receive(:num_workers).and_return(2)
+      expect { |b| worker_manager.send(:create_sockets, &b) }.to yield_control.once
     end
   end
 
@@ -197,29 +208,29 @@ describe Chore::Strategy::WorkerManager do
 
     it 'should add as many sockets as the number passed to it as a param' do
       expect(worker_manager).to receive(:read_msg).twice
-      worker_manager.send(:attach_workers, 2)
+      worker_manager.send(:attach_workers, [socket_1, socket_2])
     end
 
     it 'should select on each socket to make sure its readable' do
       expect(worker_manager).to receive(:select_sockets).twice
-      worker_manager.send(:attach_workers, 2)
+      worker_manager.send(:attach_workers, [socket_1, socket_2])
     end
 
     it 'should get the PID from each socket it creates and map that to the worker that it is connected to' do
-      worker_manager.send(:attach_workers, 2)
+      worker_manager.send(:attach_workers, [socket_1, socket_2])
       expect(worker_manager.instance_variable_get(:@socket_to_worker)).to eq(socket_to_worker)
     end
 
     it 'should kill any unattached workers' do
       expect(worker_manager).to receive(:kill_unattached_workers)
-      worker_manager.send(:attach_workers, 2)
+      worker_manager.send(:attach_workers, [socket_1, socket_2])
     end
 
     it 'should close sockets that failed to get a connection by timing out' do
       allow(worker_manager).to receive(:select_sockets).and_return([[socket_1], [], []], [nil, nil, nil])
       expect(socket_1).not_to receive(:close)
       expect(socket_2).to receive(:close)
-      worker_manager.send(:attach_workers, 2)
+      worker_manager.send(:attach_workers, [socket_1, socket_2])
     end
 
     it 'should close sockets that failed to get a connection by econnreset' do
@@ -227,16 +238,7 @@ describe Chore::Strategy::WorkerManager do
       allow(worker_manager).to receive(:select_sockets).with(socket_2, nil, 2).and_raise(Errno::ECONNRESET)
       expect(socket_1).not_to receive(:close)
       expect(socket_2).to receive(:close)
-      worker_manager.send(:attach_workers, 2)
-    end
-  end
-
-  context "#create_worker_sockets" do
-    it 'should return an array of sockets equal to the number passed to it' do
-      allow(worker_manager).to receive(:add_worker_socket).and_return(socket_1, socket_2, socket_2, socket_1)
-      num = 3
-      res = worker_manager.send(:create_worker_sockets, num)
-      expect(res.size).to eq(num)
+      worker_manager.send(:attach_workers, [socket_1, socket_2])
     end
   end
 
