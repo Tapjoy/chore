@@ -1,5 +1,7 @@
 # Chore: Job processing... for the future!
 
+[![Build Status](https://travis-ci.org/Tapjoy/chore.svg?branch=master)](https://travis-ci.org/Tapjoy/chore)
+
 ## About
 
 Chore is a pluggable, multi-backend job processor. It was built from the ground up to be extremely flexible. We hope that you

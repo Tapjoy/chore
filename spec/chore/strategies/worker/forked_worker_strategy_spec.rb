@@ -174,6 +174,7 @@ describe Chore::Strategy::ForkedWorkerStrategy do
       end
 
       it 'should run the on_failure callback hook' do
+        allow(Chore).to receive(:run_hooks_for)
         forker.assign(job)
         expect(Chore).to receive(:run_hooks_for).with(:on_failure, anything, instance_of(Chore::TimeoutError))
         sleep 2
