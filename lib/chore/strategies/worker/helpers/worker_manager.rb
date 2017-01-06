@@ -103,6 +103,7 @@ module Chore
             readable, _, _ = select_sockets(socket, nil, 2)
 
             if readable.nil?
+              Chore.logger.info "WM: #{socket} timeout waiting for a worker"
               socket.close
               next
             end
@@ -152,6 +153,7 @@ module Chore
 
         dead_workers.each do |pid, worker|
           dead_worker = @pid_to_worker.delete(pid)
+          dead_worker.socket.close
           @socket_to_worker.delete(dead_worker.socket)
           Chore.logger.info "WM: Removed preforked worker:#{worker.pid} - #{worker.socket}"
         end
