@@ -1,5 +1,15 @@
 # Change Log
 
+## [v2.0.3](https://github.com/Tapjoy/chore/tree/v2.0.3) (2017-01-10)
+**Features**
+- Added Travis CI Testing
+
+**Fixed bugs**
+- Added socket cleanup for reaped workers in preforked worker configuration.
+
+**Cleanups**
+- Added better exception logging for debugging
+
 ## [v2.0.2](https://github.com/Tapjoy/chore/tree/v2.0.2) (2016-06-16)
 **Fixed bugs**
 - Added handling for USR1 signal for Preforked worker strategy
