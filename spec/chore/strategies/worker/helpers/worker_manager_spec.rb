@@ -262,9 +262,16 @@ describe Chore::Strategy::WorkerManager do
 
     it 'should run through each worker-pid map and delete the worker pids from the hash, if they were dead' do
       allow(worker_manager).to receive(:reap_process).and_return(false, true)
+      allow(socket_2).to receive(:close)
       expect(worker_manager.instance_variable_get(:@pid_to_worker).size).to eq(2)
       worker_manager.send(:reap_workers)
       expect(worker_manager.instance_variable_get(:@pid_to_worker).size).to eq(1)
+    end
+
+    it 'closes the socket associated with the reaped worker' do
+      allow(worker_manager).to receive(:reap_process).and_return(false, true)
+      expect(socket_2).to receive(:close)
+      worker_manager.send(:reap_workers)
     end
 
     it 'should not change the worker pids map, if all the childern are running' do

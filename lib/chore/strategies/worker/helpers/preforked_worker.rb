@@ -10,6 +10,7 @@ module Chore
       include Ipc
 
       def initialize(_opts = {})
+        Chore.logger.info "PFW: #{Process.pid} initializing"
         @manager_pid = Process.ppid
         @consumer_cache = {}
         @running = true
@@ -103,7 +104,7 @@ module Chore
         config.publisher.reset_connection! if Chore.config.publisher
 
         # Ensure that all signals are handled before we hand off a hook to the
-        # application. 
+        # application.
         trap_signals
 
         Chore.run_hooks_for(:after_fork,self)
