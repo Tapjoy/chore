@@ -61,13 +61,12 @@ module Chore
 
             # Alert master that worker is ready to receive more work
             signal_ready(read_socket)
-
           end
         end
-        Chore.logger.info "PFW: Worker process terminating"
-        exit(true)
       rescue Errno::ECONNRESET, Errno::EPIPE
         Chore.logger.info "PFW: Worker-#{Process.pid} lost connection to master, shutting down"
+      ensure
+        Chore.logger.info "PFW: Worker process terminating"
         exit(true)
       end
 
@@ -122,7 +121,7 @@ module Chore
           rescue Timeout::Error => ex
             Chore.logger.info "PFW: Worker #{Process.pid} timed out"
             Chore.logger.info "PFW: Worker time out set at #{item.queue_timeout} seconds"
-            exit(true)
+            raise ex
           end
         end
       end

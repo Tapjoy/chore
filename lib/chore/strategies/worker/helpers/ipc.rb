@@ -8,7 +8,7 @@ module Chore
 
       def create_master_socket
         File.delete socket_file if File.exist? socket_file
-        UNIXServer.new(socket_file).tap do | socket |
+        UNIXServer.new(socket_file).tap do |socket|
           socket_options(socket)
         end
       end
@@ -19,7 +19,7 @@ module Chore
 
       # Sending a message to a socket (must be a connected socket)
       def send_msg(socket, msg)
-        raise 'send_msg cannot send empty messages' if msg.nil? || msg.size == 0
+        raise 'send_msg cannot send empty messages' if msg.nil? || msg.size.zero?
         message = Marshal.dump(msg)
         encoded_size = [message.size].pack(BIG_ENDIAN)
         encoded_message = "#{encoded_size}#{message}"
@@ -40,7 +40,7 @@ module Chore
       end
 
       def add_worker_socket
-        UNIXSocket.new(socket_file).tap do | socket |
+        UNIXSocket.new(socket_file).tap do |socket|
           socket_options(socket)
         end
       end
@@ -62,8 +62,9 @@ module Chore
       end
 
       def delete_socket_file
-        Chore.logger.info 'IPC: Removing socket file'
         File.unlink(socket_file)
+      rescue
+        nil
       end
 
       # Used for unit tests
@@ -73,7 +74,7 @@ module Chore
 
       private
 
-      # TODO do we need this as a optional param
+      # TODO: do we need this as a optional param
       def socket_file
         "./prefork_worker_sock-#{Process.pid}"
       end

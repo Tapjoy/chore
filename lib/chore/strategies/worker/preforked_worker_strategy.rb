@@ -14,8 +14,7 @@ module Chore
                          '2' => :INT,
                          '3' => :QUIT,
                          '4' => :TERM,
-                         '5' => :USR1
-                      }.freeze
+                         '5' => :USR1 }.freeze
 
       def initialize(manager, opts = {})
         @options = opts
@@ -23,6 +22,7 @@ module Chore
         @self_read, @self_write = IO.pipe
         trap_signals(NUM_TO_SIGNAL, @self_write)
         @worker_manager = WorkerManager.new(create_master_socket)
+        at_exit { delete_socket_file }
         @running = true
       end
 
@@ -49,6 +49,14 @@ module Chore
             Chore.logger.error e.message
             Chore.logger.error e.backtrace
             @manager.shutdown!
+          ensure
+            Chore.logger.info 'PWS: worker_assignment_thread ending'
+            # WorkerAssignment thread is independent of the main thread.
+            # The main thread is waiting on the consumer threads to join,
+            # Due to some weird SQS behaviour, its possible that these threads
+            # maynot join, and the assigment thread always exits, since it's
+            # nonblocking. This will ensure that the master process exits.
+            Process.exit(true)
           end
         end
       end
@@ -60,11 +68,11 @@ module Chore
           # select_sockets returns a list of readable sockets
           # This would include worker connections and the read end
           # of the self-pipe.
-          readables, _, _ = select_sockets(w_sockets, @self_read)
+          readables, = select_sockets(w_sockets, @self_read)
 
           # If select timed out, retry
           if readables.nil?
-            Chore.logger.debug "PWS: All sockets busy.. retry"
+            Chore.logger.debug 'PWS: All sockets busy.. retry'
             next
           end
 
@@ -75,11 +83,11 @@ module Chore
           end
 
           # Fetch and assign work for the readable worker connections
-          @worker_manager.ready_workers(readables) do | workers |
+          @worker_manager.ready_workers(readables) do |workers|
             WorkDistributor.fetch_and_assign_jobs(workers, @manager)
           end
         end
-        delete_socket_file
+        Chore.logger.info 'PWS: worker_assignment_loop ending'
       end
 
       # Wrapper need around running to help writing specs for worker_assignment_loop
@@ -100,7 +108,7 @@ module Chore
           @manager.shutdown!
         when :USR1
           Chore.reopen_logs
-          Chore.logger.info "PFS: Master process reopened log"
+          Chore.logger.info 'PWS: Master process reopened log'
         end
       end
 

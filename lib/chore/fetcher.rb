@@ -23,9 +23,10 @@ module Chore
     # Stops the fetcher, preventing any further messages from being pulled from the queue
     def stop!
       unless @stopping
-        Chore.logger.info "Fetcher shutting down"
+        Chore.logger.info "Fetcher shutting down started"
         @stopping = true
         @strategy.stop!
+        Chore.logger.info "Fetcher shutting down completed"
       end
     end
 
