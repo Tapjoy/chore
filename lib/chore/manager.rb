@@ -28,11 +28,12 @@ module Chore
     # Shut down the Manager, the Worker Strategy, and the Fetcher. This calls the +:before_shutdown+ hook.
     def shutdown!
       unless @stopping
-        Chore.logger.info "Manager shutting down"
+        Chore.logger.info "Manager shutting down started"
         @stopping = true
         Chore.run_hooks_for(:before_shutdown)
         @fetcher.stop!
         @worker_strategy.stop!
+        Chore.logger.info "Manager shutting down completed"
       end
     end
 

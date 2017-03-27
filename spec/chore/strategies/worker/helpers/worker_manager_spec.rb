@@ -168,7 +168,7 @@ describe Chore::Strategy::WorkerManager do
     before(:each) do
       allow(Chore::Strategy::PreforkedWorker).to receive(:new).and_return(worker)
       allow(worker).to receive(:start_worker).and_return(true)
-      allow(worker_manager).to receive(:exit!).and_return(true)
+      allow(worker_manager).to receive(:exit).and_return(true)
     end
 
     it 'should create a PreforkedWorker object and start it' do
@@ -178,7 +178,7 @@ describe Chore::Strategy::WorkerManager do
     end
 
     it 'should ensure that the process exits when the PreforkedWorker completes' do
-      expect(worker_manager).to receive(:exit!).with(true)
+      expect(worker_manager).to receive(:exit).with(true)
       worker_manager.send(:run_worker_instance)
     end
   end

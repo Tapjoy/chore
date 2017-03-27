@@ -168,8 +168,8 @@ describe Chore::Strategy::PreforkedWorker do
       allow(worker).to receive(:start) { sleep 5 }
       begin
         preforkedworker.send(:process_work, [work])
-      rescue SystemExit=>e
-        expect(e.status).to eq(0)
+      rescue => e
+        expect(e.class).to eq(Timeout::Error)
       end
     end
   end

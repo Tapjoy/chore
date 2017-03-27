@@ -90,7 +90,7 @@ module Chore
       def run_worker_instance
         PreforkedWorker.new.start_worker(@master_socket)
       ensure
-        exit!(true)
+        exit(true)
       end
 
       # Creates individual sockets for each worker to use and attaches them to
@@ -140,6 +140,7 @@ module Chore
       def kill_unattached_workers
         @pid_to_worker.each do |pid, worker|
           next unless worker.socket.nil?
+          Chore.logger.info "WM: kill_unattached_workers #{pid}"
           Process.kill('KILL', pid)
         end
       end
@@ -147,6 +148,7 @@ module Chore
       # Wait for terminated workers to die and remove their references from
       # master
       def reap_workers
+        Chore.logger.info "WM: reaping workers.."
         dead_workers = @pid_to_worker.select do |pid, worker|
           reap_process(pid)
         end

@@ -1,13 +1,12 @@
 require 'spec_helper'
 
 describe Chore::Strategy::PreForkedWorkerStrategy do
-
-  let(:manager) { double('manager')  }
-  let(:socket) { double("socket") }
-  let(:pipe) { double("pipe") }
-  let(:worker) { double('worker') }
-  let(:worker_manager) { Chore::Strategy::WorkerManager.new(socket) }
-  let(:strategy) { Chore::Strategy::PreForkedWorkerStrategy.new(manager)}
+  let(:manager) { double('manager') }
+  let(:socket)  { double('socket') }
+  let(:pipe)    { double('pipe') }
+  let(:worker)  { double('worker') }
+  let(:worker_manager)   { Chore::Strategy::WorkerManager.new(socket) }
+  let(:strategy)         { Chore::Strategy::PreForkedWorkerStrategy.new(manager) }
   let(:work_distributor) { Chore::Strategy::WorkDistributor }
 
   before(:each) do
@@ -43,14 +42,15 @@ describe Chore::Strategy::PreForkedWorkerStrategy do
       allow(strategy).to receive(:worker_assignment_loop).and_return(true)
       expect(Thread).to receive(:new).once.and_yield
       expect(strategy).to receive(:worker_assignment_loop)
+      expect(Process).to receive(:exit)
       strategy.send(:worker_assignment_thread)
     end
 
     it 'rescues a \'TerribleMistake\' exception and performs a shutdown of chore' do
       allow(strategy).to receive(:worker_assignment_loop).and_raise(Chore::TerribleMistake)
+      allow(manager).to receive(:shutdown!)
       allow(Thread).to receive(:new).and_yield
-      allow(manager).to receive(:shutdown!).and_return(true)
-      expect(manager).to receive(:shutdown!)
+      expect(Process).to receive(:exit)
       strategy.send(:worker_assignment_thread)
     end
   end
@@ -59,7 +59,7 @@ describe Chore::Strategy::PreForkedWorkerStrategy do
     before(:each) do
       allow(strategy).to receive(:running?).and_return(true, false)
       strategy.instance_variable_set(:@self_read, pipe)
-      allow(strategy).to receive(:select_sockets).and_return([[socket],nil, nil])
+      allow(strategy).to receive(:select_sockets).and_return([[socket], nil, nil])
       allow(strategy).to receive(:handle_self_pipe_signal).and_return(true)
       allow(strategy).to receive(:fetch_and_assign_jobs).and_return(true)
 
@@ -117,7 +117,7 @@ describe Chore::Strategy::PreForkedWorkerStrategy do
     end
 
     it 'should signal its children, and shutdown in the event of one of INT, QUIT or TERM signals' do
-      allow(pipe).to receive(:read_nonblock).and_return('2','3','4')
+      allow(pipe).to receive(:read_nonblock).and_return('2', '3', '4')
       expect(worker_manager).to receive(:stop_workers).exactly(3).times
       expect(manager).to receive(:shutdown!).exactly(3).times
       3.times do
@@ -152,7 +152,7 @@ describe Chore::Strategy::PreForkedWorkerStrategy do
     end
 
     let(:signals) { { '1' => 'QUIT' } }
-        
+
     it 'should reset signals' do
       allow(Chore::Signal).to receive(:reset)
       expect(Chore::Signal).to receive(:reset)
@@ -166,4 +166,3 @@ describe Chore::Strategy::PreForkedWorkerStrategy do
     end
   end
 end
-
