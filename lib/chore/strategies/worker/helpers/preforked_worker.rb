@@ -45,7 +45,7 @@ module Chore
           # When the Master (manager process) dies, the sockets are set to
           # readable, but there is no data in the socket. In this case we check
           # to see if the manager is actually dead, and in that case, we exit.
-          if work.nil? && is_orphan?
+          if work.nil? && orphan?
             Chore.logger.info 'PFW: Manager no longer alive; Shutting down'
             break
           end
@@ -152,7 +152,7 @@ module Chore
         end
       end
 
-      def is_orphan?
+      def orphan?
         Process.ppid != @manager_pid
       end
     end
