@@ -61,7 +61,7 @@ module Chore
           signal_ready(read_socket)
         end
       rescue Errno::ECONNRESET, Errno::EPIPE
-        Chore.logger.info "PFW: Worker-#{Process.pid} lost connection to master, shutting down"
+        Chore.logger.info "PFW: lost connection to master, shutting down"
       ensure
         Chore.logger.info 'PFW: Worker process terminating'
         exit!(true)
@@ -141,7 +141,7 @@ module Chore
             Chore.logger.info "PFW: received signal: #{signal}"
             @running = false
             sleep(Chore.config.shutdown_timeout)
-            Chore.logger.info 'PFW: Worker process terminating'
+            Chore.logger.info 'PFW: Worker process terminating..'
             exit!(true)
           end
         end
