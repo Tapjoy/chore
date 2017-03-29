@@ -1,5 +1,16 @@
 # Change Log
 
+## [v2.0.4](https://github.com/Tapjoy/chore/tree/v2.0.4) (2017-03-27)
+**Features**
+- N/A
+
+**Fixed bugs**
+- Master process hangs if consumer threads block shutdown.
+
+**Cleanups**
+- Added more logging to the shutdown path
+
+
 ## [v2.0.3](https://github.com/Tapjoy/chore/tree/v2.0.3) (2017-01-10)
 **Features**
 - Added Travis CI Testing
