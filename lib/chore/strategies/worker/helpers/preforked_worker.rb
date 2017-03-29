@@ -35,9 +35,7 @@ module Chore
           # Select on the connection to the master and the self pipe
           readables, _, ex = select_sockets(connection, nil, Chore.config.shutdown_timeout)
 
-          if readables.nil? # timeout
-            next
-          end
+          next if readables.nil? # timeout
 
           read_socket = readables.first
 
@@ -48,26 +46,25 @@ module Chore
           # readable, but there is no data in the socket. In this case we check
           # to see if the manager is actually dead, and in that case, we exit.
           if work.nil? && is_orphan?
-            Chore.logger.info "PFW: Manager no longer alive; Shutting down"
+            Chore.logger.info 'PFW: Manager no longer alive; Shutting down'
             break
           end
 
-          unless work.nil?
-            # Do the work
-            process_work(work)
+          next if work.nil?
+          # Do the work
+          process_work(work)
 
-            worker_killer.check_requests
-            worker_killer.check_memory
+          worker_killer.check_requests
+          worker_killer.check_memory
 
-            # Alert master that worker is ready to receive more work
-            signal_ready(read_socket)
-          end
+          # Alert master that worker is ready to receive more work
+          signal_ready(read_socket)
         end
       rescue Errno::ECONNRESET, Errno::EPIPE
         Chore.logger.info "PFW: Worker-#{Process.pid} lost connection to master, shutting down"
       ensure
-        Chore.logger.info "PFW: Worker process terminating"
-        exit(true)
+        Chore.logger.info 'PFW: Worker process terminating'
+        exit!(true)
       end
 
       # Method wrapper around @running makes it easier to write specs
@@ -106,7 +103,7 @@ module Chore
         # application.
         trap_signals
 
-        Chore.run_hooks_for(:after_fork,self)
+        Chore.run_hooks_for(:after_fork, self)
       end
 
       def process_work(work)
@@ -114,7 +111,7 @@ module Chore
         work.each do |item|
           item.consumer = consumer(item.queue_name)
           begin
-            Timeout.timeout( item.queue_timeout ) do
+            Timeout.timeout(item.queue_timeout) do
               worker = Worker.new(item)
               worker.start
             end
@@ -144,14 +141,14 @@ module Chore
             Chore.logger.info "PFW: received signal: #{signal}"
             @running = false
             sleep(Chore.config.shutdown_timeout)
-            Chore.logger.info "PFW: Worker process terminating"
-            exit(true)
+            Chore.logger.info 'PFW: Worker process terminating'
+            exit!(true)
           end
         end
 
         Signal.trap(:USR1) do
           Chore.reopen_logs
-          Chore.logger.info "PFW: Worker process reopened log"
+          Chore.logger.info 'PFW: Worker process reopened log'
         end
       end
 
