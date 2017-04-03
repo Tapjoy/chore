@@ -1,4 +1,4 @@
-require 'json'
+require 'multi_json'
 
 module Chore
   module Encoder
@@ -7,12 +7,12 @@ module Chore
       class << self
         # Encodes the +job+ into JSON using the standard ruby JSON parsing library
         def encode(job)
-          JSON.generate(job.to_hash)
+          MultiJson.dump(job.to_hash)
         end
 
         # Decodes the +job+ from JSON into a ruby Hash using the standard ruby JSON parsing library
         def decode(job)
-          JSON.parse(job)
+          MultiJson.load(job)
         end
       end
     end

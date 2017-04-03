@@ -36,11 +36,12 @@ Gem::Specification.new do |s|
   s.rubygems_version = "1.8.25"
   s.summary = "Job processing... for the future!"
 
-  s.add_runtime_dependency(%q<json>, [">= 0"])
+  s.add_runtime_dependency(%q<multi_json>, [">= 0"])
   s.add_runtime_dependency(%q<aws-sdk-v1>, ["~> 1.56", ">= 1.56.0"])
   s.add_runtime_dependency(%q<thread>, ["~> 0.1.3"])
   s.add_development_dependency(%q<rspec>, ["~> 2.12.0"])
   s.add_development_dependency(%q<rdoc>, ["~> 3.12"])
   s.add_development_dependency(%q<bundler>, [">= 0"])
+  s.add_development_dependency(%q<json>, [">= 0"])
 end
 

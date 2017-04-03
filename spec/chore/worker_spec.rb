@@ -118,7 +118,7 @@ describe Chore::Worker do
 
     context 'on perform' do
       let(:encoded_job) { Chore::Encoder::JsonEncoder.encode(job) }
-      let(:parsed_job) { JSON.parse(encoded_job) }
+      let(:parsed_job) { MultiJson.load(encoded_job) }
 
       before(:each) do
         SimpleJob.stub(:perform).and_raise(ArgumentError)
@@ -158,7 +158,7 @@ describe Chore::Worker do
 
   describe 'delaying retries' do
     let(:encoded_job) { Chore::Encoder::JsonEncoder.encode(job) }
-    let(:parsed_job) { JSON.parse(encoded_job) }
+    let(:parsed_job) { MultiJson.load(encoded_job) }
     let(:work) { Chore::UnitOfWork.new(2, 'test', 60, encoded_job, 0, consumer) }
 
     before(:each) do
