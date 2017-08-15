@@ -15,7 +15,8 @@ module Chore
 
   private
     def hooks_for(event)
-      candidate_methods.grep(/^#{event}/).sort
+      @_chore_hooks ||= {}
+      @_chore_hooks[event] ||= candidate_methods.grep(/^#{event}/).sort
     end
 
     # NOTE: Any hook methods defined after this is first referenced (i.e.,
