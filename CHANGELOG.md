@@ -1,5 +1,16 @@
 # Change Log
 
+## [master](https://github.com/Tapjoy/chore/tree/master)
+
+**Features**
+- N/A
+
+**Fixed bugs**
+- N/A
+
+**Cleanups**
+- Improved performance of running hooks
+
 ## [v2.0.4](https://github.com/Tapjoy/chore/tree/v2.0.4) (2017-03-27)
 **Features**
 - N/A
