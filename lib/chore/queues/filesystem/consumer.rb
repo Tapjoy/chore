@@ -87,16 +87,20 @@ module Chore
           @queue_timeout = Chore.config.default_queue_timeout
         end
 
-        def consume(&handler)
+        def consume
           Chore.logger.info "Starting consuming file system queue #{@queue_name} in #{self.class.queue_dir(queue_name)}"
           while running?
             begin
               #TODO move expired job files to new directory?
-              handle_jobs(&handler)
+              found_files = false
+              handle_jobs do |*args|
+                found_files = true
+                yield(*args)
+              end
             rescue => e
               Chore.logger.error { "#{self.class}#consume: #{e} #{e.backtrace * "\n"}" }
             ensure
-              sleep 5
+              sleep 5 unless found_files
             end
           end
         end
