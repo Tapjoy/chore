@@ -43,7 +43,8 @@ module Chore #:nodoc:
     :dupe_on_cache_failure => false,
     :payload_handler       => Chore::Job,
     :master_procline       => "chore-master-#{Chore::VERSION}",
-    :worker_procline       => "chore-worker-#{Chore::VERSION}"
+    :worker_procline       => "chore-worker-#{Chore::VERSION}",
+    :consumer_sleep_interval => 1
   }
 
   class << self

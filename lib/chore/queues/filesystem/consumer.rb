@@ -100,7 +100,7 @@ module Chore
             rescue => e
               Chore.logger.error { "#{self.class}#consume: #{e} #{e.backtrace * "\n"}" }
             ensure
-              sleep 5 unless found_files
+              sleep(Chore.config.consumer_sleep_interval) unless found_files
             end
           end
         end
