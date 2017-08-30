@@ -30,7 +30,7 @@ module Chore
             new_dir = self.new_dir(queue)
             in_progress_dir = self.in_progress_dir(queue)
 
-            job_files(in_progress_dir).each do |file|
+            each_job_file(in_progress_dir) do |file|
               make_new_again(file, new_dir, in_progress_dir)
             end
           end
@@ -58,8 +58,17 @@ module Chore
             to
           end
 
-          def job_files(dir)
-            Dir.entries(dir).select{|e| ! e.start_with?(".")}
+          def each_job_file(dir, limit = nil)
+            count = 0
+
+            Dir.foreach(dir) do |file|
+              next if file.start_with?('.')
+
+              yield file
+
+              count += 1
+              break if limit && count >= limit
+            end
           end
 
           # Grabs the unique identifier for the job filename and the number of times
@@ -126,9 +135,9 @@ module Chore
           # ThreadedConsumerStrategy with mutiple threads on a queue safely although you
           # probably wouldn't want to do that.
           FILE_QUEUE_MUTEXES[@queue_name].synchronize do
-            self.class.job_files(@new_dir).each do |job_file|
+            self.class.each_job_file(@new_dir, Chore.config.queue_polling_size) do |job_file|
               Chore.logger.debug "Found a new job #{job_file}"
-              
+
               job_json = File.read(make_in_progress(job_file))
               basename, previous_attempts = self.class.file_info(job_file)
 

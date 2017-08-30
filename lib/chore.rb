@@ -41,6 +41,7 @@ module Chore #:nodoc:
     :shutdown_timeout      => (2 * 60),
     :max_attempts          => 1.0 / 0.0, # Infinity
     :dupe_on_cache_failure => false,
+    :queue_polling_size    => 10,
     :payload_handler       => Chore::Job,
     :master_procline       => "chore-master-#{Chore::VERSION}",
     :worker_procline       => "chore-worker-#{Chore::VERSION}",
