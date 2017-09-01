@@ -136,7 +136,7 @@ module Chore
       def after_fork(worker)
         # Immediately swap out the process name so that it doesn't look like
         # the master process
-        procline("chore-worker-#{Chore::VERSION}:Started:#{Time.now}")
+        procline("#{Chore.config.worker_procline}:Started:#{Time.now}")
 
         clear_child_signals
         trap_child_signals(worker)
