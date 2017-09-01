@@ -30,7 +30,7 @@ module Chore
             new_dir = self.new_dir(queue)
             in_progress_dir = self.in_progress_dir(queue)
 
-            each_job_file(in_progress_dir) do |file|
+            each_file(File.join(in_progress_dir, '*.job')) do |file|
               make_new_again(file, new_dir, in_progress_dir)
             end
           end
@@ -63,13 +63,11 @@ module Chore
             to
           end
 
-          def each_job_file(dir, limit = nil)
+          def each_file(path, limit = nil)
             count = 0
 
-            Dir.foreach(dir) do |file|
-              next if file.start_with?('.')
-
-              yield file
+            Dir.glob(path) do |file|
+              yield File.basename(file)
 
               count += 1
               break if limit && count >= limit
@@ -140,7 +138,7 @@ module Chore
           # ThreadedConsumerStrategy with mutiple threads on a queue safely although you
           # probably wouldn't want to do that.
           FILE_QUEUE_MUTEXES[@queue_name].synchronize do
-            self.class.each_job_file(@new_dir, Chore.config.queue_polling_size) do |job_file|
+            self.class.each_file(File.join(@new_dir, '*.job'), Chore.config.queue_polling_size) do |job_file|
               Chore.logger.debug "Found a new job #{job_file}"
 
               in_progress_path = make_in_progress(job_file)

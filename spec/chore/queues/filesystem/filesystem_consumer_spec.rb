@@ -47,10 +47,10 @@ describe Chore::Queues::Filesystem::Consumer do
     end
   end
 
-  describe ".each_job_file" do
+  describe ".each_file" do
     it "should list jobs in dir" do
       FileUtils.touch("#{new_dir}/foo.1.job")
-      expect {|b| described_class.each_job_file(new_dir, &b) }.to yield_with_args("foo.1.job")
+      expect {|b| described_class.each_file("#{new_dir}/*.job", &b) }.to yield_with_args("foo.1.job")
     end
   end
 
