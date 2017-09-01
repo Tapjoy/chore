@@ -35,23 +35,28 @@ module Chore
             end
           end
 
-          def make_in_progress(job, new_dir, in_progress_dir)
-            move_job(File.join(new_dir, job), File.join(in_progress_dir, job))
-          end
-
-          def make_new_again(job, new_dir, in_progress_dir)
-            basename, previous_attempts = file_info(job)
-            move_job(File.join(in_progress_dir, job), File.join(new_dir, "#{basename}.#{previous_attempts + 1}.job"))
-          end
-
           # Moves job file to inprogress directory and returns the full path
-          def move_job(from, to)
+          def make_in_progress(job, new_dir, in_progress_dir)
+            from = File.join(new_dir, job)
+            to = File.join(in_progress_dir, job)
+
             File.open(from, "r") do |f|
               # wait on the lock a publisher in another process might have.
               # Once we get the lock the file is ours to move to mark it in progress
               f.flock(File::LOCK_EX)
-              FileUtils.mv(f.path, to)
+              FileUtils.mv(from, to)
             end
+
+            to
+          end
+
+          # Moves job file to new directory and returns the full path
+          def make_new_again(job, new_dir, in_progress_dir)
+            basename, previous_attempts = file_info(job)
+
+            from = File.join(in_progress_dir, job)
+            to = File.join(new_dir, "#{basename}.#{previous_attempts + 1}.job")
+            FileUtils.mv(from, to)
 
             to
           end
