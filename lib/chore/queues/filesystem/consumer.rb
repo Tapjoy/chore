@@ -46,15 +46,13 @@ module Chore
 
           # Moves job file to inprogress directory and returns the full path
           def move_job(from, to)
-            f = File.open(from, "r")
-            # wait on the lock a publisher in another process might have.
-            # Once we get the lock the file is ours to move to mark it in progress
-            f.flock(File::LOCK_EX)
-            begin
+            File.open(from, "r") do |f|
+              # wait on the lock a publisher in another process might have.
+              # Once we get the lock the file is ours to move to mark it in progress
+              f.flock(File::LOCK_EX)
               FileUtils.mv(f.path, to)
-            ensure
-              f.flock(File::LOCK_UN) # yes we can unlock it after its been moved, I checked
             end
+
             to
           end
 
