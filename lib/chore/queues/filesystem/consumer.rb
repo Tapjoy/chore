@@ -36,18 +36,20 @@ module Chore
           end
 
           # Moves job file to inprogress directory and returns the full path
+          # if the job was successfully locked by this consumer
           def make_in_progress(job, new_dir, in_progress_dir)
             from = File.join(new_dir, job)
             to = File.join(in_progress_dir, job)
 
             File.open(from, "r") do |f|
-              # wait on the lock a publisher in another process might have.
-              # Once we get the lock the file is ours to move to mark it in progress
-              f.flock(File::LOCK_EX)
-              FileUtils.mv(from, to)
+              # If the lock can't be obtained, that means it's still locked
+              # by the publisher; don't block and skip it.  We'll pick it up
+              # the next time around.
+              if f.flock(File::LOCK_EX | File::LOCK_NB)
+                FileUtils.mv(from, to)
+                to
+              end
             end
-
-            to
           end
 
           # Moves job file to new directory and returns the full path
@@ -141,7 +143,10 @@ module Chore
             self.class.each_job_file(@new_dir, Chore.config.queue_polling_size) do |job_file|
               Chore.logger.debug "Found a new job #{job_file}"
 
-              job_json = File.read(make_in_progress(job_file))
+              in_progress_path = make_in_progress(job_file)
+              next unless in_progress_path
+
+              job_json = File.read(in_progress_path)
               basename, previous_attempts = self.class.file_info(job_file)
 
               # job_file is just the name which is the job id
