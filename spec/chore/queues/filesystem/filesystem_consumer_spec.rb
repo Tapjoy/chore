@@ -112,7 +112,9 @@ describe Chore::Queues::Filesystem::Consumer do
           end
           expect(rejected).to be true
 
-          expect { |b| consumer.consume(&b) }.to yield_with_args(anything, 'test-queue', 60, test_job_hash.to_json, 1)
+          Timecop.freeze(Time.now + 61) do
+            expect { |b| consumer.consume(&b) }.to yield_with_args(anything, 'test-queue', 60, test_job_hash.to_json, 1)
+          end
         end
       end
 
