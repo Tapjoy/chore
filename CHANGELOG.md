@@ -11,6 +11,26 @@
 **Cleanups**
 - N/A
 
+## [v3.0.0](https://github.com/Tapjoy/chore/tree/v3.0.0) (2017-09-07)
+
+**Features**
+- Improve filesystem consumer speed by allowing configuration of time between filesystem lookups
+- Limit the number of files pulled from the filesystem queue on each iteration
+  to avoid performance impact with large queue backlogs
+- Reduce number of open files in the filesystem consumer
+- Improve filesystem consumer speed by using non-blocking locks on new jobs
+- Support running multiple threaded consumers with the filesystem queue
+- Improve performance of filesystem queue deletions
+- Support recovery of expired jobs in the filesystem queue (this allows for
+  multi-master or forked worker strategies)
+- Allow master / worker proclines to be customized
+
+**Fixed bugs**
+- N/A
+
+**Cleanups**
+- N/A
+
 ## [v2.0.5](https://github.com/Tapjoy/chore/tree/v2.0.5) (2017-08-15)
 
 **Features**

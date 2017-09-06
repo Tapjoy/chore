@@ -1,8 +1,8 @@
 module Chore
   module Version #:nodoc:
-    MAJOR = 2
+    MAJOR = 3
     MINOR = 0
-    PATCH = 5
+    PATCH = 0
 
     STRING = [ MAJOR, MINOR, PATCH ].join('.')
   end
