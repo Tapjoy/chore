@@ -93,6 +93,14 @@ module Chore
           end
         end
 
+        # The minimum number of seconds to allow to pass between checks for expired
+        # jobs on the filesystem.
+        # 
+        # Since queue times are measured on the order of seconds, 1 second is the
+        # smallest duration.  It also prevents us from burning a lot of CPU looking
+        # at expired jobs when the consumer sleep interval is less than 1 second.
+        MINIMUM_EXPIRATION_CHECK_INTERVAL = 1
+
         # The amount of time units of work can run before the queue considers
         # them timed out.  For filesystem queues, this is the global default.
         attr_reader :queue_timeout
@@ -109,8 +117,12 @@ module Chore
           Chore.logger.info "Starting consuming file system queue #{@queue_name} in #{self.class.queue_dir(queue_name)}"
           while running?
             begin
-              # Move expired job files to new directory
-              self.class.cleanup(Time.now.to_i - @queue_timeout, @new_dir, @in_progress_dir)
+              # Move expired job files to new directory (so long as enough time has
+              # passed since we last did this check)
+              if !@last_cleaned_at || (Time.now - @last_cleaned_at).to_i >= MINIMUM_EXPIRATION_CHECK_INTERVAL
+                self.class.cleanup(Time.now.to_i - @queue_timeout, @new_dir, @in_progress_dir)
+                @last_cleaned_at = Time.now
+              end
 
               found_files = false
               handle_jobs do |*args|
