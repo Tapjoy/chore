@@ -92,7 +92,7 @@ module Chore
 
           @in_progress_dir = self.class.in_progress_dir(queue_name)
           @new_dir = self.class.new_dir(queue_name)
-          @queue_timeout = Chore.config.default_queue_timeout
+          @queue_timeout = self.class.queue_timeout(queue_name)
         end
 
         def consume

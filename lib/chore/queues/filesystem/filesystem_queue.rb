@@ -6,6 +6,8 @@ module Chore::FilesystemQueue
   NEW_JOB_DIR = "new"
   # Local directory for jobs currently in-process to be moved
   IN_PROGRESS_DIR = "inprogress"
+  # Local directory for configuration info
+  CONFIG_DIR = "config"
   
   # Retrieves the directory for in-process messages to go. If the directory for the +queue_name+ doesn't exist,
   # it will be created for you. If the directory cannot be created, an IOError will be raised
@@ -27,6 +29,23 @@ module Chore::FilesystemQueue
   # Returns the fully qualified path to the directory for +queue_name+
   def queue_dir(queue_name)
     prepare_dir(File.join(root_dir, queue_name))
+  end
+
+  # The configuration for the given queue
+  def config_dir(queue_name)
+    validate_dir(queue_name, CONFIG_DIR)
+  end
+
+  def config_value(queue_name, config_name)
+    config_file = File.join(config_dir(queue_name), config_name)
+    if File.exists?(config_file)
+      File.read(config_file).strip
+    end
+  end
+
+  # Returns the timeout for +queue_name+
+  def queue_timeout(queue_name)
+    (config_value(queue_name, 'timeout') || Chore.config.default_queue_timeout).to_i
   end
 
   private

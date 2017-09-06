@@ -8,10 +8,15 @@ describe Chore::Queues::Filesystem::Consumer do
   let(:publisher) { Chore::Queues::Filesystem::Publisher.new }
   let(:test_queues_dir) { "test-queues" }
   let(:test_queue) { "test-queue" }
+  let(:timeout) { nil }
 
   before do
     Chore.config.fs_queue_root = test_queues_dir
-    expect(Chore.config).to receive(:default_queue_timeout).and_return(60)
+    if timeout
+      File.open("#{config_dir}/timeout", "w") {|f| f << timeout.to_s}
+    else
+      expect(Chore.config).to receive(:default_queue_timeout).and_return(60)
+    end
     allow(consumer).to receive(:sleep)
   end
 
@@ -22,6 +27,7 @@ describe Chore::Queues::Filesystem::Consumer do
   let(:test_job_hash) {{:class => "TestClass", :args => "test-args"}}
   let(:new_dir) { described_class.new_dir(test_queue) }
   let(:in_progress_dir) { described_class.in_progress_dir(test_queue) }
+  let(:config_dir) { described_class.config_dir(test_queue) }
 
   describe ".cleanup" do
     it "should move in_progress jobs to new dir" do
@@ -101,6 +107,14 @@ describe Chore::Queues::Filesystem::Consumer do
           expect(completed).to be true
 
           expect { |b| consumer.consume(&b) }.to_not yield_control
+        end
+      end
+
+      context "with queue-specific timeout config" do
+        let(:timeout) { 30 }
+
+        it "should consume a published job and yield the job to the handler block" do
+          expect { |b| consumer.consume(&b) }.to yield_with_args(anything, 'test-queue', 30, test_job_hash.to_json, 0)
         end
       end
     end
