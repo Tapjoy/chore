@@ -11,12 +11,6 @@ module Chore
     # Starts the fetcher with the configured Consumer Strategy. This will begin consuming messages from your queue
     def start
       Chore.logger.info "Fetcher starting up"
-
-      # Clean up configured queues in case there are any resources left behind
-      Chore.config.queues.each do |queue|
-        Chore.config.consumer.cleanup(queue)
-      end
-
       @strategy.fetch
     end
 
