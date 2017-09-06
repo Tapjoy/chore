@@ -10,7 +10,7 @@ module Chore
     def initialize()
       Chore.logger.info "Booting Chore #{Chore::VERSION}"
       Chore.logger.debug { Chore.config.inspect }
-      procline("chore-master-#{Chore::VERSION}:Started:#{Time.now}")
+      procline("#{Chore.config.master_procline}:Started:#{Time.now}")
       @started_at = nil
       @worker_strategy = Chore.config.worker_strategy.new(self)
       @fetcher = Chore.config.fetcher.new(self)

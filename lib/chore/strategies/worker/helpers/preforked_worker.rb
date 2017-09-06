@@ -89,7 +89,7 @@ module Chore
       def post_fork_setup
         # Immediately swap out the process name so that it doesn't look like
         # the master process
-        procline("chore-worker-#{Chore::VERSION}:Started:#{Time.now}")
+        procline("#{Chore.config.worker_procline}:Started:#{Time.now}")
 
         # We need to reset the logger after fork. This fixes a longstanding bug
         # where workers would hang around and never die
