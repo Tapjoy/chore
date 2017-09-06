@@ -120,7 +120,7 @@ module Chore
 
         def complete(id)
           Chore.logger.debug "Completing (deleting): #{id}"
-          FileUtils.rm_f(File.join(@in_progress_dir, id))
+          File.delete(File.join(@in_progress_dir, id))
         end
 
         private
