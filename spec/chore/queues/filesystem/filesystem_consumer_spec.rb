@@ -30,25 +30,46 @@ describe Chore::Queues::Filesystem::Consumer do
   let(:config_dir) { described_class.config_dir(test_queue) }
 
   describe ".cleanup" do
-    it "should move in_progress jobs to new dir" do
-      FileUtils.touch("#{in_progress_dir}/foo.1.job")
-      described_class.cleanup(test_queue)
+    it "should move expired in_progress jobs to new dir" do
+      timestamp = Time.now.to_i - 1
+
+      FileUtils.touch("#{in_progress_dir}/foo.1.#{timestamp}.job")
+      described_class.cleanup(Time.now.to_i, new_dir, in_progress_dir)
       expect(File.exist?("#{new_dir}/foo.2.job")).to eq(true)
+    end
+
+    it "should move non-timestamped jobs from in_progress_dir to new dir" do
+      FileUtils.touch("#{in_progress_dir}/foo.1.job")
+      described_class.cleanup(Time.now.to_i, new_dir, in_progress_dir)
+      expect(File.exist?("#{new_dir}/foo.2.job")).to eq(true)
+    end
+
+    it "should not affect non-expired jobs" do
+      timestamp = Time.now.to_i - 1
+
+      FileUtils.touch("#{in_progress_dir}/foo.1.#{timestamp}.job")
+      described_class.cleanup(Time.now.to_i - 2, new_dir, in_progress_dir)
+      expect(File.exist?("#{new_dir}/foo.2.job")).to eq(false)
     end
   end
 
   describe ".make_in_progress" do
     it "should move job to in_progress dir" do
-      FileUtils.touch("#{new_dir}/foo.1.job")
-      described_class.make_in_progress("foo.1.job", new_dir, in_progress_dir)
-      expect(File.exist?("#{in_progress_dir}/foo.1.job")).to eq(true)
+      now = Time.now
+
+      Timecop.freeze(now) do
+        FileUtils.touch("#{new_dir}/foo.1.job")
+        described_class.make_in_progress("foo.1.job", new_dir, in_progress_dir)
+        expect(File.exist?("#{in_progress_dir}/foo.1.#{now.to_i}.job")).to eq(true)
+      end
     end
   end
 
   describe ".make_new_again" do
     it "should move job to new dir" do
-      FileUtils.touch("#{in_progress_dir}/foo.1.job")
-      described_class.make_new_again("foo.1.job", new_dir, in_progress_dir)
+      timestamp = Time.now.to_i
+      FileUtils.touch("#{in_progress_dir}/foo.1.#{timestamp}.job")
+      described_class.make_new_again("foo.1.#{timestamp}.job", new_dir, in_progress_dir)
       expect(File.exist?("#{new_dir}/foo.2.job")).to eq(true)
     end
   end
@@ -91,7 +112,9 @@ describe Chore::Queues::Filesystem::Consumer do
           end
           expect(rejected).to be true
 
-          expect { |b| consumer.consume(&b) }.to yield_with_args(anything, 'test-queue', 60, test_job_hash.to_json, 1)
+          Timecop.freeze(Time.now + 61) do
+            expect { |b| consumer.consume(&b) }.to yield_with_args(anything, 'test-queue', 60, test_job_hash.to_json, 1)
+          end
         end
       end
 

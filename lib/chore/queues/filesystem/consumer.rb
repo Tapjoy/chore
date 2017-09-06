@@ -22,22 +22,32 @@ module Chore
         Chore::CLI.register_option 'fs_queue_root', '--fs-queue-root DIRECTORY', 'Root directory for fs based queue'
         
         class << self
-          # Cleans up the in-progress files by making them new again.  This should only
-          # happen once per process.
-          def cleanup(queue)
-            new_dir = self.new_dir(queue)
-            in_progress_dir = self.in_progress_dir(queue)
+          # Cleans up expired in-progress files by making them new again.
+          def cleanup(expiration_time, new_dir, in_progress_dir)
+            each_file(File.join(in_progress_dir, '*.job')) do |job_file|
+              id, previous_attempts, timestamp = file_info(job_file)
+              next if timestamp > expiration_time
 
-            each_file(File.join(in_progress_dir, '*.job')) do |file|
-              make_new_again(file, new_dir, in_progress_dir)
+              begin
+                make_new_again(job_file, new_dir, in_progress_dir)
+              rescue Errno::ENOENT
+                # File no longer exists; skip since it's been recovered by another
+                # consumer
+              rescue ArgumentError
+                # Move operation was attempted at same time as another consumer;
+                # skip since the other process succeeded where this one didn't
+              end
             end
           end
 
           # Moves job file to inprogress directory and returns the full path
           # if the job was successfully locked by this consumer
           def make_in_progress(job, new_dir, in_progress_dir)
+            basename, previous_attempts, * = file_info(job)
+
             from = File.join(new_dir, job)
-            to = File.join(in_progress_dir, job)
+            # Add a timestamp to mark when the job was started
+            to = File.join(in_progress_dir, "#{basename}.#{previous_attempts}.#{Time.now.to_i}.job")
 
             File.open(from, "r") do |f|
               # If the lock can't be obtained, that means it's been locked
@@ -78,10 +88,18 @@ module Chore
           # Grabs the unique identifier for the job filename and the number of times
           # it's been attempted (also based on the filename)
           def file_info(job_file)
-            id, previous_attempts = File.basename(job_file, '.job').split('.')
-            [id, previous_attempts.to_i]
+            id, previous_attempts, timestamp, * = job_file.split('.')
+            [id, previous_attempts.to_i, timestamp.to_i]
           end
         end
+
+        # The minimum number of seconds to allow to pass between checks for expired
+        # jobs on the filesystem.
+        # 
+        # Since queue times are measured on the order of seconds, 1 second is the
+        # smallest duration.  It also prevents us from burning a lot of CPU looking
+        # at expired jobs when the consumer sleep interval is less than 1 second.
+        EXPIRATION_CHECK_INTERVAL = 1
 
         # The amount of time units of work can run before the queue considers
         # them timed out.  For filesystem queues, this is the global default.
@@ -99,7 +117,13 @@ module Chore
           Chore.logger.info "Starting consuming file system queue #{@queue_name} in #{self.class.queue_dir(queue_name)}"
           while running?
             begin
-              #TODO move expired job files to new directory?
+              # Move expired job files to new directory (so long as enough time has
+              # passed since we last did this check)
+              if !@last_cleaned_at || (Time.now - @last_cleaned_at).to_i >= EXPIRATION_CHECK_INTERVAL
+                self.class.cleanup(Time.now.to_i - @queue_timeout, @new_dir, @in_progress_dir)
+                @last_cleaned_at = Time.now
+              end
+
               found_files = false
               handle_jobs do |*args|
                 found_files = true
@@ -113,14 +137,17 @@ module Chore
           end
         end
 
+        # Rejects the given message from the filesystem by +id+. Currently a noop
         def reject(id)
-          Chore.logger.debug "Rejecting: #{id}"
-          make_new_again(id)
+
         end
 
         def complete(id)
           Chore.logger.debug "Completing (deleting): #{id}"
           File.delete(File.join(@in_progress_dir, id))
+        rescue Errno::ENOENT
+          # The job took too long to complete, was deemed expired, and moved
+          # back into "new".  Ignore.
         end
 
         private
@@ -134,8 +161,11 @@ module Chore
             in_progress_path = make_in_progress(job_file)
             next unless in_progress_path
 
+            # The job filename may have changed, so update it to reflect the in progress path
+            job_file = File.basename(in_progress_path)
+
             job_json = File.read(in_progress_path)
-            basename, previous_attempts = self.class.file_info(job_file)
+            basename, previous_attempts, * = self.class.file_info(job_file)
 
             # job_file is just the name which is the job id
             block.call(job_file, queue_name, queue_timeout, job_json, previous_attempts)

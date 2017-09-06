@@ -21,11 +21,6 @@ module Chore
     def self.reset_connection!
     end
 
-    # Cleans up any resources that were left behind from prior instances of the
-    # chore process.  By default, this is a no-op.
-    def self.cleanup(queue)
-    end
-
     # Consume takes a block with an arity of two. The two params are
     # |message_id,message_body| where message_id is any object that the
     # consumer will need to be able to act on a message later (reject, complete, etc)
