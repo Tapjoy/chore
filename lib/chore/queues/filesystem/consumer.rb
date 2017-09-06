@@ -21,8 +21,6 @@ module Chore
 
         Chore::CLI.register_option 'fs_queue_root', '--fs-queue-root DIRECTORY', 'Root directory for fs based queue'
         
-        FILE_QUEUE_MUTEXES = {}
-
         class << self
           # Cleans up the in-progress files by making them new again.  This should only
           # happen once per process.
@@ -30,36 +28,51 @@ module Chore
             new_dir = self.new_dir(queue)
             in_progress_dir = self.in_progress_dir(queue)
 
-            job_files(in_progress_dir).each do |file|
+            each_file(File.join(in_progress_dir, '*.job')) do |file|
               make_new_again(file, new_dir, in_progress_dir)
             end
           end
 
+          # Moves job file to inprogress directory and returns the full path
+          # if the job was successfully locked by this consumer
           def make_in_progress(job, new_dir, in_progress_dir)
-            move_job(File.join(new_dir, job), File.join(in_progress_dir, job))
+            from = File.join(new_dir, job)
+            to = File.join(in_progress_dir, job)
+
+            File.open(from, "r") do |f|
+              # If the lock can't be obtained, that means it's been locked
+              # by another consumer or the publisher of the file) -- don't
+              # block and skip it
+              if f.flock(File::LOCK_EX | File::LOCK_NB)
+                FileUtils.mv(from, to)
+                to
+              end
+            end
+          rescue Errno::ENOENT
+            # File no longer exists; skip it since it's been picked up by
+            # another consumer
           end
 
+          # Moves job file to new directory and returns the full path
           def make_new_again(job, new_dir, in_progress_dir)
             basename, previous_attempts = file_info(job)
-            move_job(File.join(in_progress_dir, job), File.join(new_dir, "#{basename}.#{previous_attempts + 1}.job"))
-          end
 
-          # Moves job file to inprogress directory and returns the full path
-          def move_job(from, to)
-            f = File.open(from, "r")
-            # wait on the lock a publisher in another process might have.
-            # Once we get the lock the file is ours to move to mark it in progress
-            f.flock(File::LOCK_EX)
-            begin
-              FileUtils.mv(f.path, to)
-            ensure
-              f.flock(File::LOCK_UN) # yes we can unlock it after its been moved, I checked
-            end
+            from = File.join(in_progress_dir, job)
+            to = File.join(new_dir, "#{basename}.#{previous_attempts + 1}.job")
+            FileUtils.mv(from, to)
+
             to
           end
 
-          def job_files(dir)
-            Dir.entries(dir).select{|e| ! e.start_with?(".")}
+          def each_file(path, limit = nil)
+            count = 0
+
+            Dir.glob(path) do |file|
+              yield File.basename(file)
+
+              count += 1
+              break if limit && count >= limit
+            end
           end
 
           # Grabs the unique identifier for the job filename and the number of times
@@ -77,26 +90,25 @@ module Chore
         def initialize(queue_name, opts={})
           super(queue_name, opts)
 
-          # Even though putting these Mutexes in this hash is, by itself, not particularly threadsafe
-          # as long as some Mutex ends up in the queue after all consumers are created we're good
-          # as they are pulled from the queue and synchronized for file operations below
-          FILE_QUEUE_MUTEXES[@queue_name] ||= Mutex.new
-
           @in_progress_dir = self.class.in_progress_dir(queue_name)
           @new_dir = self.class.new_dir(queue_name)
-          @queue_timeout = Chore.config.default_queue_timeout
+          @queue_timeout = self.class.queue_timeout(queue_name)
         end
 
-        def consume(&handler)
+        def consume
           Chore.logger.info "Starting consuming file system queue #{@queue_name} in #{self.class.queue_dir(queue_name)}"
           while running?
             begin
               #TODO move expired job files to new directory?
-              handle_jobs(&handler)
+              found_files = false
+              handle_jobs do |*args|
+                found_files = true
+                yield(*args)
+              end
             rescue => e
               Chore.logger.error { "#{self.class}#consume: #{e} #{e.backtrace * "\n"}" }
             ensure
-              sleep 5
+              sleep(Chore.config.consumer_sleep_interval) unless found_files
             end
           end
         end
@@ -108,7 +120,7 @@ module Chore
 
         def complete(id)
           Chore.logger.debug "Completing (deleting): #{id}"
-          FileUtils.rm_f(File.join(@in_progress_dir, id))
+          File.delete(File.join(@in_progress_dir, id))
         end
 
         private
@@ -116,22 +128,18 @@ module Chore
         # finds all new job files, moves them to in progress and starts the job
         # Returns a list of the job files processed
         def handle_jobs(&block)
-          # all consumers on a single queue share a lock on handling files.
-          # Each consumer comes along, processes all present files and release the lock.
-          # This isn't particularly useful but is here to allow the configuration of
-          # ThreadedConsumerStrategy with mutiple threads on a queue safely although you
-          # probably wouldn't want to do that.
-          FILE_QUEUE_MUTEXES[@queue_name].synchronize do
-            self.class.job_files(@new_dir).each do |job_file|
-              Chore.logger.debug "Found a new job #{job_file}"
-              
-              job_json = File.read(make_in_progress(job_file))
-              basename, previous_attempts = self.class.file_info(job_file)
+          self.class.each_file(File.join(@new_dir, '*.job'), Chore.config.queue_polling_size) do |job_file|
+            Chore.logger.debug "Found a new job #{job_file}"
 
-              # job_file is just the name which is the job id
-              block.call(job_file, queue_name, queue_timeout, job_json, previous_attempts)
-              Chore.run_hooks_for(:on_fetch, job_file, job_json)
-            end
+            in_progress_path = make_in_progress(job_file)
+            next unless in_progress_path
+
+            job_json = File.read(in_progress_path)
+            basename, previous_attempts = self.class.file_info(job_file)
+
+            # job_file is just the name which is the job id
+            block.call(job_file, queue_name, queue_timeout, job_json, previous_attempts)
+            Chore.run_hooks_for(:on_fetch, job_file, job_json)
           end
         end
 

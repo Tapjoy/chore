@@ -201,8 +201,8 @@ describe Chore::CLI do
 
       context 'given no value' do
         let(:command) { [] }
-        it 'is the default value, nil' do
-          subject.should == nil
+        it 'is the default value, 1' do
+          subject.should == 1
         end
       end
     end

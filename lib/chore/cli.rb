@@ -135,7 +135,7 @@ module Chore #:nodoc:
         options[:consumer_strategy] = constantize(arg)
       end
 
-      register_option 'consumer_sleep_interval', '--consumer-sleep-interval INTERVAL', Float, 'Length of time in seconds to sleep when the consumer does not find any messages. Defaults vary depending on consumer implementation'
+      register_option 'consumer_sleep_interval', '--consumer-sleep-interval INTERVAL', Float, 'Length of time in seconds to sleep when the consumer does not find any messages (default: 1)'
 
       register_option 'payload_handler', '--payload_handler CLASS_NAME', 'Name of a class to use as the payload handler (default: Chore::Job)' do |arg|
         options[:payload_handler] = constantize(arg)
@@ -145,6 +145,7 @@ module Chore #:nodoc:
 
       register_option 'dupe_on_cache_failure', '--dupe-on-cache-failure BOOLEAN', 'Determines the deduping behavior when a cache connection error occurs. When set to false, the message is assumed not to be a duplicate. (default: false)'
 
+      register_option 'queue_polling_size', '--queue_polling_size NUM', Integer, 'Amount of messages to grab on each request (default: 10)'
     end
 
     def parse_opts(argv, ignore_errors = false) #:nodoc:
