@@ -137,12 +137,9 @@ module Chore
           end
         end
 
+        # Rejects the given message from the filesystem by +id+. Currently a noop
         def reject(id)
-          Chore.logger.debug "Rejecting: #{id}"
-          make_new_again(id)
-        rescue Errno::ENOENT
-          # The job took too long to complete, was deemed expired, and moved
-          # back into "new".  Ignore.
+
         end
 
         def complete(id)
