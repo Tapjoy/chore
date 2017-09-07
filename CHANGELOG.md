@@ -11,6 +11,17 @@
 **Cleanups**
 - N/A
 
+## [v3.0.2](https://github.com/Tapjoy/chore/tree/v3.0.2) (2017-09-07)
+
+**Features**
+- N/A
+
+**Fixed bugs**
+- Fix the filesystem consumer processing incomplete job files
+
+**Cleanups**
+- N/A
+
 ## [v3.0.1](https://github.com/Tapjoy/chore/tree/v3.0.1) (2017-09-07)
 
 **Features**
