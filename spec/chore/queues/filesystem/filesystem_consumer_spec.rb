@@ -8,6 +8,7 @@ describe Chore::Queues::Filesystem::Consumer do
   let(:publisher) { Chore::Queues::Filesystem::Publisher.new }
   let(:test_queues_dir) { "test-queues" }
   let(:test_queue) { "test-queue" }
+  let(:default_timeout) { 60 }
   let(:timeout) { nil }
 
   before do
@@ -15,7 +16,7 @@ describe Chore::Queues::Filesystem::Consumer do
     if timeout
       File.open("#{config_dir}/timeout", "w") {|f| f << timeout.to_s}
     else
-      expect(Chore.config).to receive(:default_queue_timeout).and_return(60)
+      expect(Chore.config).to receive(:default_queue_timeout).and_return(default_timeout)
     end
     allow(consumer).to receive(:sleep)
   end
@@ -54,13 +55,35 @@ describe Chore::Queues::Filesystem::Consumer do
   end
 
   describe ".make_in_progress" do
-    it "should move job to in_progress dir" do
+    it "should move non-empty job to in_progress dir" do
+      now = Time.now
+
+      Timecop.freeze(now) do
+        File.open("#{new_dir}/foo.1.job", "w") {|f| f << "{}"}
+        described_class.make_in_progress("foo.1.job", new_dir, in_progress_dir, default_timeout)
+        expect(File.exist?("#{in_progress_dir}/foo.1.#{now.to_i}.job")).to eq(true)
+      end
+    end
+
+    it "should not move empty jobs to in_progress dir" do
       now = Time.now
 
       Timecop.freeze(now) do
         FileUtils.touch("#{new_dir}/foo.1.job")
-        described_class.make_in_progress("foo.1.job", new_dir, in_progress_dir)
-        expect(File.exist?("#{in_progress_dir}/foo.1.#{now.to_i}.job")).to eq(true)
+        described_class.make_in_progress("foo.1.job", new_dir, in_progress_dir, default_timeout)
+        expect(File.exist?("#{new_dir}/foo.1.job")).to eq(true)
+        expect(File.exist?("#{in_progress_dir}/foo.1.#{now.to_i}.job")).to eq(false)
+      end
+    end
+
+    it "should delete expired empty jobs" do
+      FileUtils.touch("#{new_dir}/foo.1.job")
+
+      now = Time.now + default_timeout
+      Timecop.freeze(now) do
+        described_class.make_in_progress("foo.1.job", new_dir, in_progress_dir, default_timeout)
+        expect(File.exist?("#{new_dir}/foo.1.job")).to eq(false)
+        expect(File.exist?("#{in_progress_dir}/foo.1.#{now.to_i}.job")).to eq(false)
       end
     end
   end

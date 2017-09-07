@@ -42,21 +42,38 @@ module Chore
 
           # Moves job file to inprogress directory and returns the full path
           # if the job was successfully locked by this consumer
-          def make_in_progress(job, new_dir, in_progress_dir)
+          def make_in_progress(job, new_dir, in_progress_dir, queue_timeout)
             basename, previous_attempts, * = file_info(job)
 
             from = File.join(new_dir, job)
             # Add a timestamp to mark when the job was started
             to = File.join(in_progress_dir, "#{basename}.#{previous_attempts}.#{Time.now.to_i}.job")
 
-            File.open(from, "r") do |f|
-              # If the lock can't be obtained, that means it's been locked
-              # by another consumer or the publisher of the file) -- don't
-              # block and skip it
-              if f.flock(File::LOCK_EX | File::LOCK_NB)
-                FileUtils.mv(from, to)
-                to
+            # If the file is non-zero, this means it was successfully written to
+            # by a publisher and we can attempt to move it to "in progress".
+            # 
+            # There is a small window of time where the file can be zero, but
+            # the publisher hasn't finished writing to the file yet.
+            if !File.zero?(from)
+              File.open(from, "r") do |f|
+                # If the lock can't be obtained, that means it's been locked
+                # by another consumer or the publisher of the file) -- don't
+                # block and skip it
+                if f.flock(File::LOCK_EX | File::LOCK_NB)
+                  FileUtils.mv(from, to)
+                  to
+                end
               end
+            elsif (Time.now - File.ctime(from)) >= queue_timeout
+              # The file is empty (zero bytes) and enough time has passed since
+              # the file was written that we can safely assume it will never
+              # get written to be the publisher.
+              # 
+              # The scenario where this happens is when the publisher created
+              # the file, but the process was killed before it had a chance to
+              # actually write the data.
+              File.delete(from)
+              nil
             end
           rescue Errno::ENOENT
             # File no longer exists; skip it since it's been picked up by
@@ -176,7 +193,7 @@ module Chore
         end
 
         def make_in_progress(job)
-          self.class.make_in_progress(job, @new_dir, @in_progress_dir)
+          self.class.make_in_progress(job, @new_dir, @in_progress_dir, @queue_timeout)
         end
 
         def make_new_again(job)
