@@ -11,7 +11,18 @@
 **Cleanups**
 - N/A
 
-## [v3.0.0](https://github.com/Tapjoy/chore/tree/v3.0.0) (2017-09-07)
+## [v3.0.1](https://github.com/Tapjoy/chore/tree/v3.0.1) (2017-09-07)
+
+**Features**
+- N/A
+
+**Fixed bugs**
+- Fix performance regression when listing files in the filesystem queue
+
+**Cleanups**
+- N/A
+
+## [v3.0.0](https://github.com/Tapjoy/chore/tree/v3.0.0) (2017-09-06)
 
 **Features**
 - Improve filesystem consumer speed by allowing configuration of time between filesystem lookups
