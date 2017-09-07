@@ -24,7 +24,7 @@ module Chore
         class << self
           # Cleans up expired in-progress files by making them new again.
           def cleanup(expiration_time, new_dir, in_progress_dir)
-            each_file(File.join(in_progress_dir, '*.job')) do |job_file|
+            each_file(in_progress_dir) do |job_file|
               id, previous_attempts, timestamp = file_info(job_file)
               next if timestamp > expiration_time
 
@@ -77,8 +77,10 @@ module Chore
           def each_file(path, limit = nil)
             count = 0
 
-            Dir.glob(path) do |file|
-              yield File.basename(file)
+            Dir.foreach(path) do |file|
+              next if file.start_with?('.')
+
+              yield file
 
               count += 1
               break if limit && count >= limit
@@ -155,7 +157,7 @@ module Chore
         # finds all new job files, moves them to in progress and starts the job
         # Returns a list of the job files processed
         def handle_jobs(&block)
-          self.class.each_file(File.join(@new_dir, '*.job'), Chore.config.queue_polling_size) do |job_file|
+          self.class.each_file(@new_dir, Chore.config.queue_polling_size) do |job_file|
             Chore.logger.debug "Found a new job #{job_file}"
 
             in_progress_path = make_in_progress(job_file)
