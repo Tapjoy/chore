@@ -33,7 +33,8 @@ module Chore
         def filename(queue_name, job_name)
           now = Time.now.strftime "%Y%m%d-%H%M%S-%6N"
           previous_attempts = 0
-          File.join(new_dir(queue_name), "#{queue_name}-#{job_name}-#{now}.#{previous_attempts}.job")
+          pid = Process.pid
+          File.join(new_dir(queue_name), "#{queue_name}-#{job_name}-#{pid}-#{now}.#{previous_attempts}.job")
         end
       end
     end
