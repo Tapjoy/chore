@@ -20,7 +20,7 @@ module Chore
           while !published
             # keep trying to get a file with nothing in it meaning we just created it
             # as opposed to us getting someone else's file that hasn't been processed yet.
-            File.open(filename(queue_name, job[:class].to_s), "w") do |f|
+            File.open(filename(queue_name, job[:class].to_s), "a") do |f|
               if f.flock(File::LOCK_EX | File::LOCK_NB) && f.size == 0
                 f.write(encoded_job)
                 published = true
