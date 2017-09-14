@@ -11,6 +11,17 @@
 **Cleanups**
 - N/A
 
+## [v3.1.0](https://github.com/Tapjoy/chore/tree/v3.1.0) (2017-09-15)
+
+**Features**
+- N/A
+
+**Fixed bugs**
+- Fix the filesystem publisher potentially leaving job files locked for process's lifetime
+
+**Cleanups**
+- N/A
+
 ## [v3.0.2](https://github.com/Tapjoy/chore/tree/v3.0.2) (2017-09-07)
 
 **Features**
