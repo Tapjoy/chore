@@ -42,6 +42,20 @@ module Chore
       @started_at + total_timeout
     end
 
+    def duplicate_work?(item)
+      # if we've got a duplicate, remove the message from the queue by not actually running and also not reporting any errors
+      payload = options[:payload_handler].payload(item.decoded_message)
+
+       # if we're hitting the custom dedupe key, we want to remove this message from the queue
+      if item.klass.has_dedupe_lambda? && item.consumer.duplicate_message?(item.klass.dedupe_key(*payload), item.klass, item.queue_timeout)
+        Chore.logger.info { "Found and deleted duplicate job #{item.klass}"}
+        item.consumer.complete(item.id)
+        return true
+      end
+
+      return false
+    end
+
     # The workhorse. Do the work, all of it. This will block for an entirely unspecified amount
     # of time based on the work to be performed. This will:
     # * Decode each message.
@@ -58,6 +72,9 @@ module Chore
         begin
           item.decoded_message = options[:payload_handler].decode(item.message)
           item.klass = options[:payload_handler].payload_class(item.decoded_message)
+
+          next if duplicate_work?(item)
+
           Chore.run_hooks_for(:worker_to_start, item)
           start_item(item)
         rescue => e

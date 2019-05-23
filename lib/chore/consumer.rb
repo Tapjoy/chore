@@ -53,5 +53,15 @@ module Chore
     def provide_work(n)
       raise NotImplementedError
     end
+
+    # now, given an arbitrary key and klass, have we seen the key already?
+    def duplicate_message?(dedupe_key, klass, queue_timeout)
+      dupe_detector.found_duplicate?(:id=>dedupe_key, :queue=>klass.to_s, :visibility_timeout=>queue_timeout)
+    end
+
+    def dupe_detector
+      @dupes ||= DuplicateDetector.new({:servers => Chore.config.dedupe_servers,
+                                        :dupe_on_cache_failure => false})
+    end
   end
 end

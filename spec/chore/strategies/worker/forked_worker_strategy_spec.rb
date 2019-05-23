@@ -23,6 +23,10 @@ describe Chore::Strategy::ForkedWorkerStrategy do
   let!(:worker) { Chore::Worker.new(job) }
   let(:pid) { Random.rand(2048) }
 
+  before(:each) do
+    allow(consumer).to receive(:duplicate_message?).and_return(false)
+  end
+
   after(:each) do
     allow(Process).to receive(:kill) { nil }
     allow(Process).to receive(:wait) { pid }

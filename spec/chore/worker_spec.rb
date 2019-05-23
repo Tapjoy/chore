@@ -2,6 +2,10 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Chore::Worker do
 
+  before(:each) do
+    allow(consumer).to receive(:duplicate_message?).and_return(false)
+  end
+
   class SimpleJob
     include Chore::Job
     queue_options :name => 'test',
@@ -10,6 +14,30 @@ describe Chore::Worker do
 
     def perform(*args)
       return args
+    end
+  end
+
+  class SimpleDedupeJob
+    include Chore::Job
+    queue_options :name => 'dedupe_test',
+      :publisher => FakePublisher,
+      :max_attempts => 100,
+      :dedupe_lambda => lambda { |first, second, third| first }
+    
+    def perform(first, second, third)
+      return second
+    end
+  end
+
+  class InvalidDedupeJob
+    include Chore::Job
+    queue_options :name => 'invalid_dedupe_test',
+      :publisher => FakePublisher,
+      :max_attempts => 100,
+      :dedupe_lambda => lambda { |first, second, third| first }
+    
+    def perform(first, second)
+      return second
     end
   end
 
@@ -39,6 +67,33 @@ describe Chore::Worker do
       SimpleJob.should_receive(:perform).exactly(10).times
       consumer.should_receive(:complete).exactly(10).times
       Chore::Worker.start(work, {:payload_handler => payload_handler})
+    end
+
+    context 'when the job has a dedupe_lambda defined' do
+      context 'when the value being deduped on is unique' do
+        let(:job_args) { [rand,2,'3'] }
+        let(:encoded_job) { Chore::Encoder::JsonEncoder.encode(job) }
+        let(:job) { SimpleDedupeJob.job_hash(job_args) }
+        it 'should call complete for each unique value' do
+          allow(consumer).to receive(:duplicate_message?).and_return(false)
+          work = []
+          work << Chore::UnitOfWork.new(1, 'dedupe_test', 60, Chore::Encoder::JsonEncoder.encode(SimpleDedupeJob.job_hash([rand,2,'3'])), 0, consumer)
+          SimpleDedupeJob.should_receive(:perform).exactly(1).times
+          consumer.should_receive(:complete).exactly(1).times
+          Chore::Worker.start(work, {:payload_handler => payload_handler})
+        end
+      end
+
+      context 'when the dedupe lambda does not take the same number of arguments as perform' do
+        it 'should raise an error and not complete the job' do
+          work = []
+          work << Chore::UnitOfWork.new(1, 'invalid_dedupe_test', 60, Chore::Encoder::JsonEncoder.encode(InvalidDedupeJob.job_hash([rand,2,'3'])), 0, consumer)
+          work << Chore::UnitOfWork.new(2, 'invalid_dedupe_test', 60, Chore::Encoder::JsonEncoder.encode(InvalidDedupeJob.job_hash([rand,2,'3'])), 0, consumer)
+          work << Chore::UnitOfWork.new(1, 'invalid_dedupe_test', 60, Chore::Encoder::JsonEncoder.encode(InvalidDedupeJob.job_hash([rand,2,'3'])), 0, consumer)
+          consumer.should_not_receive(:complete)
+          Chore::Worker.start(work, {:payload_handler => payload_handler})
+        end
+      end
     end
   end
 
