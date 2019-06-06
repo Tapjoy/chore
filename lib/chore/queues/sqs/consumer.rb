@@ -70,24 +70,12 @@ module Chore
           msg = queue.receive_messages(:limit => sqs_polling_amount, :attributes => [:receive_count])
           messages = *msg
           messages.each do |message|
-            unless duplicate_message?(message)
-              block.call(message.handle, queue_name, queue_timeout, message.body, message.receive_count - 1)
+            unless duplicate_message?(message.id, message.queue.url, message.queue.visibility_timeout)
+              block.call(message.handle, queue_name, message.queue.visibility_timeout, message.body, message.receive_count - 1)
             end
             Chore.run_hooks_for(:on_fetch, message.handle, message.body)
           end
           messages
-        end
-
-        # Checks if the given message has already been received within the timeout window for this queue
-        def duplicate_message?(message)
-          dupe_detector.found_duplicate?(:id=>message.id, :queue=>message.queue.url, :visibility_timeout=>message.queue.visibility_timeout)
-        end
-
-        # Returns the instance of the DuplicateDetector used to ensure unique messages.
-        # Will create one if one doesn't already exist
-        def dupe_detector
-          @dupes ||= DuplicateDetector.new({:servers => Chore.config.dedupe_servers,
-                                            :dupe_on_cache_failure => Chore.config.dupe_on_cache_failure})
         end
 
         # Retrieves the SQS queue with the given +name+. The method will cache the results to prevent round trips on

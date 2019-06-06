@@ -60,6 +60,12 @@ module Chore
             raise ArgumentError, "#{self.to_s}: backoff must accept a single argument"
           end
         end
+
+        if @chore_options.key?(:dedupe_lambda)
+          if !@chore_options[:dedupe_lambda].is_a?(Proc)
+            raise ArgumentError, "#{self.to_s}: dedupe_lambda must be a lambda or Proc"
+          end
+        end
       end
 
       # This is a method so it can be overriden to create additional required
@@ -107,6 +113,17 @@ module Chore
       # the key at this point.
       def has_backoff?
         self.options.key?(:backoff)
+      end
+
+      def has_dedupe_lambda?
+        self.options.key?(:dedupe_lambda)
+      end
+
+      def dedupe_key(*args)
+        return unless has_dedupe_lambda?
+
+        # run the proc to get the key
+        self.options[:dedupe_lambda].call(*args).to_s
       end
     end #ClassMethods
 
