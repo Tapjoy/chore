@@ -70,8 +70,8 @@ module Chore
           msg = queue.receive_messages(:limit => sqs_polling_amount, :attributes => [:receive_count])
           messages = *msg
           messages.each do |message|
-            unless duplicate_message?(message.id, message.queue.url, message.queue.visibility_timeout)
-              block.call(message.handle, queue_name, message.queue.visibility_timeout, message.body, message.receive_count - 1)
+            unless duplicate_message?(message.id, message.queue.url, queue_timeout)
+              block.call(message.handle, queue_name, queue_timeout, message.body, message.receive_count - 1)
             end
             Chore.run_hooks_for(:on_fetch, message.handle, message.body)
           end
