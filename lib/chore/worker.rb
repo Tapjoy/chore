@@ -47,10 +47,18 @@ module Chore
       payload = options[:payload_handler].payload(item.decoded_message)
 
        # if we're hitting the custom dedupe key, we want to remove this message from the queue
-      if item.klass.has_dedupe_lambda? && item.consumer.duplicate_message?(item.klass.dedupe_key(*payload), item.klass, item.queue_timeout)
-        Chore.logger.info { "Found and deleted duplicate job #{item.klass}"}
-        item.consumer.complete(item.id)
-        return true
+      if item.klass.has_dedupe_lambda?
+        dedupe_key = item.klass.dedupe_key(*payload)
+        if dedupe_key.nil? || dedupe_key.strip.empty? # if the dedupe key is nil, don't continue with the rest of the dedupe lambda logic
+          Chore.logger.info { "#{item.klass} dedupe key nil, skipping memcached lookup." }
+          return false
+        end
+
+        if item.consumer.duplicate_message?(dedupe_key, item.klass, item.queue_timeout)
+          Chore.logger.info { "Found and deleted duplicate job #{item.klass}"}
+          item.consumer.complete(item.id)
+          return true
+        end
       end
 
       return false
