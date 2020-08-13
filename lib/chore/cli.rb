@@ -92,8 +92,8 @@ module Chore #:nodoc:
       validate_strategy!
     end
 
-
     private
+
     def setup_options #:nodoc:
       register_option "queues", "-q", "--queues QUEUE1,QUEUE2", "Names of queues to process (default: all known)" do |arg|
         # This will remove duplicates. We ultimately force this to be a Set further below
@@ -289,4 +289,3 @@ module Chore #:nodoc:
     end
   end
 end
-

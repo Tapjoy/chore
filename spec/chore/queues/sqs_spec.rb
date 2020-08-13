@@ -10,13 +10,13 @@ module Chore
       let(:fake_queue) {double(Object)}
 
       before(:each) do
-        allow(AWS::SQS).to receive(:new).and_return(fake_sqs)
+        allow(Aws::SQS::Client).to receive(:new).and_return(fake_sqs)
         allow(Chore).to receive(:prefixed_queue_names).and_return([queue_name])
         allow(fake_queue).to receive(:delete)
 
         allow(fake_queue_collection).to receive(:[]).and_return(fake_queue)
         allow(fake_queue_collection).to receive(:create)
-        allow(fake_queue_collection).to receive(:url_for).with(queue_name).and_return(queue_url)
+        allow(fake_queue_collection).to receive(:get_queue_url).with(queue_name).and_return(queue_url)
 
         allow(fake_sqs).to receive(:queues).and_return(fake_queue_collection)
       end

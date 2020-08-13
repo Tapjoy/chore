@@ -15,17 +15,17 @@ module Chore
         @running = true
       end
 
-      # The main entry point of the Batcher, <tt>schedule</tt> begins a thread with the provided +batch_timeout+ 
-      # as the only argument. While the Batcher is running, it will attempt to check if either the batch is full, 
+      # The main entry point of the Batcher, <tt>schedule</tt> begins a thread with the provided +batch_timeout+
+      # as the only argument. While the Batcher is running, it will attempt to check if either the batch is full,
       # or if the +batch_timeout+ has elapsed since the oldest message was added. If either case is true, the
       # items in the batch will be executed.
-      # 
+      #
       # Calling <tt>stop</tt> will cause the thread to finish it's current check, and exit
       def schedule(batch_timeout)
         @thread = Thread.new(batch_timeout) do |timeout|
-          Chore.logger.info "Batching timeout thread starting"
+          Chore.logger.info "Batching thread starting with #{batch_timeout} second timeout"
           while @running do
-            begin 
+            begin
               oldest_item = @batch.first
               timestamp = oldest_item && oldest_item.created_at
               Chore.logger.debug "Oldest message in batch: #{timestamp}, size: #{@batch.size}"
@@ -33,7 +33,7 @@ module Chore
                 Chore.logger.debug "Batching timeout reached (#{timestamp + timeout}), current size: #{@batch.size}"
                 self.execute(true)
               end
-              sleep(1) 
+              sleep(1)
             rescue => e
               Chore.logger.error "Batcher#schedule raised an exception: #{e.inspect}"
             end
