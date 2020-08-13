@@ -161,7 +161,7 @@ module Chore
 
         end
 
-        def complete(id)
+        def complete(id, opts = {})
           Chore.logger.debug "Completing (deleting): #{id}"
           File.delete(File.join(@in_progress_dir, id))
         rescue Errno::ENOENT
@@ -186,8 +186,9 @@ module Chore
             job_json = File.read(in_progress_path)
             basename, previous_attempts, * = self.class.file_info(job_file)
 
-            # job_file is just the name which is the job id
-            block.call(job_file, queue_name, queue_timeout, job_json, previous_attempts)
+            # job_file is just the name which is the job id. 2nd argument (:receipt_handle) is nil because the
+            # filesystem is dealt with directly, as opposed to being an external API
+            block.call(job_file, nil, queue_name, queue_timeout, job_json, previous_attempts)
             Chore.run_hooks_for(:on_fetch, job_file, job_json)
           end
         end

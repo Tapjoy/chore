@@ -1,8 +1,8 @@
 module Chore
   # Raised when Chore is booting up, but encounters a set of configuration that is impossible to boot from. Typically
-  # you'll find additional information around the cause of the exception by examining the logfiles
+  # you'll find additional information around the cause of the exception by examining the logfiles.
+  # You can raise this exception if your queue is in a terrible state and must shut down.
   class TerribleMistake < Exception
-    # You can raise this exception if your queue is in a terrible state and must shut down
   end
 
   # Base class for a Chore Consumer. Provides the basic interface to adhere to for building custom
@@ -11,6 +11,13 @@ module Chore
 
     attr_accessor :queue_name
 
+    # Raise this exception if your message has been processed but you can't delete it from the queue.
+    class CouldNotComplete < Exception; end
+
+    # @param [String] queue_name Name of queue to be consumed from
+    # @param [Hash] opts
+    #
+    # @return [Chore::Consumer] if so
     def initialize(queue_name, opts={})
       @queue_name = queue_name
       @running = true
@@ -35,7 +42,7 @@ module Chore
     end
 
     # Complete should mark a message as finished. It takes a message_id as returned via consume
-    def complete(message_id)
+    def complete(message_id, opts = {})
       raise NotImplementedError
     end
 
@@ -68,6 +75,8 @@ module Chore
 
     def handle_messages(&block)
       raise NotImplementedError
+      # Should do a block.call(id, receipt_id, queue_name, queue_timeout, job_json, previous_attempts)
+      # Arguments to the block are a minimum set. See Chore::UnitOfWork.
     end
   end
 end
