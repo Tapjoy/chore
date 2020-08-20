@@ -113,6 +113,24 @@ describe Chore::Strategy::Ipc do
     end
   end
 
+  context '#worker_socket_writable?' do
+    it 'should write a health check signal on the socket' do
+      expect(@dummy_instance).to receive(:send_msg).with(socket, 'H')
+      @dummy_instance.worker_socket_writable?(socket)
+    end
+
+    it 'should be true if no exception occurs' do
+      expect(socket).to receive(:send)
+      expect(@dummy_instance.worker_socket_writable?(socket)).to eq(true)
+    end
+
+    it 'should be false if an exception occurs' do
+      expect(socket).to receive(:send).and_raise(StandardError)
+      expect(@dummy_instance.worker_socket_writable?(socket)).to eq(false)
+    end
+  end
+
+
   context '#select_sockets' do
     it 'should return a readable socket if one is found' do
       allow(IO).to receive(:select).with([socket], nil, [socket], 0.5).and_return([[socket], [], []])

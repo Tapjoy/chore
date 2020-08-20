@@ -30,6 +30,7 @@ describe Chore::Strategy::ThrottledConsumerStrategy do
   let(:strategy) { Chore::Strategy::ThrottledConsumerStrategy.new(fetcher) }
   let(:config) { double("config") }
   let(:sized_queue) {double("sized_queue")}
+  let(:return_queue) {double("return_queue")}
   let(:work) { double("work") }
   let(:msg) { OpenStruct.new( :id => 1, :body => "test" ) }
 
@@ -66,7 +67,7 @@ describe Chore::Strategy::ThrottledConsumerStrategy do
     end
   end
 
-  context '#fetch_work' do
+  context '#provide_work' do
     it 'should return upto n units of work' do
       n = 2
       strategy.instance_variable_set(:@queue, sized_queue)
@@ -87,6 +88,47 @@ describe Chore::Strategy::ThrottledConsumerStrategy do
       res = strategy.provide_work(n)
       expect(res.size).to eq(0)
       expect(res).to be_a_kind_of(Array)
+    end
+
+    it 'should return units of work from the return queue first' do
+      n = 2
+      strategy.instance_variable_set(:@return_queue, return_queue)
+      allow(return_queue).to receive(:empty?).and_return(false)
+      allow(return_queue).to receive(:size).and_return(10)
+      allow(return_queue).to receive(:pop).and_return(work)
+      expect(return_queue).to receive(:pop).exactly(n).times
+      res = strategy.provide_work(n)
+      expect(res.size).to eq(n)
+      expect(res).to be_a_kind_of(Array)
+    end
+
+    it 'should return units of work from all queues if return queue is small' do
+      n = 2
+
+      strategy.instance_variable_set(:@return_queue, return_queue)
+      allow(return_queue).to receive(:empty?).and_return(false, true)
+      allow(return_queue).to receive(:size).and_return(1)
+      allow(return_queue).to receive(:pop).and_return(work)
+      expect(return_queue).to receive(:pop).once
+
+      strategy.instance_variable_set(:@queue, sized_queue)
+      allow(sized_queue).to receive(:size).and_return(1)
+      allow(sized_queue).to receive(:pop).and_return(work)
+      expect(sized_queue).to receive(:pop).once
+
+      res = strategy.provide_work(n)
+      expect(res.size).to eq(n)
+      expect(res).to be_a_kind_of(Array)
+    end
+  end
+
+  context 'return_work' do
+    it 'should add it to the internal return queue' do
+      strategy.instance_variable_set(:@return_queue, [])
+      strategy.send(:return_work, [work])
+      strategy.send(:return_work, [work])
+      return_queue = strategy.instance_variable_get(:@return_queue)
+      expect(return_queue).to eq([work, work])
     end
   end
 

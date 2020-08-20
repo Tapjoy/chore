@@ -57,6 +57,8 @@ describe Chore::Strategy::PreForkedWorkerStrategy do
 
   context '#worker_assignment_loop' do
     before(:each) do
+      allow(socket).to receive(:send)
+
       allow(strategy).to receive(:running?).and_return(true, false)
       strategy.instance_variable_set(:@self_read, pipe)
       allow(strategy).to receive(:select_sockets).and_return([[socket], nil, nil])
@@ -90,6 +92,19 @@ describe Chore::Strategy::PreForkedWorkerStrategy do
     it 'should handle signals if alerted on a self pipe' do
       allow(strategy).to receive(:select_sockets).and_return([[pipe], nil, nil])
       expect(strategy).to receive(:handle_signal).once
+      strategy.send(:worker_assignment_loop)
+    end
+
+    it 'should check if sockets are writable' do
+      allow(strategy).to receive(:handle_signal)
+      expect(socket).to receive(:send).once
+      strategy.send(:worker_assignment_loop)
+    end
+
+    it 'should not assign jobs if sockets are not writable' do
+      allow(strategy).to receive(:handle_signal)
+      allow(socket).to receive(:send).and_raise(IOError)
+      expect(work_distributor).to_not receive(:fetch_and_assign_jobs)
       strategy.send(:worker_assignment_loop)
     end
 

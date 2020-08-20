@@ -54,5 +54,10 @@ module Chore
     def fetch_work(n)
       @fetcher.provide_work(n)
     end
+
+    # gives work back to the fetcher in case it couldn't be assigned
+    def return_work(work_units)
+      @fetcher.return_work(work_units)
+    end
   end
 end

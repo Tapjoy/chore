@@ -68,6 +68,12 @@ module Chore
           # select_sockets returns a list of readable sockets
           # This would include worker connections and the read end
           # of the self-pipe.
+          # 
+          # Note this not only returns sockets from live workers
+          # that are readable, but it also returns sockets from
+          # *dead* workers.  If the worker hasn't already been reaped,
+          # then we might get a socket for a dead worker than will
+          # fail on write.
           readables, = select_sockets(w_sockets, @self_read)
 
           # If select timed out, retry
@@ -79,6 +85,19 @@ module Chore
           # Handle the signal from the self-pipe
           if readables.include?(@self_read)
             handle_signal
+            next
+          end
+
+          # Confirm they're writable as well!  A socket will be readable but not
+          # writable if the worker has died but not yet been reaped by the
+          # master.
+          readables.select! do |readable|
+            worker_socket_writable?(readable)
+          end
+
+          # Check again to see if there are still sockets available
+          if readables.empty?
+            Chore.logger.debug 'PWS: All sockets busy.. retry'
             next
           end
 

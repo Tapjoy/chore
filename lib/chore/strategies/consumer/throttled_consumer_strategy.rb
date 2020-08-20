@@ -4,6 +4,7 @@ module Chore
       def initialize(fetcher)
         @fetcher = fetcher
         @queue = SizedQueue.new(Chore.config.num_workers)
+        @return_queue = Queue.new
         @max_queue_size = Chore.config.num_workers
         @consumers_per_queue = Chore.config.threads_per_queue
         @running = true
@@ -39,6 +40,7 @@ module Chore
           @consumers.each do |consumer|
             Chore.logger.info "TCS: Stopping consumer: #{consumer.object_id}"
             @queue.clear
+            @return_queue.clear
             consumer.stop
           end
         end
@@ -52,12 +54,26 @@ module Chore
       # return upto number_of_free_workers work objects
       def provide_work(no_free_workers)
         work_units = []
-        free_workers = [no_free_workers, @queue.size].min
+        free_workers = [no_free_workers, @queue.size + @return_queue.size].min
         while free_workers > 0
-          work_units << @queue.pop
+          # Drain from the return queue first, then the consumer thread queue
+          queue = @return_queue.empty? ? @queue : @return_queue
+          work_units << queue.pop
           free_workers -= 1
         end
         work_units
+      end
+
+      # Gives work back to the queue in case it couldn't be assigned
+      # 
+      # This will go into a separate queue so that it will be prioritized
+      # over other work that hasn't been attempted yet.  It also avoids
+      # a deadlock where @queue is full and the master is waiting to return
+      # work that it couldn't assign.
+      def return_work(work_units)
+        work_units.each do |work|
+          @return_queue.push(work)
+        end
       end
 
       private
