@@ -5,6 +5,7 @@ module Chore
     module Ipc #:nodoc:
       BIG_ENDIAN = 'L>'.freeze
       MSG_BYTES = 4
+      READY_MSG = 'R'
 
       def create_master_socket
         File.delete socket_file if File.exist? socket_file
@@ -50,7 +51,7 @@ module Chore
       end
 
       def signal_ready(socket)
-        socket.puts 'R'
+        socket.puts READY_MSG
       rescue Errno::EPIPE => ex
         Chore.logger.info 'IPC: Connection was shutdown by master'
         raise ex

@@ -35,6 +35,13 @@ describe Chore::Manager do
         manager.assign(work)
       end
     end
+
+    describe 'returning work' do
+      it 'should return work to the fetcher' do
+        expect(fetcher).to receive(:return_work).with([work])
+        manager.return_work([work])
+      end
+    end
   end
 
 end
