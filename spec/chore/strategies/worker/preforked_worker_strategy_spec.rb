@@ -57,7 +57,7 @@ describe Chore::Strategy::PreForkedWorkerStrategy do
 
   context '#worker_assignment_loop' do
     before(:each) do
-      allow(socket).to receive(:send)
+      allow(socket).to receive(:eof?).and_return(false)
 
       allow(strategy).to receive(:running?).and_return(true, false)
       strategy.instance_variable_set(:@self_read, pipe)
@@ -95,15 +95,15 @@ describe Chore::Strategy::PreForkedWorkerStrategy do
       strategy.send(:worker_assignment_loop)
     end
 
-    it 'should check if sockets are writable' do
+    it 'should check if sockets have hit EOF' do
       allow(strategy).to receive(:handle_signal)
-      expect(socket).to receive(:send).once
+      expect(socket).to receive(:eof?).once.and_return(false)
       strategy.send(:worker_assignment_loop)
     end
 
-    it 'should not assign jobs if sockets are not writable' do
+    it 'should not assign jobs if sockets have hit EOF' do
       allow(strategy).to receive(:handle_signal)
-      allow(socket).to receive(:send).and_raise(IOError)
+      allow(socket).to receive(:eof?).and_return(true)
       expect(work_distributor).to_not receive(:fetch_and_assign_jobs)
       strategy.send(:worker_assignment_loop)
     end

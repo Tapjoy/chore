@@ -88,12 +88,11 @@ module Chore
             next
           end
 
-          # Confirm they're writable as well!  A socket will be readable but not
-          # writable if the worker has died but not yet been reaped by the
-          # master.
-          readables.select! do |readable|
-            worker_socket_writable?(readable)
-          end
+          # Confirm they're actually alive!  A socket will be readable even
+          # if the worker has died but not yet been reaped by the master.  We
+          # need to confirm that the "Ready" flag has actually been written by
+          # the worker and readable by the master.
+          readables.reject! {|readable| readable.eof?}
 
           # Check again to see if there are still sockets available
           if readables.empty?

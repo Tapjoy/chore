@@ -91,18 +91,6 @@ describe Chore::Strategy::PreforkedWorker do
       end
     end
 
-    it 'should ignore health checks' do
-      allow(preforkedworker).to receive(:running?).and_return(true, false)
-      allow(preforkedworker).to receive(:read_msg).and_return('H')
-      expect(preforkedworker).to_not receive(:process_work)
-      expect(preforkedworker).to_not receive(:signal_ready)
-      begin
-        preforkedworker.send(:worker, socket)
-      rescue SystemExit=>e
-        expect(e.status).to eq(0)
-      end
-    end
-
     it 'should exit the process if the connection to master is closed' do
       allow(preforkedworker).to receive(:running?).and_return(true)
       allow(preforkedworker).to receive(:read_msg).and_raise(Errno::ECONNRESET)
