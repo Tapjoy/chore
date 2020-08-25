@@ -15,12 +15,12 @@ module Chore
       # Once complete job files are deleted.
       # If rejected they are moved back into new and will be processed again.  This may not be the
       # desired behavior long term and we may want to add configuration to this class to allow more
-      # creating failure handling and retrying. 
+      # creating failure handling and retrying.
       class Consumer < Chore::Consumer
         extend FilesystemQueue
 
         Chore::CLI.register_option 'fs_queue_root', '--fs-queue-root DIRECTORY', 'Root directory for fs based queue'
-        
+
         class << self
           # Cleans up expired in-progress files by making them new again.
           def cleanup(expiration_time, new_dir, in_progress_dir)
@@ -51,7 +51,7 @@ module Chore
 
             # If the file is non-zero, this means it was successfully written to
             # by a publisher and we can attempt to move it to "in progress".
-            # 
+            #
             # There is a small window of time where the file can be zero, but
             # the publisher hasn't finished writing to the file yet.
             if !File.zero?(from)
@@ -68,7 +68,7 @@ module Chore
               # The file is empty (zero bytes) and enough time has passed since
               # the file was written that we can safely assume it will never
               # get written to be the publisher.
-              # 
+              #
               # The scenario where this happens is when the publisher created
               # the file, but the process was killed before it had a chance to
               # actually write the data.
@@ -114,7 +114,7 @@ module Chore
 
         # The minimum number of seconds to allow to pass between checks for expired
         # jobs on the filesystem.
-        # 
+        #
         # Since queue times are measured on the order of seconds, 1 second is the
         # smallest duration.  It also prevents us from burning a lot of CPU looking
         # at expired jobs when the consumer sleep interval is less than 1 second.
@@ -144,7 +144,7 @@ module Chore
               end
 
               found_files = false
-              handle_jobs do |*args|
+              handle_messages do |*args|
                 found_files = true
                 yield(*args)
               end
@@ -173,7 +173,7 @@ module Chore
 
         # finds all new job files, moves them to in progress and starts the job
         # Returns a list of the job files processed
-        def handle_jobs(&block)
+        def handle_messages(&block)
           self.class.each_file(@new_dir, Chore.config.queue_polling_size) do |job_file|
             Chore.logger.debug "Found a new job #{job_file}"
 
@@ -203,4 +203,3 @@ module Chore
     end
   end
 end
-

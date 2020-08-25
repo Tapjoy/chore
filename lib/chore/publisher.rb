@@ -19,6 +19,12 @@ module Chore
     def publish(queue_name,job)
       raise NotImplementedError
     end
+
+    # Sets a flag that instructs the publisher to reset the connection the next time it's used.
+    # Should be overriden in publishers (but is not required)
+    def self.reset_connection!
+    end
+
   protected
 
     def encode_job(job)

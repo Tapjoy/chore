@@ -63,5 +63,11 @@ module Chore
       @dupes ||= DuplicateDetector.new({:servers => Chore.config.dedupe_servers,
                                         :dupe_on_cache_failure => false})
     end
+
+    private
+
+    def handle_messages(&block)
+      raise NotImplementedError
+    end
   end
 end
