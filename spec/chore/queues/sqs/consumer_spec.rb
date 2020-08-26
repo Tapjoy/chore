@@ -43,9 +43,7 @@ describe Chore::Queues::SQS::Consumer do
       end
 
       it 'should create a queue object' do
-        allow(consumer).to receive(:queue_object).and_return(queue_object)
-        expect(consumer).to receive(:queue_object)
-        expect(consumer.send(:queue_object)).to eq(queue_object)
+        expect(consumer.send(:queue)).to_not be_nil
         consumer.consume
       end
 
