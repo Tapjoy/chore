@@ -3,11 +3,21 @@ require 'spec_helper'
 describe Chore::Queues::SQS::Consumer do
   let(:queue_name) { "test_queue" }
   let(:queue_uri) { Aws::SQS::Types::GetQueueUrlResult.new(queue_url: "http://amazon.sqs.url/queues/#{queue_name}") }
-  let(:queue_object) { double(Aws::SQS::Queue) }
+  let(:queue_object) { double(Aws::SQS::Queue, attributes: {'VisibilityTimeout' => rand(10)}) }
   let(:options) { {} }
   let(:consumer) { Chore::Queues::SQS::Consumer.new(queue_name) }
-  let(:message) { Aws::SQS::Message.new(queue_url: queue_uri.queue_url, receipt_handle: "receipt_handle") }
   let(:message_data) {{:id=>message.message_id, :receipt_handle=>message.receipt_handle, :queue=>message.queue, :visibility_timeout=>10}}
+  let(:message) do
+    Aws::SQS::Message.new(
+      queue_url: queue_uri.queue_url,
+      receipt_handle: "receipt_handle",
+      data: {
+        message_id: 'test message',
+        attributes: {
+          'ApproximateReceiveCount' => rand(10)
+        }
+      })
+  end
   let(:sqs_empty_message_collection) { double(Aws::SQS::Message::Collection.new([])) }
   let(:sqs) { double(Aws::SQS::Client) }
   let(:backoff_func) { 2 + 2 }
