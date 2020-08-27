@@ -35,13 +35,17 @@ describe Chore::Queues::SQS::Consumer do
     allow(Aws::SQS::Client).to receive(:new).and_return(sqs)
     allow(sqs).to receive(:get_queue_url).with(:queue_name=>queue_name).and_return(queue_uri)
     allow(sqs).to receive(:receive_message)
+
+    allow(Aws::SQS::Queue).to receive(:new).and_return(queue_object)
+    allow(queue_object).to receive(:receive_messages)
+
     allow(message).to receive(:load)
   end
 
   describe "consuming messages" do
-    let!(:consumer_runs) { allow(consumer).to receive(:running?).and_return(true, false) }
-    let!(:message_uniqueness) { allow_any_instance_of(Chore::DuplicateDetector).to receive(:found_duplicate?).and_return(false) }
-    let!(:queue_contain_messages) { allow(queue_object).to receive(:receive_messages).and_return(message) }
+    before do
+      allow(consumer).to receive(:running?).and_return(true, false)
+    end
 
     context "should create objects for interacting with the SQS API" do
       it 'should create an sqs client' do
@@ -109,12 +113,9 @@ describe Chore::Queues::SQS::Consumer do
     end
 
     context 'with messages' do
-      let!(:consumer_runs) { allow(consumer).to receive(:running?).and_return(true, true, true, false, true) }
-      let!(:queue_contain_messages) { allow(queue_object).to receive(:receive_messages).and_return(message, message, message) }
-      let!(:message_uniqueness) { allow_any_instance_of(Chore::DuplicateDetector).to receive(:found_duplicate?).and_return(true) }
-
       before do
-        allow(consumer).to receive(:duplicate_message?)
+        allow(consumer).to receive(:duplicate_message?).and_return(false)
+        allow(queue_object).to receive(:receive_messages).and_return(message)
       end
 
       it "should check the uniqueness of the message" do
