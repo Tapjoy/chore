@@ -148,14 +148,15 @@ describe Chore::Queues::SQS::Consumer do
   describe '#delay' do
     let(:item) { Chore::UnitOfWork.new(message.message_id, message.receipt_handle, message.queue, 60, message.body, 0, consumer) }
     let(:backoff_func) { lambda { |item| 2 } }
-    let(:entries) { [{ :id => "id", :receipt_handle => 'receipt_handle', :visibility_timeout => backoff_func.call(item) }] }
+    let(:entries) do
+      [
+        { id: item.id, receipt_handle: item.receipt_handle, visibility_timeout: backoff_func.call(item) },
+      ]
+    end
 
     it 'changes the visiblity of the message' do
-      # allow(nil).to receive(:data).and_return('response_data') # TODO: Do something about this
-      expect(sqs).to receive(:change_message_visibility_batch).with({
-        :entries    => entries,
-        :queue_url  => queue_uri},
-      )
+      # allow(nil).to receive(:data).and_return('response_data') # TODO Do something about this
+      expect(queue_object).to receive(:change_message_visibility_batch).with(entries: entries)
       consumer.delay(item, backoff_func)
     end
   end
