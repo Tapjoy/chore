@@ -123,9 +123,15 @@ describe Chore::Queues::SQS::Consumer do
       end
 
       it "should yield the message to the handler block" do
-        expect { |b| consumer.consume(&b) }.to yield_with_args('id', 'receipt_handle', queue_name, 10, 'message body', 0)
-        # expect { |b| consumer.consume(&b) }.to yield_with_args('id', message.receipt_handle, queue_name, queue_timeout, message.body, message.attributes['ApproximateReceiveCount'].to_i - 1)
-
+        expect { |b| consume(&b) }
+          .to yield_with_args(
+                message.message_id,
+                message.receipt_handle,
+                queue_name,
+                queue_object.attributes['VisibilityTimeout'].to_i,
+                message.body,
+                message.attributes['ApproximateReceiveCount'].to_i - 1
+              )
       end
 
       it 'should not sleep' do
