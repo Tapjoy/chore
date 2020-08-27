@@ -55,7 +55,7 @@ describe Chore::Queues::SQS::Consumer do
 
       it "should only create an sqs client when one doesn't exist" do
         allow(consumer).to receive(:running?).and_return(true, true, true, true, false, true, true)
-        expect(Aws::SQS::Client).to receive(:new).twice.and_return(sqs)
+        expect(Aws::SQS::Client).to receive(:new).exactly(:once)
         consume
       end
 
