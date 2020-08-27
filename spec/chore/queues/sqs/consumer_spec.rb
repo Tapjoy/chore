@@ -13,6 +13,14 @@ describe Chore::Queues::SQS::Consumer do
   let(:backoff_func) { 2 + 2 }
   let(:dupe_detector) { double(Chore::DuplicateDetector) }
 
+
+  # NOTE(dabrady) Since a message handler is required (but not validated), this convenience method lets us
+  # effectively stub the block.
+  def consume(&block)
+    block = Proc.new{} unless block_given?
+    consumer.consume(&block)
+  end
+
   before do
     allow(Aws::SQS::Client).to receive(:new).and_return(sqs)
     allow(sqs).to receive(:get_queue_url).with(:queue_name=>queue_name).and_return(queue_uri)
@@ -28,23 +36,23 @@ describe Chore::Queues::SQS::Consumer do
     context "should create objects for interacting with the SQS API" do
       it 'should create an sqs client' do
         expect(Aws::SQS::Client).to receive(:new)
-        consumer.consume
+        consume
       end
 
       it "should only create an sqs client when one doesn't exist" do
         allow(consumer).to receive(:running?).and_return(true, true, true, true, false, true, true)
         expect(Aws::SQS::Client).to receive(:new).twice.and_return(sqs)
-        consumer.consume
+        consume
       end
 
       it 'should look up the queue url based on the queue name' do
         expect(sqs).to receive(:get_queue_url).with(:queue_name=>queue_name)
-        consumer.consume
+        consume
       end
 
       it 'should create a queue object' do
         expect(consumer.send(:queue)).to_not be_nil
-        consumer.consume
+        consume
       end
 
       # This seems like it's no longer necessary
@@ -52,7 +60,7 @@ describe Chore::Queues::SQS::Consumer do
       #   # TODO: Fix and reenable this if it's still relevant, otherwise delete
       #   expect(sqs).to receive(:get_queue_uri).with(:queue_name=>queue_name).and_return(queue_uri)
       #   expect(queue_object).to receive(:[]).with(queue_uri).and_return(queue_object)
-      #   consumer.consume
+      #   consume
       # end
     end
 
@@ -66,7 +74,7 @@ describe Chore::Queues::SQS::Consumer do
           :max_number_of_messages => 10,
           :attribute_names => ['ApproximateReceiveCount']
         ).and_return(message)
-        consumer.consume
+        consume
       end
 
       it 'should respect the queue_polling_size when specified' do
@@ -75,7 +83,7 @@ describe Chore::Queues::SQS::Consumer do
           :max_number_of_messages => 5,
           :attribute_names => ['ApproximateReceiveCount']
         )
-        consumer.consume
+        consume
       end
     end
 
@@ -86,7 +94,7 @@ describe Chore::Queues::SQS::Consumer do
 
       it 'should sleep' do
         expect(consumer).to receive(:sleep).with(1)
-        consumer.consume
+        consume
       end
     end
 
@@ -101,7 +109,7 @@ describe Chore::Queues::SQS::Consumer do
 
       it "should check the uniqueness of the message" do
         expect(Chore::DuplicateDetector).to receive(:found_duplicate?)
-        consumer.consume
+        consume
       end
 
       it "should yield the message to the handler block" do
@@ -116,7 +124,7 @@ describe Chore::Queues::SQS::Consumer do
 
       it 'should not sleep' do
         expect(consumer).to_not receive(:sleep)
-        consumer.consume
+        consume
       end
     end
   end
@@ -156,13 +164,13 @@ describe Chore::Queues::SQS::Consumer do
       allow(queue_object).to receive(:receive_messages).and_return(message)
       allow(sqs).to receive(:receive_message).with({:attribute_names=>["ApproximateReceiveCount"], :max_number_of_messages=>10, :queue_uri=>queue_uri})
 
-      consumer.consume
+      consume
 
       Chore::Queues::SQS::Consumer.reset_connection!
       allow(Aws::SQS::Client).to receive(:new).and_return(sqs)
 
       expect(consumer).to receive(:running?).and_return(true, false)
-      consumer.consume
+      consume
     end
   end
 end
