@@ -6,7 +6,6 @@ describe Chore::Queues::SQS::Consumer do
   let(:queue_object) { double(Aws::SQS::Queue, attributes: {'VisibilityTimeout' => rand(10)}) }
   let(:options) { {} }
   let(:consumer) { Chore::Queues::SQS::Consumer.new(queue_name) }
-  let(:message_data) {{:id=>message.message_id, :receipt_handle=>message.receipt_handle, :queue=>message.queue, :visibility_timeout=>10}}
   let(:message) do
     Aws::SQS::Message.new(
       queue_url: queue_uri.queue_url,
@@ -126,16 +125,22 @@ describe Chore::Queues::SQS::Consumer do
       it "should yield the message to the handler block" do
         expect { |b| consumer.consume(&b) }.to yield_with_args('id', 'receipt_handle', queue_name, 10, 'message body', 0)
         # expect { |b| consumer.consume(&b) }.to yield_with_args('id', message.receipt_handle, queue_name, queue_timeout, message.body, message.attributes['ApproximateReceiveCount'].to_i - 1)
-      end
 
-      it 'should not yield for a dupe message' do
-        allow_any_instance_of(Chore::DuplicateDetector).to receive(:found_duplicate?).with(message_data).and_return(true)
-        expect {|b| consumer.consume(&b) }.not_to yield_control
       end
 
       it 'should not sleep' do
         expect(consumer).to_not receive(:sleep)
         consume
+      end
+
+      context 'with duplicates' do
+        before do
+          allow(consumer).to receive(:duplicate_message?).and_return(true)
+        end
+
+        it 'should not yield for a dupe message' do
+          expect {|b| consume(&b) }.not_to yield_control
+        end
       end
     end
   end
