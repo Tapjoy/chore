@@ -118,7 +118,7 @@ describe Chore::Queues::SQS::Consumer do
       end
 
       it "should check the uniqueness of the message" do
-        expect(Chore::DuplicateDetector).to receive(:found_duplicate?)
+        expect(consumer).to receive(:duplicate_message?)
         consume
       end
 
