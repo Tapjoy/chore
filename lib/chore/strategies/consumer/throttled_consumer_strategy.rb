@@ -65,7 +65,7 @@ module Chore
       end
 
       # Gives work back to the queue in case it couldn't be assigned
-      # 
+      #
       # This will go into a separate queue so that it will be prioritized
       # over other work that hasn't been attempted yet.  It also avoids
       # a deadlock where @queue is full and the master is waiting to return

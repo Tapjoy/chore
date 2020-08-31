@@ -5,6 +5,10 @@ module Chore
       # This is meant to be invoked from a rake task, and not directly.
       # These queues will be created with the default settings, which may not be ideal.
       # This is meant only as a convenience helper for testing, and not as a way to create production quality queues in SQS
+      #
+      # @param [TrueClass, FalseClass] halt_on_existing Raise an exception if the queue already exists
+      #
+      # @return [Array<String>]
       def self.create_queues!(halt_on_existing=false)
         raise 'You must have atleast one Chore Job configured and loaded before attempting to create queues' unless Chore.prefixed_queue_names.length > 0
 
@@ -30,11 +34,15 @@ module Chore
             Chore.logger.info "exists with different config"
           end
         end
+
         Chore.prefixed_queue_names
       end
 
       # Helper method to delete all known queues based on the list as provided by your configured Chore::Jobs
       # This is meant to be invoked from a rake task, and not directly.
+      #
+      # @return [Array<String>]
+
       def self.delete_queues!
         raise 'You must have atleast one Chore Job configured and loaded before attempting to create queues' unless Chore.prefixed_queue_names.length > 0
         #This will raise an exception if AWS has not been configured by the project making use of Chore
@@ -49,10 +57,13 @@ module Chore
             Chore.logger.error "Deleting Queue: #{queue_name} failed because #{e}"
           end
         end
+
         Chore.prefixed_queue_names
       end
 
       # Collect a list of queues that already exist
+      #
+      # @return [TrueClass, FalseClass]
       def self.existing_queues
         #This will raise an exception if AWS has not been configured by the project making use of Chore
         sqs_queues = AWS::SQS.new.queues

@@ -19,7 +19,7 @@ module Chore
 
     # The current attempt number for the worker processing this message.
     def current_attempt
-      previous_attempts + 1
+      previous_attempts.to_i + 1
     end
   end
 end

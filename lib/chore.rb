@@ -218,6 +218,8 @@ module Chore #:nodoc:
   end
 
   # List of queue_names as configured via Chore::Job including their prefix, if set.
+  #
+  # @return [Array<String>]
   def self.prefixed_queue_names
     Chore::Job.job_classes.collect {|klass| c = constantize(klass); c.prefixed_queue_name}
   end

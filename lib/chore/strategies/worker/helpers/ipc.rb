@@ -75,7 +75,7 @@ module Chore
 
       private
 
-      # TODO: do we need this as a optional param
+      # TODO: Decide if we should make this customizable via an optional param
       def socket_file
         "./prefork_worker_sock-#{Process.pid}"
       end

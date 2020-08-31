@@ -11,7 +11,7 @@ module Chore
         include FilesystemQueue
 
         # use of mutex and file locking should make this both threadsafe and safe for multiple
-        # processes to use the same queue directory simultaneously. 
+        # processes to use the same queue directory simultaneously.
         def publish(queue_name,job)
           # First try encoding the job to avoid writing empty job files if this fails
           encoded_job = encode_job(job)

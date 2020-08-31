@@ -23,7 +23,7 @@ module Chore
         Chore.logger.debug "Starting up consumer strategy: #{self.class.name}"
         threads = []
         Chore.config.queues.each do |queue|
-          Chore.config.threads_per_queue.times do 
+          Chore.config.threads_per_queue.times do
             if running?
               threads << start_consumer_thread(queue)
             end
@@ -32,7 +32,7 @@ module Chore
 
         threads.each(&:join)
       end
-      
+
       # If the ThreadedConsumerStrategy is currently running <tt>stop!</tt> will begin signalling it to stop
       # It will stop the batcher from forking more work, as well as set a flag which will disable it's own consuming
       # threads once they finish with their current work.
@@ -49,7 +49,7 @@ module Chore
         @running
       end
 
-      private 
+      private
       # Starts a consumer thread for polling the given +queue+.
       # If <tt>stop!<tt> is called, the threads will shut themsevles down.
       def start_consumer_thread(queue)
@@ -61,7 +61,7 @@ module Chore
               # if we're shutting down. Could be delayed due to the
               # weird sometimes-blocking nature of SQS.
               consumer.stop if !running?
-              Chore.logger.debug { "Got message: #{id}"}
+              Chore.logger.debug { "Got message: #{message_id}"}
 
               work = UnitOfWork.new(id, queue_name, queue_timeout, body, previous_attempts, consumer)
               Chore.run_hooks_for(:consumed_from_source, work)
