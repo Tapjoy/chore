@@ -23,7 +23,7 @@ describe Chore::Worker do
       :publisher => FakePublisher,
       :max_attempts => 100,
       :dedupe_lambda => lambda { |first, second, third| first }
-    
+
     def perform(first, second, third)
       return second
     end
@@ -35,7 +35,7 @@ describe Chore::Worker do
       :publisher => FakePublisher,
       :max_attempts => 100,
       :dedupe_lambda => lambda { |first, second, third| first }
-    
+
     def perform(first, second)
       return second
     end
@@ -52,9 +52,9 @@ describe Chore::Worker do
 
   shared_examples_for "a worker" do
     it 'processing a single job' do
-      work = Chore::UnitOfWork.new('1', 'test', 60, encoded_job, 0, consumer)
+      work = Chore::UnitOfWork.new('1', nil, 'test', 60, encoded_job, 0, consumer)
       SimpleJob.should_receive(:perform).with(*payload)
-      consumer.should_receive(:complete).with('1')
+      consumer.should_receive(:complete).with('1', nil)
       w = Chore::Worker.new(work, {:payload_handler => payload_handler})
       w.start
     end
@@ -62,7 +62,7 @@ describe Chore::Worker do
     it 'processing multiple jobs' do
       work = []
       10.times do |i|
-        work << Chore::UnitOfWork.new(i, 'test', 60, encoded_job, 0, consumer)
+        work << Chore::UnitOfWork.new(i, nil, 'test', 60, encoded_job, 0, consumer)
       end
       SimpleJob.should_receive(:perform).exactly(10).times
       consumer.should_receive(:complete).exactly(10).times
@@ -77,7 +77,7 @@ describe Chore::Worker do
         it 'should call complete for each unique value' do
           allow(consumer).to receive(:duplicate_message?).and_return(false)
           work = []
-          work << Chore::UnitOfWork.new(1, 'dedupe_test', 60, Chore::Encoder::JsonEncoder.encode(SimpleDedupeJob.job_hash([rand,2,'3'])), 0, consumer)
+          work << Chore::UnitOfWork.new(1, nil, 'dedupe_test', 60, Chore::Encoder::JsonEncoder.encode(SimpleDedupeJob.job_hash([rand,2,'3'])), 0, consumer)
           SimpleDedupeJob.should_receive(:perform).exactly(1).times
           consumer.should_receive(:complete).exactly(1).times
           Chore::Worker.start(work, {:payload_handler => payload_handler})
@@ -87,9 +87,9 @@ describe Chore::Worker do
       context 'when the dedupe lambda does not take the same number of arguments as perform' do
         it 'should raise an error and not complete the job' do
           work = []
-          work << Chore::UnitOfWork.new(1, 'invalid_dedupe_test', 60, Chore::Encoder::JsonEncoder.encode(InvalidDedupeJob.job_hash([rand,2,'3'])), 0, consumer)
-          work << Chore::UnitOfWork.new(2, 'invalid_dedupe_test', 60, Chore::Encoder::JsonEncoder.encode(InvalidDedupeJob.job_hash([rand,2,'3'])), 0, consumer)
-          work << Chore::UnitOfWork.new(1, 'invalid_dedupe_test', 60, Chore::Encoder::JsonEncoder.encode(InvalidDedupeJob.job_hash([rand,2,'3'])), 0, consumer)
+          work << Chore::UnitOfWork.new(1, nil, 'invalid_dedupe_test', 60, Chore::Encoder::JsonEncoder.encode(InvalidDedupeJob.job_hash([rand,2,'3'])), 0, consumer)
+          work << Chore::UnitOfWork.new(2, nil, 'invalid_dedupe_test', 60, Chore::Encoder::JsonEncoder.encode(InvalidDedupeJob.job_hash([rand,2,'3'])), 0, consumer)
+          work << Chore::UnitOfWork.new(1, nil, 'invalid_dedupe_test', 60, Chore::Encoder::JsonEncoder.encode(InvalidDedupeJob.job_hash([rand,2,'3'])), 0, consumer)
           consumer.should_not_receive(:complete)
           Chore::Worker.start(work, {:payload_handler => payload_handler})
         end
@@ -109,7 +109,7 @@ describe Chore::Worker do
     let(:queue_timeouts) { [10, 20, 30] }
     let(:work) do
       queue_timeouts.map do |queue_timeout|
-        Chore::UnitOfWork.new('1', 'test', queue_timeout, Chore::Encoder::JsonEncoder.encode(job), 0, consumer)
+        Chore::UnitOfWork.new('1', nil, 'test', queue_timeout, Chore::Encoder::JsonEncoder.encode(job), 0, consumer)
       end
     end
     let(:worker) do
@@ -140,14 +140,14 @@ describe Chore::Worker do
       let(:job) { "Not-A-Valid-Json-String" }
 
       it 'should fail cleanly' do
-        work = Chore::UnitOfWork.new(2,'test',60,job,0,consumer)
+        work = Chore::UnitOfWork.new(2,nil,'test',60,job,0,consumer)
         consumer.should_not_receive(:complete)
         Chore.should_receive(:run_hooks_for).with(:on_failure, job, anything())
         Chore::Worker.start(work)
       end
 
       it 'should reject job' do
-        work = Chore::UnitOfWork.new(2,'test',60,job,0,consumer)
+        work = Chore::UnitOfWork.new(2,nil,'test',60,job,0,consumer)
         consumer.should_receive(:reject).with(2)
         Chore::Worker.start(work)
       end
@@ -158,14 +158,14 @@ describe Chore::Worker do
         end
 
         it 'should permanently fail' do
-          work = Chore::UnitOfWork.new(2,'test',60,job,9,consumer)
+          work = Chore::UnitOfWork.new(2,nil,'test',60,job,9,consumer)
           Chore.should_receive(:run_hooks_for).with(:on_permanent_failure, 'test', job, anything())
           Chore::Worker.start(work)
         end
 
         it 'should mark the item as completed' do
-          work = Chore::UnitOfWork.new(2,'test',60,job,9,consumer)
-          consumer.should_receive(:complete).with(2)
+          work = Chore::UnitOfWork.new(2,nil,'test',60,job,9,consumer)
+          consumer.should_receive(:complete).with(2, nil)
           Chore::Worker.start(work)
         end
       end
@@ -181,7 +181,7 @@ describe Chore::Worker do
       end
 
       it 'should fail cleanly' do
-        work = Chore::UnitOfWork.new(2,'test',60,encoded_job,0,consumer)
+        work = Chore::UnitOfWork.new(2,nil,'test',60,encoded_job,0,consumer)
         consumer.should_not_receive(:complete)
         SimpleJob.should_receive(:run_hooks_for).with(:on_failure, parsed_job, anything())
 
@@ -189,7 +189,7 @@ describe Chore::Worker do
       end
 
       it 'should reject job' do
-        work = Chore::UnitOfWork.new(2,'test',60,encoded_job,0,consumer)
+        work = Chore::UnitOfWork.new(2,nil,'test',60,encoded_job,0,consumer)
         consumer.should_receive(:reject).with(2)
 
         Chore::Worker.start(work)
@@ -197,14 +197,14 @@ describe Chore::Worker do
 
       context 'more than the maximum allowed times' do
         it 'should permanently fail' do
-          work = Chore::UnitOfWork.new(2,'test',60,encoded_job,999,consumer)
+          work = Chore::UnitOfWork.new(2,nil,'test',60,encoded_job,999,consumer)
           SimpleJob.should_receive(:run_hooks_for).with(:on_permanent_failure, 'test', parsed_job, anything())
           Chore::Worker.start(work)
         end
 
         it 'should mark the item as completed' do
-          work = Chore::UnitOfWork.new(2,'test',60,encoded_job,999,consumer)
-          consumer.should_receive(:complete).with(2)
+          work = Chore::UnitOfWork.new(2,nil,'test',60,encoded_job,999,consumer)
+          consumer.should_receive(:complete).with(2, nil)
           Chore::Worker.start(work)
         end
       end
@@ -214,7 +214,7 @@ describe Chore::Worker do
   describe 'delaying retries' do
     let(:encoded_job) { Chore::Encoder::JsonEncoder.encode(job) }
     let(:parsed_job) { JSON.parse(encoded_job) }
-    let(:work) { Chore::UnitOfWork.new(2, 'test', 60, encoded_job, 0, consumer) }
+    let(:work) { Chore::UnitOfWork.new(2, nil, 'test', 60, encoded_job, 0, consumer) }
 
     before(:each) do
       SimpleJob.options[:backoff] = lambda { |work| work.current_attempt }

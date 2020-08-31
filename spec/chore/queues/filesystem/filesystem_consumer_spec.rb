@@ -121,7 +121,7 @@ describe Chore::Queues::Filesystem::Consumer do
       end
 
       it "should consume a published job and yield the job to the handler block" do
-        expect { |b| consumer.consume(&b) }.to yield_with_args(anything, 'test-queue', 60, test_job_hash.to_json, 0)
+        expect { |b| consumer.consume(&b) }.to yield_with_args(anything, anything, 'test-queue', 60, test_job_hash.to_json, 0)
       end
 
       context "rejecting a job" do
@@ -136,7 +136,7 @@ describe Chore::Queues::Filesystem::Consumer do
           expect(rejected).to be true
 
           Timecop.freeze(Time.now + 61) do
-            expect { |b| consumer.consume(&b) }.to yield_with_args(anything, 'test-queue', 60, test_job_hash.to_json, 1)
+            expect { |b| consumer.consume(&b) }.to yield_with_args(anything, anything, 'test-queue', 60, test_job_hash.to_json, 1)
           end
         end
       end
@@ -145,12 +145,11 @@ describe Chore::Queues::Filesystem::Consumer do
         let!(:consumer_run_for_two_messages) { allow(consumer).to receive(:running?).and_return(true, false,true,false) }
 
         it "should remove job on completion" do
-          completed = false
+
           consumer.consume do |job_id, queue_name, job_hash|
+            expect(File).to receive(:delete).with(kind_of(String))
             consumer.complete(job_id)
-            completed = true
           end
-          expect(completed).to be true
 
           expect { |b| consumer.consume(&b) }.to_not yield_control
         end
@@ -160,7 +159,7 @@ describe Chore::Queues::Filesystem::Consumer do
         let(:timeout) { 30 }
 
         it "should consume a published job and yield the job to the handler block" do
-          expect { |b| consumer.consume(&b) }.to yield_with_args(anything, 'test-queue', 30, test_job_hash.to_json, 0)
+          expect { |b| consumer.consume(&b) }.to yield_with_args(anything, anything, 'test-queue', 30, test_job_hash.to_json, 0)
         end
       end
     end
@@ -172,4 +171,3 @@ describe Chore::Queues::Filesystem::Consumer do
     end
   end
 end
-
