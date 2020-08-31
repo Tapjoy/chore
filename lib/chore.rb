@@ -63,6 +63,24 @@ module Chore #:nodoc:
     end
   end
 
+  def self.log_level_to_sym
+    return self.config[:log_level] if self.config[:log_level].is_a?(Symbol)
+    case self.config[:log_level]
+    when 0
+      :debug
+    when 1
+      :info
+    when 2
+      :warn
+    when 3
+      :error
+    when 4
+      :fatal
+    else
+      :unknown
+    end
+  end
+
   # Reopens any open files.  This will match any logfile that was opened by Chore,
   # Rails, or any other library.
   def self.reopen_logs

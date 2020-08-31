@@ -21,14 +21,11 @@ module Chore
         #
         # @return [struct Aws::SQS::Types::SendMessageResult]
         def publish(queue_name,job)
-          queue = self.queue(queue_name)
-          queue.send_message(encode_job(job))
+          queue = queue(queue_name)
+          queue.send_message(message_body: encode_job(job))
         end
 
         # Sets a flag that instructs the publisher to reset the connection the next time it's used
-        # TODO: We reset on every publish. Is this desirable? Seems like a performance problem.
-        #
-        # @return [Array<Seahorse::Client::NetHttp::ConnectionPool>]
         def self.reset_connection!
           @@reset_next = true
         end
@@ -39,11 +36,7 @@ module Chore
         #
         # @return [Aws::SQS::Client]
         def sqs
-          @sqs ||= AWS::SQS.new(
-            :access_key_id => Chore.config.aws_access_key,
-            :secret_access_key => Chore.config.aws_secret_key,
-            :logger => Chore.logger,
-            :log_level => :debug)
+          @sqs ||= Chore::Queues::SQS.sqs_client
         end
 
         # Retrieves the SQS queue object. The method will cache the results to prevent round trips on subsequent calls
@@ -55,16 +48,15 @@ module Chore
         #
         # @return [Aws::SQS::Queue]
         def queue(name)
-         if @@reset_next
-            AWS::Core::Http::ConnectionPool.pools.each do |p|
-              p.empty!
-            end
+          if @@reset_next
+            Aws.empty_connection_pools!
             @sqs = nil
             @@reset_next = false
             @sqs_queues = {}
           end
-          @sqs_queue_urls[name] ||= self.sqs.queues.url_for(name)
-          @sqs_queues[name] ||= self.sqs.queues[@sqs_queue_urls[name]]
+
+          @sqs_queue_urls[name] ||= sqs.get_queue_url(queue_name: name).queue_url
+          @sqs_queues[name] ||= Aws::SQS::Queue.new(url: @sqs_queue_urls[name], client: sqs)
         end
       end
     end

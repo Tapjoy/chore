@@ -100,22 +100,21 @@ module Chore
       end
 
       def create_work_units(consumer)
-        consumer.consume do |id, queue, timeout, body, previous_attempts|
-          # Note: The unit of work object contains a consumer object that when 
-          # used to consume from SQS, would have a mutex (that comes as a part 
-          # of the AWS sdk); When sending these objects across from one process 
-          # to another, we cannot send this across (becasue of the mutex). To 
+        consumer.consume do |message_id, message_receipt_handle, queue, timeout, body, previous_attempts|
+          # Note: The unit of work object contains a consumer object that when
+          # used to consume from SQS, would have a mutex (that comes as a part
+          # of the AWS sdk); When sending these objects across from one process
+          # to another, we cannot send this across (becasue of the mutex). To
           # work around this, we simply ignore the consumer object when creating
-          # the unit of work object, and when the worker recieves the work 
-          # object, it assigns it a consumer object. 
+          # the unit of work object, and when the worker recieves the work
+          # object, it assigns it a consumer object.
           # (to allow for communication back to the queue it was consumed from)
-          work = UnitOfWork.new(id, queue, timeout, body,
-                                previous_attempts)
+          work = UnitOfWork.new(message_id, message_receipt_handle, queue, timeout, body, previous_attempts)
           Chore.run_hooks_for(:consumed_from_source, work)
           @queue.push(work) if running?
           Chore.run_hooks_for(:added_to_queue, work)
         end
       end
-    end # ThrottledConsumerStrategyyeah 
+    end # ThrottledConsumerStrategy
   end
 end # Chore

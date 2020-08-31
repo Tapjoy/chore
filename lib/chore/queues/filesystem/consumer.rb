@@ -144,7 +144,7 @@ module Chore
               end
 
               found_files = false
-              handle_jobs do |*args|
+              handle_messages do |*args|
                 found_files = true
                 yield(*args)
               end
@@ -161,9 +161,14 @@ module Chore
 
         end
 
-        def complete(id)
-          Chore.logger.debug "Completing (deleting): #{id}"
-          File.delete(File.join(@in_progress_dir, id))
+        # Deletes the given message from filesystem queue. Since the filesystem is not a remote API, there is no
+        # notion of a "receipt handle".
+        #
+        # @param [String] message_id Unique ID of the message
+        # @param [Hash] receipt_handle Receipt handle of the message. Always nil for the filesystem consumer
+        def complete(message_id, receipt_handle = nil)
+          Chore.logger.debug "Completing (deleting): #{message_id}"
+          File.delete(File.join(@in_progress_dir, message_id))
         rescue Errno::ENOENT
           # The job took too long to complete, was deemed expired, and moved
           # back into "new".  Ignore.
@@ -173,7 +178,7 @@ module Chore
 
         # finds all new job files, moves them to in progress and starts the job
         # Returns a list of the job files processed
-        def handle_jobs(&block)
+        def handle_messages(&block)
           self.class.each_file(@new_dir, Chore.config.queue_polling_size) do |job_file|
             Chore.logger.debug "Found a new job #{job_file}"
 
@@ -188,7 +193,7 @@ module Chore
 
             # job_file is just the name which is the job id. 2nd argument (:receipt_handle) is nil because the
             # filesystem is dealt with directly, as opposed to being an external API
-            block.call(job_file, queue_name, queue_timeout, job_json, previous_attempts)
+            block.call(job_file, nil, queue_name, queue_timeout, job_json, previous_attempts)
             Chore.run_hooks_for(:on_fetch, job_file, job_json)
           end
         end

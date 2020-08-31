@@ -10,9 +10,6 @@ module Chore
 
     attr_accessor :queue_name
 
-    # Raise this exception if your message has been processed but you can't delete it from the queue.
-    class CouldNotComplete < Exception; end
-
     # @param [String] queue_name Name of queue to be consumed from
     # @param [Hash] opts
     def initialize(queue_name, opts={})
@@ -29,7 +26,7 @@ module Chore
     # |message_id,message_body| where message_id is any object that the
     # consumer will need to be able to act on a message later (reject, complete, etc)
     #
-    # @param [Proc] &handler Message handler, used by the calling context (worker) to create & assigns a UnitOfWork
+    # @param [Block] &handler Message handler, used by the calling context (worker) to create & assigns a UnitOfWork
     def consume(&handler)
       raise NotImplementedError
     end
@@ -42,14 +39,15 @@ module Chore
       raise NotImplementedError
     end
 
-    # Complete should mark a message as finished. It takes a message_id as returned via consume
-    def complete(message_id)
+    # Complete should mark a message as finished.
+    #
+    # @param [String] message_id Unique ID of the message
+    # @param [Hash] receipt_handle Unique ID of the consuming transaction in non-filesystem implementations
+    def complete(message_id, receipt_handle)
       raise NotImplementedError
     end
 
     # Perform any shutdown behavior and stop consuming messages
-    #
-    # @return [FalseClass]
     def stop
       @running = false
     end
@@ -93,7 +91,7 @@ module Chore
     # hook will be invoked per message. This block call provides data necessary for the worker (calling context) to
     # populate a UnitOfWork struct.
     #
-    # @param [Proc] &handler Message handler, passed along by #consume
+    # @param [Block] &handler Message handler, passed along by #consume
     def handle_messages(&handler)
       raise NotImplementedError
     end
