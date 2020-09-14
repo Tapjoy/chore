@@ -1,23 +1,22 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>
   Module: Chore::Strategy
   
-    &mdash; Documentation by YARD 0.8.7.4
+    &mdash; Documentation by YARD 0.9.25
   
 </title>
 
-  <link rel="stylesheet" href="../css/style.css" type="text/css" charset="utf-8" />
+  <link rel="stylesheet" href="../css/style.css" type="text/css" />
 
-  <link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8" />
+  <link rel="stylesheet" href="../css/common.css" type="text/css" />
 
-<script type="text/javascript" charset="utf-8">
-  hasFrames = window.top.frames.main ? true : false;
+<script type="text/javascript">
+  pathId = "Chore::Strategy";
   relpath = '../';
-  framesUrl = "../frames.html#!Chore/Strategy.html";
 </script>
 
 
@@ -28,71 +27,73 @@
 
   </head>
   <body>
-    <div id="header">
-      <div id="menu">
+    <div class="nav_wrap">
+      <iframe id="nav" src="../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
   
     <a href="../_index.html">Index (S)</a> &raquo;
     <span class='title'><span class='object_link'><a href="../Chore.html" title="Chore (module)">Chore</a></span></span>
      &raquo; 
     <span class="title">Strategy</span>
   
-
-  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
 </div>
 
-      <div id="search">
+        <div id="search">
   
     <a class="full_list_link" id="class_list_link"
         href="../class_list.html">
-      Class List
-    </a>
-  
-    <a class="full_list_link" id="method_list_link"
-        href="../method_list.html">
-      Method List
-    </a>
-  
-    <a class="full_list_link" id="file_list_link"
-        href="../file_list.html">
-      File List
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
     </a>
   
 </div>
-      <div class="clear"></div>
-    </div>
+        <div class="clear"></div>
+      </div>
 
-    <iframe id="search_frame"></iframe>
-
-    <div id="content"><h1>Module: Chore::Strategy
+      <div id="content"><h1>Module: Chore::Strategy
   
   
   
 </h1>
+<div class="box_info">
+  
 
-<dl class="box">
-  
-  
-    
-  
-    
   
   
   
-    <dt class="r1 last">Defined in:</dt>
-    <dd class="r1 last">lib/chore/strategies/consumer/batcher.rb<span class="defines">,<br />
-  lib/chore/strategies/worker/single_worker_strategy.rb,<br /> lib/chore/strategies/worker/forked_worker_strategy.rb,<br /> lib/chore/strategies/consumer/single_consumer_strategy.rb,<br /> lib/chore/strategies/consumer/threaded_consumer_strategy.rb</span>
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/chore/strategies/consumer/batcher.rb<span class="defines">,<br />
+  lib/chore/strategies/worker/helpers/ipc.rb,<br /> lib/chore/strategies/worker/helpers/worker_info.rb,<br /> lib/chore/strategies/worker/helpers/worker_killer.rb,<br /> lib/chore/strategies/worker/forked_worker_strategy.rb,<br /> lib/chore/strategies/worker/helpers/worker_manager.rb,<br /> lib/chore/strategies/worker/single_worker_strategy.rb,<br /> lib/chore/strategies/worker/helpers/preforked_worker.rb,<br /> lib/chore/strategies/worker/helpers/work_distributor.rb,<br /> lib/chore/strategies/worker/preforked_worker_strategy.rb,<br /> lib/chore/strategies/consumer/single_consumer_strategy.rb,<br /> lib/chore/strategies/consumer/threaded_consumer_strategy.rb,<br /> lib/chore/strategies/consumer/throttled_consumer_strategy.rb</span>
 </dd>
+  </dl>
   
-</dl>
-<div class="clear"></div>
+</div>
 
 <h2>Defined Under Namespace</h2>
 <p class="children">
   
     
+      <strong class="modules">Modules:</strong> <span class='object_link'><a href="Strategy/Ipc.html" title="Chore::Strategy::Ipc (module)">Ipc</a></span>
+    
   
     
-      <strong class="classes">Classes:</strong> <span class='object_link'><a href="Strategy/Batcher.html" title="Chore::Strategy::Batcher (class)">Batcher</a></span>, <span class='object_link'><a href="Strategy/ForkedWorkerStrategy.html" title="Chore::Strategy::ForkedWorkerStrategy (class)">ForkedWorkerStrategy</a></span>, <span class='object_link'><a href="Strategy/SingleConsumerStrategy.html" title="Chore::Strategy::SingleConsumerStrategy (class)">SingleConsumerStrategy</a></span>, <span class='object_link'><a href="Strategy/SingleWorkerStrategy.html" title="Chore::Strategy::SingleWorkerStrategy (class)">SingleWorkerStrategy</a></span>, <span class='object_link'><a href="Strategy/ThreadedConsumerStrategy.html" title="Chore::Strategy::ThreadedConsumerStrategy (class)">ThreadedConsumerStrategy</a></span>
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="Strategy/Batcher.html" title="Chore::Strategy::Batcher (class)">Batcher</a></span>, <span class='object_link'><a href="Strategy/ForkedWorkerStrategy.html" title="Chore::Strategy::ForkedWorkerStrategy (class)">ForkedWorkerStrategy</a></span>, <span class='object_link'><a href="Strategy/PreForkedWorkerStrategy.html" title="Chore::Strategy::PreForkedWorkerStrategy (class)">PreForkedWorkerStrategy</a></span>, <span class='object_link'><a href="Strategy/PreforkedWorker.html" title="Chore::Strategy::PreforkedWorker (class)">PreforkedWorker</a></span>, <span class='object_link'><a href="Strategy/SingleConsumerStrategy.html" title="Chore::Strategy::SingleConsumerStrategy (class)">SingleConsumerStrategy</a></span>, <span class='object_link'><a href="Strategy/SingleWorkerStrategy.html" title="Chore::Strategy::SingleWorkerStrategy (class)">SingleWorkerStrategy</a></span>, <span class='object_link'><a href="Strategy/ThreadedConsumerStrategy.html" title="Chore::Strategy::ThreadedConsumerStrategy (class)">ThreadedConsumerStrategy</a></span>, <span class='object_link'><a href="Strategy/ThrottledConsumerStrategy.html" title="Chore::Strategy::ThrottledConsumerStrategy (class)">ThrottledConsumerStrategy</a></span>, <span class='object_link'><a href="Strategy/WorkDistributor.html" title="Chore::Strategy::WorkDistributor (class)">WorkDistributor</a></span>, <span class='object_link'><a href="Strategy/WorkerInfo.html" title="Chore::Strategy::WorkerInfo (class)">WorkerInfo</a></span>, <span class='object_link'><a href="Strategy/WorkerKiller.html" title="Chore::Strategy::WorkerKiller (class)">WorkerKiller</a></span>, <span class='object_link'><a href="Strategy/WorkerManager.html" title="Chore::Strategy::WorkerManager (class)">WorkerManager</a></span>
     
   
 </p>
@@ -107,11 +108,12 @@
 
 </div>
 
-    <div id="footer">
-  Generated on Mon Oct  6 13:20:20 2014 by
+      <div id="footer">
+  Generated on Mon Sep 14 12:30:28 2020 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.7.4 (ruby-1.9.3).
+  0.9.25 (ruby-2.3.0).
 </div>
 
+    </div>
   </body>
 </html>

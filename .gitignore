@@ -1,2 +1,5 @@
 .yardoc/
 rdoc/
+.bundle
+vendor/
+*.gem

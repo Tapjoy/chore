@@ -1,23 +1,22 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>
   Class: Chore::UnitOfWork
   
-    &mdash; Documentation by YARD 0.8.7.4
+    &mdash; Documentation by YARD 0.9.25
   
 </title>
 
-  <link rel="stylesheet" href="../css/style.css" type="text/css" charset="utf-8" />
+  <link rel="stylesheet" href="../css/style.css" type="text/css" />
 
-  <link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8" />
+  <link rel="stylesheet" href="../css/common.css" type="text/css" />
 
-<script type="text/javascript" charset="utf-8">
-  hasFrames = window.top.frames.main ? true : false;
+<script type="text/javascript">
+  pathId = "Chore::UnitOfWork";
   relpath = '../';
-  framesUrl = "../frames.html#!Chore/UnitOfWork.html";
 </script>
 
 
@@ -28,51 +27,48 @@
 
   </head>
   <body>
-    <div id="header">
-      <div id="menu">
+    <div class="nav_wrap">
+      <iframe id="nav" src="../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
   
     <a href="../_index.html">Index (U)</a> &raquo;
     <span class='title'><span class='object_link'><a href="../Chore.html" title="Chore (module)">Chore</a></span></span>
      &raquo; 
     <span class="title">UnitOfWork</span>
   
-
-  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
 </div>
 
-      <div id="search">
+        <div id="search">
   
     <a class="full_list_link" id="class_list_link"
         href="../class_list.html">
-      Class List
-    </a>
-  
-    <a class="full_list_link" id="method_list_link"
-        href="../method_list.html">
-      Method List
-    </a>
-  
-    <a class="full_list_link" id="file_list_link"
-        href="../file_list.html">
-      File List
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
     </a>
   
 </div>
-      <div class="clear"></div>
-    </div>
+        <div class="clear"></div>
+      </div>
 
-    <iframe id="search_frame"></iframe>
-
-    <div id="content"><h1>Class: Chore::UnitOfWork
+      <div id="content"><h1>Class: Chore::UnitOfWork
   
   
   
 </h1>
-
-<dl class="box">
+<div class="box_info">
   
-    <dt class="r1">Inherits:</dt>
-    <dd class="r1">
+  <dl>
+    <dt>Inherits:</dt>
+    <dd>
       <span class="inheritName">Struct</span>
       
         <ul class="fullTree">
@@ -85,21 +81,25 @@
         </ul>
         <a href="#" class="inheritanceTree">show all</a>
       
-      </dd>
-    
+    </dd>
+  </dl>
   
-  
-    
-  
-    
+
   
   
   
-    <dt class="r2 last">Defined in:</dt>
-    <dd class="r2 last">lib/chore/unit_of_work.rb</dd>
   
-</dl>
-<div class="clear"></div>
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/chore/unit_of_work.rb</dd>
+  </dl>
+  
+</div>
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
@@ -108,6 +108,9 @@
 <ul><li>
 <p><code>:id</code> The queue implementation specific identifier for this
 message.</p>
+</li><li>
+<p><code>:receipt_handle</code> The queue implementation specific identifier
+for the receipt of this message.</p>
 </li><li>
 <p><code>:queue_name</code> The name of the queue the job came from</p>
 </li><li>
@@ -120,8 +123,8 @@ re-enqueued if not processed</p>
 attempted previously.</p>
 </li><li>
 <p><code>:consumer</code> The consumer instance used to fetch this message.
-Most queue implementations won't need access to this, but some (RabbitMQ)
-will. So we</p>
+Most queue implementations won&#39;t need access to this, but some
+(RabbitMQ) will. So we</p>
 </li></ul>
 
 <p>make sure to pass it along with each message. This instance will be used by
@@ -138,13 +141,13 @@ the Worker for things like <code>complete</code> and
 
 
 
-  <h2>Instance Attribute Summary <small>(<a href="#" class="summary_toggle">collapse</a>)</small></h2>
+  <h2>Instance Attribute Summary <small><a href="#" class="summary_toggle">collapse</a></small></h2>
   <ul class="summary">
     
       <li class="public ">
   <span class="summary_signature">
     
-      <a href="#consumer-instance_method" title="#consumer (instance method)">- (Object) <strong>consumer</strong> </a>
+      <a href="#consumer-instance_method" title="#consumer (instance method)">#<strong>consumer</strong>  &#x21d2; Object </a>
     
 
     
@@ -171,7 +174,61 @@ the Worker for things like <code>complete</code> and
       <li class="public ">
   <span class="summary_signature">
     
-      <a href="#id-instance_method" title="#id (instance method)">- (Object) <strong>id</strong> </a>
+      <a href="#created_at-instance_method" title="#created_at (instance method)">#<strong>created_at</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>The time at which this unit of work was created.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#decoded_message-instance_method" title="#decoded_message (instance method)">#<strong>decoded_message</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the value of attribute decoded_message.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#id-instance_method" title="#id (instance method)">#<strong>id</strong>  &#x21d2; Object </a>
     
 
     
@@ -198,7 +255,34 @@ the Worker for things like <code>complete</code> and
       <li class="public ">
   <span class="summary_signature">
     
-      <a href="#message-instance_method" title="#message (instance method)">- (Object) <strong>message</strong> </a>
+      <a href="#klass-instance_method" title="#klass (instance method)">#<strong>klass</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the value of attribute klass.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#message-instance_method" title="#message (instance method)">#<strong>message</strong>  &#x21d2; Object </a>
     
 
     
@@ -225,7 +309,7 @@ the Worker for things like <code>complete</code> and
       <li class="public ">
   <span class="summary_signature">
     
-      <a href="#previous_attempts-instance_method" title="#previous_attempts (instance method)">- (Object) <strong>previous_attempts</strong> </a>
+      <a href="#previous_attempts-instance_method" title="#previous_attempts (instance method)">#<strong>previous_attempts</strong>  &#x21d2; Object </a>
     
 
     
@@ -252,7 +336,7 @@ the Worker for things like <code>complete</code> and
       <li class="public ">
   <span class="summary_signature">
     
-      <a href="#queue_name-instance_method" title="#queue_name (instance method)">- (Object) <strong>queue_name</strong> </a>
+      <a href="#queue_name-instance_method" title="#queue_name (instance method)">#<strong>queue_name</strong>  &#x21d2; Object </a>
     
 
     
@@ -279,7 +363,7 @@ the Worker for things like <code>complete</code> and
       <li class="public ">
   <span class="summary_signature">
     
-      <a href="#queue_timeout-instance_method" title="#queue_timeout (instance method)">- (Object) <strong>queue_timeout</strong> </a>
+      <a href="#queue_timeout-instance_method" title="#queue_timeout (instance method)">#<strong>queue_timeout</strong>  &#x21d2; Object </a>
     
 
     
@@ -303,6 +387,33 @@ the Worker for things like <code>complete</code> and
 </li>
 
     
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#receipt_handle-instance_method" title="#receipt_handle (instance method)">#<strong>receipt_handle</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the value of attribute receipt_handle.</p>
+</div></span>
+  
+</li>
+
+    
   </ul>
 
 
@@ -311,7 +422,7 @@ the Worker for things like <code>complete</code> and
   
     <h2>
       Instance Method Summary
-      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+      <small><a href="#" class="summary_toggle">collapse</a></small>
     </h2>
 
     <ul class="summary">
@@ -319,7 +430,7 @@ the Worker for things like <code>complete</code> and
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#current_attempt-instance_method" title="#current_attempt (instance method)">- (Object) <strong>current_attempt</strong> </a>
+      <a href="#current_attempt-instance_method" title="#current_attempt (instance method)">#<strong>current_attempt</strong>  &#x21d2; Object </a>
     
 
     
@@ -340,11 +451,84 @@ the Worker for things like <code>complete</code> and
 </li>
 
       
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>  &#x21d2; UnitOfWork </a>
+    
+
+    
+  </span>
+  
+  
+    <span class="note title constructor">constructor</span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>:nodoc:.</p>
+</div></span>
+  
+</li>
+
+      
     </ul>
   
 
 
+  <div id="constructor_details" class="method_details_list">
+  <h2>Constructor Details</h2>
   
+    <div class="method_details first">
+  <h3 class="signature first" id="initialize-instance_method">
+  
+    #<strong>initialize</strong>  &#x21d2; <tt><span class='object_link'><a href="" title="Chore::UnitOfWork (class)">UnitOfWork</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>:nodoc:</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+16
+17
+18
+19</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/unit_of_work.rb', line 16</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='op'>*</span><span class='rparen'>)</span> <span class='comment'>#:nodoc:
+</span>  <span class='kw'>super</span>
+  <span class='ivar'>@created_at</span> <span class='op'>=</span> <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+  
+</div>
+
   <div id="instance_attr_details" class="attr_details">
     <h2>Instance Attribute Details</h2>
     
@@ -353,7 +537,7 @@ the Worker for things like <code>complete</code> and
       <div class="method_details first">
   <h3 class="signature first" id="consumer-instance_method">
   
-    - (<tt>Object</tt>) <strong>consumer</strong> 
+    #<strong>consumer</strong>  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -394,15 +578,119 @@ the Worker for things like <code>complete</code> and
       <pre class="lines">
 
 
-11
 12
-13</pre>
+13
+14</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/unit_of_work.rb', line 11</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/unit_of_work.rb', line 12</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_consumer'>consumer</span>
   <span class='ivar'>@consumer</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id="created_at=-instance_method"></span>
+      <div class="method_details ">
+  <h3 class="signature " id="created_at-instance_method">
+  
+    #<strong>created_at</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>The time at which this unit of work was created</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+14
+15
+16</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/unit_of_work.rb', line 14</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_created_at'>created_at</span>
+  <span class='ivar'>@created_at</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id="decoded_message=-instance_method"></span>
+      <div class="method_details ">
+  <h3 class="signature " id="decoded_message-instance_method">
+  
+    #<strong>decoded_message</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the value of attribute decoded_message</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the current value of decoded_message</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+12
+13
+14</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/unit_of_work.rb', line 12</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_decoded_message'>decoded_message</span>
+  <span class='ivar'>@decoded_message</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -414,7 +702,7 @@ the Worker for things like <code>complete</code> and
       <div class="method_details ">
   <h3 class="signature " id="id-instance_method">
   
-    - (<tt>Object</tt>) <strong>id</strong> 
+    #<strong>id</strong>  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -455,15 +743,76 @@ the Worker for things like <code>complete</code> and
       <pre class="lines">
 
 
-11
 12
-13</pre>
+13
+14</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/unit_of_work.rb', line 11</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/unit_of_work.rb', line 12</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_id'>id</span>
   <span class='ivar'>@id</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id="klass=-instance_method"></span>
+      <div class="method_details ">
+  <h3 class="signature " id="klass-instance_method">
+  
+    #<strong>klass</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the value of attribute klass</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the current value of klass</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+12
+13
+14</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/unit_of_work.rb', line 12</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_klass'>klass</span>
+  <span class='ivar'>@klass</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -475,7 +824,7 @@ the Worker for things like <code>complete</code> and
       <div class="method_details ">
   <h3 class="signature " id="message-instance_method">
   
-    - (<tt>Object</tt>) <strong>message</strong> 
+    #<strong>message</strong>  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -516,12 +865,12 @@ the Worker for things like <code>complete</code> and
       <pre class="lines">
 
 
-11
 12
-13</pre>
+13
+14</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/unit_of_work.rb', line 11</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/unit_of_work.rb', line 12</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_message'>message</span>
   <span class='ivar'>@message</span>
@@ -536,7 +885,7 @@ the Worker for things like <code>complete</code> and
       <div class="method_details ">
   <h3 class="signature " id="previous_attempts-instance_method">
   
-    - (<tt>Object</tt>) <strong>previous_attempts</strong> 
+    #<strong>previous_attempts</strong>  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -577,12 +926,12 @@ the Worker for things like <code>complete</code> and
       <pre class="lines">
 
 
-11
 12
-13</pre>
+13
+14</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/unit_of_work.rb', line 11</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/unit_of_work.rb', line 12</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_previous_attempts'>previous_attempts</span>
   <span class='ivar'>@previous_attempts</span>
@@ -597,7 +946,7 @@ the Worker for things like <code>complete</code> and
       <div class="method_details ">
   <h3 class="signature " id="queue_name-instance_method">
   
-    - (<tt>Object</tt>) <strong>queue_name</strong> 
+    #<strong>queue_name</strong>  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -638,12 +987,12 @@ the Worker for things like <code>complete</code> and
       <pre class="lines">
 
 
-11
 12
-13</pre>
+13
+14</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/unit_of_work.rb', line 11</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/unit_of_work.rb', line 12</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_queue_name'>queue_name</span>
   <span class='ivar'>@queue_name</span>
@@ -658,7 +1007,7 @@ the Worker for things like <code>complete</code> and
       <div class="method_details ">
   <h3 class="signature " id="queue_timeout-instance_method">
   
-    - (<tt>Object</tt>) <strong>queue_timeout</strong> 
+    #<strong>queue_timeout</strong>  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -699,15 +1048,76 @@ the Worker for things like <code>complete</code> and
       <pre class="lines">
 
 
-11
 12
-13</pre>
+13
+14</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/unit_of_work.rb', line 11</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/unit_of_work.rb', line 12</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_queue_timeout'>queue_timeout</span>
   <span class='ivar'>@queue_timeout</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id="receipt_handle=-instance_method"></span>
+      <div class="method_details ">
+  <h3 class="signature " id="receipt_handle-instance_method">
+  
+    #<strong>receipt_handle</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the value of attribute receipt_handle</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the current value of receipt_handle</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+12
+13
+14</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/unit_of_work.rb', line 12</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_receipt_handle'>receipt_handle</span>
+  <span class='ivar'>@receipt_handle</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -724,7 +1134,7 @@ the Worker for things like <code>complete</code> and
       <div class="method_details first">
   <h3 class="signature first" id="current_attempt-instance_method">
   
-    - (<tt>Object</tt>) <strong>current_attempt</strong> 
+    #<strong>current_attempt</strong>  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -747,12 +1157,12 @@ the Worker for things like <code>complete</code> and
       <pre class="lines">
 
 
-13
-14
-15</pre>
+22
+23
+24</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/chore/unit_of_work.rb', line 13</span>
+      <pre class="code"><span class="info file"># File 'lib/chore/unit_of_work.rb', line 22</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_current_attempt'>current_attempt</span>
   <span class='id identifier rubyid_previous_attempts'>previous_attempts</span> <span class='op'>+</span> <span class='int'>1</span>
@@ -766,11 +1176,12 @@ the Worker for things like <code>complete</code> and
 
 </div>
 
-    <div id="footer">
-  Generated on Mon Oct  6 13:20:21 2014 by
+      <div id="footer">
+  Generated on Mon Sep 14 12:30:29 2020 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.7.4 (ruby-1.9.3).
+  0.9.25 (ruby-2.3.0).
 </div>
 
+    </div>
   </body>
 </html>

@@ -1,23 +1,22 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>
   Module: Chore::Util
   
-    &mdash; Documentation by YARD 0.8.7.4
+    &mdash; Documentation by YARD 0.9.25
   
 </title>
 
-  <link rel="stylesheet" href="../css/style.css" type="text/css" charset="utf-8" />
+  <link rel="stylesheet" href="../css/style.css" type="text/css" />
 
-  <link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8" />
+  <link rel="stylesheet" href="../css/common.css" type="text/css" />
 
-<script type="text/javascript" charset="utf-8">
-  hasFrames = window.top.frames.main ? true : false;
+<script type="text/javascript">
+  pathId = "Chore::Util";
   relpath = '../';
-  framesUrl = "../frames.html#!Chore/Util.html";
 </script>
 
 
@@ -28,65 +27,66 @@
 
   </head>
   <body>
-    <div id="header">
-      <div id="menu">
+    <div class="nav_wrap">
+      <iframe id="nav" src="../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
   
     <a href="../_index.html">Index (U)</a> &raquo;
     <span class='title'><span class='object_link'><a href="../Chore.html" title="Chore (module)">Chore</a></span></span>
      &raquo; 
     <span class="title">Util</span>
   
-
-  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
 </div>
 
-      <div id="search">
+        <div id="search">
   
     <a class="full_list_link" id="class_list_link"
         href="../class_list.html">
-      Class List
-    </a>
-  
-    <a class="full_list_link" id="method_list_link"
-        href="../method_list.html">
-      Method List
-    </a>
-  
-    <a class="full_list_link" id="file_list_link"
-        href="../file_list.html">
-      File List
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
     </a>
   
 </div>
-      <div class="clear"></div>
-    </div>
+        <div class="clear"></div>
+      </div>
 
-    <iframe id="search_frame"></iframe>
-
-    <div id="content"><h1>Module: Chore::Util
+      <div id="content"><h1>Module: Chore::Util
   
   
   
 </h1>
+<div class="box_info">
+  
 
-<dl class="box">
   
   
-    
-  
-    
   
   
-    <dt class="r1">Included in:</dt>
-    <dd class="r1"><span class='object_link'><a href="CLI.html" title="Chore::CLI (class)">CLI</a></span>, <span class='object_link'><a href="Worker.html" title="Chore::Worker (class)">Worker</a></span></dd>
-    
   
+
   
-    <dt class="r2 last">Defined in:</dt>
-    <dd class="r2 last">lib/chore/util.rb</dd>
+  <dl>
+    <dt>Included in:</dt>
+    <dd><span class='object_link'><a href="../Chore.html" title="Chore (module)">Chore</a></span>, <span class='object_link'><a href="CLI.html" title="Chore::CLI (class)">CLI</a></span>, <span class='object_link'><a href="Job.html" title="Chore::Job (module)">Job</a></span>, <span class='object_link'><a href="Manager.html" title="Chore::Manager (class)">Manager</a></span>, <span class='object_link'><a href="Strategy/ForkedWorkerStrategy.html" title="Chore::Strategy::ForkedWorkerStrategy (class)">Strategy::ForkedWorkerStrategy</a></span>, <span class='object_link'><a href="Strategy/PreforkedWorker.html" title="Chore::Strategy::PreforkedWorker (class)">Strategy::PreforkedWorker</a></span>, <span class='object_link'><a href="Worker.html" title="Chore::Worker (class)">Worker</a></span></dd>
+  </dl>
   
-</dl>
-<div class="clear"></div>
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/chore/util.rb</dd>
+  </dl>
+  
+</div>
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
@@ -109,7 +109,7 @@
   
     <h2>
       Instance Method Summary
-      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+      <small><a href="#" class="summary_toggle">collapse</a></small>
     </h2>
 
     <ul class="summary">
@@ -117,7 +117,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#constantize-instance_method" title="#constantize (instance method)">- (Object) <strong>constantize</strong>(camel_cased_word) </a>
+      <a href="#constantize-instance_method" title="#constantize (instance method)">#<strong>constantize</strong>(camel_cased_word)  &#x21d2; Object </a>
     
 
     
@@ -139,6 +139,28 @@ here.</p>
 </li>
 
       
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#procline-instance_method" title="#procline (instance method)">#<strong>procline</strong>(str)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
     </ul>
   
 
@@ -151,7 +173,7 @@ here.</p>
       <div class="method_details first">
   <h3 class="signature first" id="constantize-instance_method">
   
-    - (<tt>Object</tt>) <strong>constantize</strong>(camel_cased_word) 
+    #<strong>constantize</strong>(camel_cased_word)  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -189,7 +211,7 @@ here.</p>
       <pre class="code"><span class="info file"># File 'lib/chore/util.rb', line 7</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_constantize'>constantize</span><span class='lparen'>(</span><span class='id identifier rubyid_camel_cased_word'>camel_cased_word</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_names'>names</span> <span class='op'>=</span> <span class='id identifier rubyid_camel_cased_word'>camel_cased_word</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>::</span><span class='tstring_end'>'</span></span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_names'>names</span> <span class='op'>=</span> <span class='id identifier rubyid_camel_cased_word'>camel_cased_word</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>::</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
   <span class='id identifier rubyid_names'>names</span><span class='period'>.</span><span class='id identifier rubyid_shift'>shift</span> <span class='kw'>if</span> <span class='id identifier rubyid_names'>names</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>||</span> <span class='id identifier rubyid_names'>names</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
 
   <span class='id identifier rubyid_constant'>constant</span> <span class='op'>=</span> <span class='const'>Object</span>
@@ -203,15 +225,46 @@ here.</p>
 </table>
 </div>
     
+      <div class="method_details ">
+  <h3 class="signature " id="procline-instance_method">
+  
+    #<strong>procline</strong>(str)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+18
+19
+20</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/chore/util.rb', line 18</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_procline'>procline</span><span class='lparen'>(</span><span class='id identifier rubyid_str'>str</span><span class='rparen'>)</span>
+  <span class='gvar'>$0</span> <span class='op'>=</span> <span class='id identifier rubyid_str'>str</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
   </div>
 
 </div>
 
-    <div id="footer">
-  Generated on Mon Oct  6 13:20:20 2014 by
+      <div id="footer">
+  Generated on Mon Sep 14 12:30:28 2020 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.7.4 (ruby-1.9.3).
+  0.9.25 (ruby-2.3.0).
 </div>
 
+    </div>
   </body>
 </html>

@@ -1,21 +1,20 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>
-  Documentation by YARD 0.8.7.4
+  Documentation by YARD 0.9.25
   
 </title>
 
-  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
 
-  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+  <link rel="stylesheet" href="css/common.css" type="text/css" />
 
-<script type="text/javascript" charset="utf-8">
-  hasFrames = window.top.frames.main ? true : false;
+<script type="text/javascript">
+  pathId = null;
   relpath = '';
-  framesUrl = "frames.html#!_index.html";
 </script>
 
 
@@ -26,37 +25,34 @@
 
   </head>
   <body>
-    <div id="header">
-      <div id="menu">
-  
+    <div class="nav_wrap">
+      <iframe id="nav" src="class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
 
-  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
 </div>
 
-      <div id="search">
+        <div id="search">
   
     <a class="full_list_link" id="class_list_link"
         href="class_list.html">
-      Class List
-    </a>
-  
-    <a class="full_list_link" id="method_list_link"
-        href="method_list.html">
-      Method List
-    </a>
-  
-    <a class="full_list_link" id="file_list_link"
-        href="file_list.html">
-      File List
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
     </a>
   
 </div>
-      <div class="clear"></div>
-    </div>
+        <div class="clear"></div>
+      </div>
 
-    <iframe id="search_frame"></iframe>
-
-    <div id="content"><h1 class="noborder title">Documentation by YARD 0.8.7.4</h1>
+      <div id="content"><h1 class="noborder title">Documentation by YARD 0.9.25</h1>
 <div id="listing">
   <h1 class="alphaindex">Alphabetic Index</h1>
   
@@ -129,9 +125,9 @@
               </li>
             
               <li>
-                <span class='object_link'><a href="Chore/Queues/SQS/Consumer.html" title="Chore::Queues::SQS::Consumer (class)">Consumer</a></span>
+                <span class='object_link'><a href="Chore/Queues/Filesystem/Consumer.html" title="Chore::Queues::Filesystem::Consumer (class)">Consumer</a></span>
                 
-                  <small>(Chore::Queues::SQS)</small>
+                  <small>(Chore::Queues::Filesystem)</small>
                 
               </li>
             
@@ -143,9 +139,9 @@
               </li>
             
               <li>
-                <span class='object_link'><a href="Chore/Queues/Filesystem/Consumer.html" title="Chore::Queues::Filesystem::Consumer (class)">Consumer</a></span>
+                <span class='object_link'><a href="Chore/Queues/SQS/Consumer.html" title="Chore::Queues::SQS::Consumer (class)">Consumer</a></span>
                 
-                  <small>(Chore::Queues::Filesystem)</small>
+                  <small>(Chore::Queues::SQS)</small>
                 
               </li>
             
@@ -159,6 +155,21 @@
             
               <li>
                 <span class='object_link'><a href="Chore/DuplicateDetector.html" title="Chore::DuplicateDetector (class)">DuplicateDetector</a></span>
+                
+                  <small>(Chore)</small>
+                
+              </li>
+            
+          </ul>
+        </ul>
+      
+        
+        <ul id="alpha_E" class="alpha">
+          <li class="letter">E</li>
+          <ul>
+            
+              <li>
+                <span class='object_link'><a href="Chore/Encoder.html" title="Chore::Encoder (module)">Encoder</a></span>
                 
                   <small>(Chore)</small>
                 
@@ -219,6 +230,24 @@
         </ul>
       
         
+        <ul id="alpha_I" class="alpha">
+          <li class="letter">I</li>
+          <ul>
+            
+              <li>
+                <span class='object_link'><a href="Chore/Strategy/Ipc.html" title="Chore::Strategy::Ipc (module)">Ipc</a></span>
+                
+                  <small>(Chore::Strategy)</small>
+                
+              </li>
+            
+          </ul>
+        </ul>
+      
+        
+          </td><td valign='top' width="33%">
+          
+        
         <ul id="alpha_J" class="alpha">
           <li class="letter">J</li>
           <ul>
@@ -231,9 +260,9 @@
               </li>
             
               <li>
-                <span class='object_link'><a href="Chore/JsonEncoder.html" title="Chore::JsonEncoder (module)">JsonEncoder</a></span>
+                <span class='object_link'><a href="Chore/Encoder/JsonEncoder.html" title="Chore::Encoder::JsonEncoder (module)">JsonEncoder</a></span>
                 
-                  <small>(Chore)</small>
+                  <small>(Chore::Encoder)</small>
                 
               </li>
             
@@ -256,17 +285,28 @@
         </ul>
       
         
-          </td><td valign='top' width="33%">
-          
-        
         <ul id="alpha_P" class="alpha">
           <li class="letter">P</li>
           <ul>
             
               <li>
-                <span class='object_link'><a href="Chore/Publisher.html" title="Chore::Publisher (class)">Publisher</a></span>
+                <span class='object_link'><a href="Chore/Strategy/PreForkedWorkerStrategy.html" title="Chore::Strategy::PreForkedWorkerStrategy (class)">PreForkedWorkerStrategy</a></span>
                 
-                  <small>(Chore)</small>
+                  <small>(Chore::Strategy)</small>
+                
+              </li>
+            
+              <li>
+                <span class='object_link'><a href="Chore/Strategy/PreforkedWorker.html" title="Chore::Strategy::PreforkedWorker (class)">PreforkedWorker</a></span>
+                
+                  <small>(Chore::Strategy)</small>
+                
+              </li>
+            
+              <li>
+                <span class='object_link'><a href="Chore/Queues/Filesystem/Publisher.html" title="Chore::Queues::Filesystem::Publisher (class)">Publisher</a></span>
+                
+                  <small>(Chore::Queues::Filesystem)</small>
                 
               </li>
             
@@ -278,9 +318,9 @@
               </li>
             
               <li>
-                <span class='object_link'><a href="Chore/Queues/Filesystem/Publisher.html" title="Chore::Queues::Filesystem::Publisher (class)">Publisher</a></span>
+                <span class='object_link'><a href="Chore/Publisher.html" title="Chore::Publisher (class)">Publisher</a></span>
                 
-                  <small>(Chore::Queues::Filesystem)</small>
+                  <small>(Chore)</small>
                 
               </li>
             
@@ -387,6 +427,13 @@
               </li>
             
               <li>
+                <span class='object_link'><a href="Chore/Strategy/ThrottledConsumerStrategy.html" title="Chore::Strategy::ThrottledConsumerStrategy (class)">ThrottledConsumerStrategy</a></span>
+                
+                  <small>(Chore::Strategy)</small>
+                
+              </li>
+            
+              <li>
                 <span class='object_link'><a href="Chore/TimeoutError.html" title="Chore::TimeoutError (class)">TimeoutError</a></span>
                 
                   <small>(Chore)</small>
@@ -419,6 +466,9 @@
         </ul>
       
         
+          </td><td valign='top' width="33%">
+          
+        
         <ul id="alpha_V" class="alpha">
           <li class="letter">V</li>
           <ul>
@@ -439,9 +489,37 @@
           <ul>
             
               <li>
+                <span class='object_link'><a href="Chore/Strategy/WorkDistributor.html" title="Chore::Strategy::WorkDistributor (class)">WorkDistributor</a></span>
+                
+                  <small>(Chore::Strategy)</small>
+                
+              </li>
+            
+              <li>
                 <span class='object_link'><a href="Chore/Worker.html" title="Chore::Worker (class)">Worker</a></span>
                 
                   <small>(Chore)</small>
+                
+              </li>
+            
+              <li>
+                <span class='object_link'><a href="Chore/Strategy/WorkerInfo.html" title="Chore::Strategy::WorkerInfo (class)">WorkerInfo</a></span>
+                
+                  <small>(Chore::Strategy)</small>
+                
+              </li>
+            
+              <li>
+                <span class='object_link'><a href="Chore/Strategy/WorkerKiller.html" title="Chore::Strategy::WorkerKiller (class)">WorkerKiller</a></span>
+                
+                  <small>(Chore::Strategy)</small>
+                
+              </li>
+            
+              <li>
+                <span class='object_link'><a href="Chore/Strategy/WorkerManager.html" title="Chore::Strategy::WorkerManager (class)">WorkerManager</a></span>
+                
+                  <small>(Chore::Strategy)</small>
                 
               </li>
             
@@ -456,11 +534,12 @@
 
 </div>
 
-    <div id="footer">
-  Generated on Mon Oct  6 13:20:20 2014 by
+      <div id="footer">
+  Generated on Mon Sep 14 12:30:28 2020 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.7.4 (ruby-1.9.3).
+  0.9.25 (ruby-2.3.0).
 </div>
 
+    </div>
   </body>
 </html>
