@@ -25,8 +25,13 @@ Once a PR has been reviewed and accepted for release
 1. Generate and publish YARD documentation
 
     ```
+    # Generate the docs from the updated main branch, then switch to the gh-pages branch and copy updated code
     bundle exec rake yard
-    bundle exec rake yard:publish
+    git checkout gh-pages
+    cp -af rdoc/* .
+    git add . # Make sure to remove any unwanted changes that weren't captured in the `.gitignore` before moving on
+    git commit -m "${VERSION} documentation" # Make sure to substitute the version!
+    git push
     ```
 
     The [Chore Github Pages](https://tapjoy.github.io/chore) site should be updated with the updated documentation.
@@ -35,5 +40,6 @@ Once a PR has been reviewed and accepted for release
 
     ```
     gem build chore-core.gemspec
+    # Do the push from a version of Ruby >= 2.6, as they have much better tooling for this
     gem push chore-core-${GEM_VERSION}.gem
     ```
