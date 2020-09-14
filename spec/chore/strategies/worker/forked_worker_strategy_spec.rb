@@ -13,6 +13,7 @@ describe Chore::Strategy::ForkedWorkerStrategy do
   let(:job) do
     Chore::UnitOfWork.new(
       SecureRandom.uuid,
+      nil,
       'test',
       job_timeout,
       Chore::Encoder::JsonEncoder.encode(TestJob.job_hash([1,2,"3"])),
@@ -296,4 +297,3 @@ describe Chore::Strategy::ForkedWorkerStrategy do
     end
   end
 end
-

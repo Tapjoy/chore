@@ -31,6 +31,6 @@ describe Chore::Consumer do
   end
 
   it 'should not have an implemented complete method' do
-    expect { consumer.complete(message) }.to raise_error(NotImplementedError)
+    expect { consumer.complete(message, nil) }.to raise_error(NotImplementedError)
   end
 end

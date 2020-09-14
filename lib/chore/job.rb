@@ -105,6 +105,8 @@ module Chore
       end
 
       # The name of the configured queue, combined with an optional prefix
+      #
+      # @return [String]
       def prefixed_queue_name
         "#{Chore.config.queue_prefix}#{self.options[:name]}"
       end

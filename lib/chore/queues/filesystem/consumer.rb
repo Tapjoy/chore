@@ -15,12 +15,12 @@ module Chore
       # Once complete job files are deleted.
       # If rejected they are moved back into new and will be processed again.  This may not be the
       # desired behavior long term and we may want to add configuration to this class to allow more
-      # creating failure handling and retrying. 
+      # creating failure handling and retrying.
       class Consumer < Chore::Consumer
         extend FilesystemQueue
 
         Chore::CLI.register_option 'fs_queue_root', '--fs-queue-root DIRECTORY', 'Root directory for fs based queue'
-        
+
         class << self
           # Cleans up expired in-progress files by making them new again.
           def cleanup(expiration_time, new_dir, in_progress_dir)
@@ -51,7 +51,7 @@ module Chore
 
             # If the file is non-zero, this means it was successfully written to
             # by a publisher and we can attempt to move it to "in progress".
-            # 
+            #
             # There is a small window of time where the file can be zero, but
             # the publisher hasn't finished writing to the file yet.
             if !File.zero?(from)
@@ -68,7 +68,7 @@ module Chore
               # The file is empty (zero bytes) and enough time has passed since
               # the file was written that we can safely assume it will never
               # get written to be the publisher.
-              # 
+              #
               # The scenario where this happens is when the publisher created
               # the file, but the process was killed before it had a chance to
               # actually write the data.
@@ -114,7 +114,7 @@ module Chore
 
         # The minimum number of seconds to allow to pass between checks for expired
         # jobs on the filesystem.
-        # 
+        #
         # Since queue times are measured on the order of seconds, 1 second is the
         # smallest duration.  It also prevents us from burning a lot of CPU looking
         # at expired jobs when the consumer sleep interval is less than 1 second.
@@ -144,7 +144,7 @@ module Chore
               end
 
               found_files = false
-              handle_jobs do |*args|
+              handle_messages do |*args|
                 found_files = true
                 yield(*args)
               end
@@ -161,9 +161,14 @@ module Chore
 
         end
 
-        def complete(id)
-          Chore.logger.debug "Completing (deleting): #{id}"
-          File.delete(File.join(@in_progress_dir, id))
+        # Deletes the given message from filesystem queue. Since the filesystem is not a remote API, there is no
+        # notion of a "receipt handle".
+        #
+        # @param [String] message_id Unique ID of the message
+        # @param [Hash] receipt_handle Receipt handle of the message. Always nil for the filesystem consumer
+        def complete(message_id, receipt_handle = nil)
+          Chore.logger.debug "Completing (deleting): #{message_id}"
+          File.delete(File.join(@in_progress_dir, message_id))
         rescue Errno::ENOENT
           # The job took too long to complete, was deemed expired, and moved
           # back into "new".  Ignore.
@@ -173,7 +178,7 @@ module Chore
 
         # finds all new job files, moves them to in progress and starts the job
         # Returns a list of the job files processed
-        def handle_jobs(&block)
+        def handle_messages(&block)
           self.class.each_file(@new_dir, Chore.config.queue_polling_size) do |job_file|
             Chore.logger.debug "Found a new job #{job_file}"
 
@@ -186,8 +191,9 @@ module Chore
             job_json = File.read(in_progress_path)
             basename, previous_attempts, * = self.class.file_info(job_file)
 
-            # job_file is just the name which is the job id
-            block.call(job_file, queue_name, queue_timeout, job_json, previous_attempts)
+            # job_file is just the name which is the job id. 2nd argument (:receipt_handle) is nil because the
+            # filesystem is dealt with directly, as opposed to being an external API
+            block.call(job_file, nil, queue_name, queue_timeout, job_json, previous_attempts)
             Chore.run_hooks_for(:on_fetch, job_file, job_json)
           end
         end
@@ -203,4 +209,3 @@ module Chore
     end
   end
 end
-

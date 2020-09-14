@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Chore::Strategy::SingleWorkerStrategy do
   let(:manager) { double('Manager') }
   let(:job_timeout) { 60 }
-  let(:job) { Chore::UnitOfWork.new(SecureRandom.uuid, 'test', job_timeout, Chore::Encoder::JsonEncoder.encode(TestJob.job_hash([1,2,"3"])), 0) }
+  let(:job) { Chore::UnitOfWork.new(SecureRandom.uuid, nil, 'test', job_timeout, Chore::Encoder::JsonEncoder.encode(TestJob.job_hash([1,2,"3"])), 0) }
   subject       { described_class.new(manager) }
 
   describe '#stop!' do

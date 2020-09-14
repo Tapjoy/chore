@@ -11,6 +11,26 @@
 **Cleanups**
 - N/A
 
+## [v4.0.0](https://github.com/Tapjoy/chore/tree/v4.0.0)
+
+**Features**
+
+- AWS SDK library has been updated to support AWS authentication via
+[Web Federated Identity](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-browser-credentials-federated-id.html)
+  - The API has jumped ahead 2 major versions, so some of the internals (e.g.
+    [`Chore::UnitOfWork`](lib/chore/unit_of_work.rb)) had to be changed to accommodate its changes. In the end, however,
+    this update is designed to function as a drop-in replacement for earlier versions of Chore
+
+**Fixed bugs**
+
+- Some of the SQS specs were not actually testing output values
+
+**Cleanups**
+
+- Many more YARD docs
+- Documented the release process
+- Mild overhaul of the base README
+
 ## [v3.1.0](https://github.com/Tapjoy/chore/tree/v3.1.0) (2017-09-15)
 
 **Features**

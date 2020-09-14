@@ -56,7 +56,7 @@ module Chore
 
         if item.consumer.duplicate_message?(dedupe_key, item.klass, item.queue_timeout)
           Chore.logger.info { "Found and deleted duplicate job #{item.klass}"}
-          item.consumer.complete(item.id)
+          item.consumer.complete(item.id, item.receipt_handle)
           return true
         end
       end
@@ -89,7 +89,7 @@ module Chore
           Chore.logger.error { "Failed to run job for #{item.message} with error: #{e.message} #{e.backtrace * "\n"}" }
           if item.current_attempt >= Chore.config.max_attempts
             Chore.run_hooks_for(:on_permanent_failure,item.queue_name,item.message,e)
-            item.consumer.complete(item.id)
+            item.consumer.complete(item.id, item.receipt_handle)
           else
             Chore.run_hooks_for(:on_failure,item.message,e)
             item.consumer.reject(item.id)
@@ -112,7 +112,7 @@ module Chore
       begin
         Chore.logger.info { "Running job #{klass} with params #{message}"}
         perform_job(klass,message)
-        item.consumer.complete(item.id)
+        item.consumer.complete(item.id, item.receipt_handle)
         Chore.logger.info { "Finished job #{klass} with params #{message}"}
         klass.run_hooks_for(:after_perform, message)
         Chore.run_hooks_for(:worker_ended, item)
@@ -141,7 +141,7 @@ module Chore
       Chore.logger.error { "Failed to run job #{item.message} with error: #{e.message} at #{e.backtrace * "\n"}" }
       if item.current_attempt >= klass.options[:max_attempts]
         klass.run_hooks_for(:on_permanent_failure,item.queue_name,message,e)
-        item.consumer.complete(item.id)
+        item.consumer.complete(item.id, item.receipt_handle)
       else
         klass.run_hooks_for(:on_failure, message, e)
         item.consumer.reject(item.id)
