@@ -11,6 +11,18 @@
 **Cleanups**
 - N/A
 
+## [v4.1.0](https://github.com/Tapjoy/chore/tree/v4.1.0)
+
+**BREAKING**
+
+This change requires changes if you are using `--queue-prefix` argument when running the `bin/chore.rb` binstub. See bug
+fix details for more info.
+
+**Fixed bugs**
+
+- `Chore::CLI` was appending an underscore to any passed in `--queue_prefix`. This should be handled by the consuming
+  application, and has been removed.
+
 ## [v4.0.0](https://github.com/Tapjoy/chore/tree/v4.0.0)
 
 **Features**

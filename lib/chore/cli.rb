@@ -118,7 +118,7 @@ module Chore #:nodoc:
       register_option 'num_workers', '--concurrency NUM', Integer, 'Number of workers to run concurrently'
 
       register_option 'queue_prefix', '--queue-prefix PREFIX', "Prefix to use on Queue names to prevent non-determinism in testing environments" do |arg|
-        options[:queue_prefix] = arg.downcase << "_"
+        options[:queue_prefix] = arg.downcase
       end
 
       register_option 'max_attempts', '--max-attempts NUM', Integer, 'Number of times to attempt failed jobs'
