@@ -64,13 +64,13 @@ describe Chore::CLI do
     end
 
     it 'should honor --queue-prefix when processing all queues' do
-      cli.parse(['--queue-prefix=prefixey'])
+      cli.parse(['--queue-prefix=prefixey_'])
       Chore.config.queues.should include('prefixey_test2')
     end
 
     context 'when provided duplicate queues' do
       let(:queue_options) {['--queues=test2,test2']}
-      before :each do 
+      before :each do
         cli.parse(queue_options)
       end
 
@@ -88,7 +88,7 @@ describe Chore::CLI do
     end
 
     context 'when both --queue_prefix and --queues have been provided' do
-      let(:queue_options) {['--queue-prefix=prefixy', '--queues=test2']}
+      let(:queue_options) {['--queue-prefix=prefixy_', '--queues=test2']}
       before :each do
         cli.parse(queue_options)
       end
