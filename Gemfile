@@ -6,7 +6,7 @@ group :development do
   gem 'guard-rspec'
   gem 'rb-fsevent', '~> 0.9.1'
   gem 'rake', '~> 10.0'
-  gem 'dalli'
+  gem 'dalli', '~> 2.0'
   gem 'redcarpet'
   gem 'yard'
   gem 'timecop'
