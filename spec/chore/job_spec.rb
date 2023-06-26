@@ -69,6 +69,14 @@ describe Chore::Job do
       Chore::Publisher.any_instance.should_receive(:publish).with('test_queue',{:class => 'TestJob',:args => args}).and_return(true)
       TestJob.perform_async(*args)
     end
+
+    it 'calls the around_publish hook with the correct parameters' do
+      args = [1,2,{:h => 'ash'}]
+      expect(Chore).to receive(:run_hooks_for).with(:around_publish, 'test_queue', {:class => 'TestJob',:args => args}).and_call_original
+      TestJob.queue_options(:publisher => Chore::Publisher)
+      Chore::Publisher.any_instance.should_receive(:publish).with('test_queue',{:class => 'TestJob',:args => args}).and_return(true)
+      TestJob.perform_async(*args)
+    end
   end
 
   describe 'publisher configured via Chore.configure' do

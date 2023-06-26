@@ -144,7 +144,12 @@ module Chore
     def perform_async(*args)
       self.class.run_hooks_for(:before_publish,*args)
       @chore_publisher ||= self.class.options[:publisher]
-      @chore_publisher.publish(self.class.prefixed_queue_name,self.class.job_hash(args))
+
+      publish_job_hash = self.class.job_hash(args)
+      Chore.run_hooks_for(:around_publish, self.class.prefixed_queue_name, publish_job_hash) do
+        @chore_publisher.publish(self.class.prefixed_queue_name,publish_job_hash)
+      end
+
       self.class.run_hooks_for(:after_publish,*args)
     end
 

@@ -111,7 +111,7 @@ module Chore
 
       begin
         Chore.logger.info { "Running job #{klass} with params #{message}"}
-        perform_job(klass,message)
+        perform_job(klass, message)
         item.consumer.complete(item.id, item.receipt_handle)
         Chore.logger.info { "Finished job #{klass} with params #{message}"}
         klass.run_hooks_for(:after_perform, message)
@@ -149,7 +149,9 @@ module Chore
     end
 
     def perform_job(klass, message)
-      klass.perform(*options[:payload_handler].payload(message))
+      Chore.run_hooks_for(:around_perform, klass, message) do
+        klass.perform(*options[:payload_handler].payload(message))
+      end
     end
   end
 end

@@ -69,6 +69,15 @@ describe Chore::Worker do
       Chore::Worker.start(work, {:payload_handler => payload_handler})
     end
 
+    it 'calls the around_perform hook with the correct parameters' do
+      expect(Chore).to receive(:run_hooks_for).with(:around_perform, SimpleJob, {"class" => 'SimpleJob', "args" => job_args}).and_call_original
+      expect(Chore).to receive(:run_hooks_for).at_least(:once).and_call_original
+
+      work = Chore::UnitOfWork.new('1', nil, 'test', 60, encoded_job, 0, consumer)
+      w = Chore::Worker.new(work, { payload_handler: payload_handler })
+      w.start
+    end
+
     context 'when the job has a dedupe_lambda defined' do
       context 'when the value being deduped on is unique' do
         let(:job_args) { [rand,2,'3'] }

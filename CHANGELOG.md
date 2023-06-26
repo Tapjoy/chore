@@ -11,6 +11,13 @@
 **Cleanups**
 - N/A
 
+## [v4.2.0](https://github.com/Tapjoy/chore/tree/v4.2.0)
+
+**Features**
+
+- Added Global hooks for `around_publish` with parameters queue_name, job_hash, and &blk.
+- Added Global hooks for `around_perform` with parameters klass, message, and &blk.
+
 ## [v4.1.0](https://github.com/Tapjoy/chore/tree/v4.1.0)
 
 **BREAKING**

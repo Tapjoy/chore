@@ -241,6 +241,8 @@ A number of hooks, both global and per-job, exist in Chore for flexibility and c
 * `on_rejected(message)`
 * `on_failure(message, error)`
 * `on_permanent_failure(queue_name, message, error)`
+* `around_publish`
+* `around_perform`
 
 All per-job hooks can also be global hooks.
 
@@ -394,4 +396,4 @@ pgrep -f chore-worker
 
 ## Copyright
 
-Copyright (c) 2013 - 2020 Tapjoy. See [LICENSE.txt](LICENSE.txt) for further details.
+Copyright (c) 2013 - 2023 Tapjoy. See [LICENSE.txt](LICENSE.txt) for further details.
