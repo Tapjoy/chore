@@ -2,7 +2,9 @@ module Chore
   module Queues
     module SQS
       def self.sqs_client
-        Aws::SQS::Client.new(logger: Chore.logger, log_level: Chore.log_level_to_sym)
+        Aws.use_bundled_cert!
+        
+        Aws::SQS::Client.new({logger: Chore.logger, log_level: Chore.log_level_to_sym})
       end
 
       # Helper method to create queues based on the currently known list as provided by your configured Chore::Jobs
