@@ -17,8 +17,9 @@ describe Chore::DuplicateDetector do
   end
 
   let(:memcache) { FakeDalli.new }
+  let(:handler) { memcache.method(:add) }
   let(:dupe_on_cache_failure) { false }
-  let(:dedupe_params)  { { :memcached_client => memcache, :dupe_on_cache_failure => dupe_on_cache_failure } }
+  let(:dedupe_params)  { { :handler => handler, :dupe_on_cache_failure => dupe_on_cache_failure } }
   let(:dedupe) { Chore::DuplicateDetector.new(dedupe_params)}
   let(:timeout) { 2 }
   let(:queue_url) {"queue://bogus/url"}

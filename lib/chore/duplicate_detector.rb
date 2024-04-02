@@ -2,28 +2,21 @@ module Chore
   class DuplicateDetector #:nodoc:
 
     def initialize(opts={})
-      # Make it optional. Only required when we use it.
-      begin
-        require 'dalli'
-      rescue LoadError => e
-        Chore.logger.error "Unable to load dalli gem. It is required if duplicate \
-  detection is enabled.  Install it with 'gem install dalli'."
-        raise e
-      end
-
-      memcached_options = {
-        :auto_eject_hosts    => false,
-        :cache_lookups       => false,
-        :tcp_nodelay         => true,
-        :socket_max_failures => 5,
-        :socket_timeout      => 2
-      }
-
       @timeouts              = {}
       @dupe_on_cache_failure = opts.fetch(:dupe_on_cache_failure) { false }
       @timeout               = opts.fetch(:timeout) { 0 }
-      @servers               = opts.fetch(:servers) { nil }
-      @memcached_client      = opts.fetch(:memcached_client) { Dalli::Client.new(@servers, memcached_options) }
+      @dedupe_handler        = opts.fetch(:handler) do
+        require 'dalli'
+        client = Dalli::Client.new(opts.fetch(:servers) { nil }, {
+          :auto_eject_hosts    => false,
+          :cache_lookups       => false,
+          :tcp_nodelay         => true,
+          :socket_max_failures => 5,
+          :socket_timeout      => 2
+        })
+
+        client.method(:add)
+      end
     end
 
     # Checks the message against the configured dedupe server to see if the message is unique or not
@@ -33,7 +26,7 @@ module Chore
       return false unless msg_data && msg_data[:queue]
       timeout = self.queue_timeout(msg_data)
       begin
-        !@memcached_client.add(msg_data[:id], "1",timeout)
+        !@dedupe_handler.call(msg_data[:id], "1",timeout)
       rescue StandardError => e
         if @dupe_on_cache_failure
           Chore.logger.error "Error accessing duplicate cache server. Assuming message is a duplicate. #{e}\n#{e.backtrace * "\n"}"
