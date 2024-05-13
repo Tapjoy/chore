@@ -100,7 +100,7 @@ module Chore
       end
 
       def create_work_units(consumer)
-        consumer.consume do |message_id, message_receipt_handle, queue, timeout, body, previous_attempts|
+        consumer.consume do |message_id, message_receipt_handle, queue, timeout, body, previous_attempts, received_timestamp|
           # Note: The unit of work object contains a consumer object that when
           # used to consume from SQS, would have a mutex (that comes as a part
           # of the AWS sdk); When sending these objects across from one process
@@ -109,7 +109,7 @@ module Chore
           # the unit of work object, and when the worker recieves the work
           # object, it assigns it a consumer object.
           # (to allow for communication back to the queue it was consumed from)
-          work = UnitOfWork.new(message_id, message_receipt_handle, queue, timeout, body, previous_attempts)
+          work = UnitOfWork.new(message_id, message_receipt_handle, queue, timeout, body, previous_attempts, nil, nil, nil, received_timestamp)
           Chore.run_hooks_for(:consumed_from_source, work)
           @queue.push(work) if running?
           Chore.run_hooks_for(:added_to_queue, work)

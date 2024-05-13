@@ -97,12 +97,15 @@ describe Chore::Queues::SQS::Consumer do
       before do
         allow(consumer).to receive(:duplicate_message?).and_return(false)
         allow(queue).to receive(:receive_messages).and_return(message)
+        allow(Time).to receive(:now).and_return(Time.utc(2024, 5, 10, 12, 0, 0))
       end
 
       it "should check the uniqueness of the message" do
         expect(consumer).to receive(:duplicate_message?)
         consume
       end
+
+      let(:received_timestamp) { Time.utc(2024, 5, 10, 12, 0, 0) }
 
       it "should yield the message to the handler block" do
         expect { |b| consume(&b) }
@@ -112,7 +115,8 @@ describe Chore::Queues::SQS::Consumer do
                 queue_name,
                 queue.attributes['VisibilityTimeout'].to_i,
                 message.body,
-                message.attributes['ApproximateReceiveCount'].to_i - 1
+                message.attributes['ApproximateReceiveCount'].to_i - 1,
+                received_timestamp
               )
       end
 

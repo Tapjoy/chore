@@ -114,6 +114,8 @@ describe Chore::Queues::Filesystem::Consumer do
 
   describe 'consumption' do
     let!(:consumer_run_for_one_message) { expect(consumer).to receive(:running?).and_return(true, false) }
+    let(:received_timestamp) { Time.now }
+
 
     context "founding a published job" do
       before do
@@ -121,7 +123,8 @@ describe Chore::Queues::Filesystem::Consumer do
       end
 
       it "should consume a published job and yield the job to the handler block" do
-        expect { |b| consumer.consume(&b) }.to yield_with_args(anything, anything, 'test-queue', 60, test_job_hash.to_json, 0)
+        allow(Time).to receive(:now).and_return(received_timestamp)
+        expect { |b| consumer.consume(&b) }.to yield_with_args(anything, anything, 'test-queue', 60, test_job_hash.to_json, 0, received_timestamp)
       end
 
       context "rejecting a job" do
@@ -136,7 +139,7 @@ describe Chore::Queues::Filesystem::Consumer do
           expect(rejected).to be true
 
           Timecop.freeze(Time.now + 61) do
-            expect { |b| consumer.consume(&b) }.to yield_with_args(anything, anything, 'test-queue', 60, test_job_hash.to_json, 1)
+            expect { |b| consumer.consume(&b) }.to yield_with_args(anything, anything, 'test-queue', 60, test_job_hash.to_json, 1, Time.now)
           end
         end
       end
@@ -159,7 +162,8 @@ describe Chore::Queues::Filesystem::Consumer do
         let(:timeout) { 30 }
 
         it "should consume a published job and yield the job to the handler block" do
-          expect { |b| consumer.consume(&b) }.to yield_with_args(anything, anything, 'test-queue', 30, test_job_hash.to_json, 0)
+          allow(Time).to receive(:now).and_return(received_timestamp)
+          expect { |b| consumer.consume(&b) }.to yield_with_args(anything, anything, 'test-queue', 30, test_job_hash.to_json, 0, received_timestamp)
         end
       end
     end

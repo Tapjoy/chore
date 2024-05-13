@@ -73,8 +73,8 @@ module Chore
     # @param [Integer] queue_timeout
     #
     # @return [TrueClass, FalseClass]
-    def duplicate_message?(dedupe_key, klass, queue_timeout)
-      dupe_detector.found_duplicate?(:id=>dedupe_key, :queue=>klass.to_s, :visibility_timeout=>queue_timeout)
+    def duplicate_message?(dedupe_key, klass, queue_timeout, received_timestamp)
+      dupe_detector.found_duplicate?(:id=>dedupe_key, :queue=>klass.to_s, :visibility_timeout=>queue_timeout, :received_timestamp=>received_timestamp)
     end
 
     # Instance of duplicate detection implementation class

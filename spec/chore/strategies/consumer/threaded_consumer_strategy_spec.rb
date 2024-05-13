@@ -40,7 +40,7 @@ describe Chore::Strategy::ThreadedConsumerStrategy do
     let(:batch_size) { 2 }
 
     it "should queue but not assign the message" do
-      consumer.any_instance.should_receive(:consume).and_yield(1, nil, 'test-queue', 60, "test", 0)
+      consumer.any_instance.should_receive(:consume).and_yield(1, nil, 'test-queue', 60, "test", 0, Time.now)
       strategy.fetch
       strategy.batcher.batch.size.should == 1
 
@@ -60,7 +60,7 @@ describe Chore::Strategy::ThreadedConsumerStrategy do
 
     it "should assign the batch" do
       manager.should_receive(:assign)
-      consumer.any_instance.should_receive(:consume).and_yield(1, nil, 'test-queue', 60, "test", 0)
+      consumer.any_instance.should_receive(:consume).and_yield(1, nil, 'test-queue', 60, "test", 0, Time.now)
       strategy.fetch
       strategy.batcher.batch.size.should == 0
     end
