@@ -18,8 +18,8 @@ module Chore
         raise "When using SingleConsumerStrategy only one queue can be defined. Queues: #{queues}" unless queues.size == 1
 
         @consumer = Chore.config.consumer.new(queues.first)
-        @consumer.consume do |message_id, message_receipt_handle, queue_name, queue_timeout, body, previous_attempts|
-          work = UnitOfWork.new(message_id, message_receipt_handle, queue_name, queue_timeout, body, previous_attempts, @consumer)
+        @consumer.consume do |message_id, message_receipt_handle, queue_name, queue_timeout, body, previous_attempts, received_timestamp|
+          work = UnitOfWork.new(message_id, message_receipt_handle, queue_name, queue_timeout, body, previous_attempts, @consumer, nil, nil, received_timestamp)
           @fetcher.manager.assign(work)
         end
       end

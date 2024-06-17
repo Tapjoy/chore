@@ -88,10 +88,11 @@ module Chore
         def handle_messages(&block)
           msg = queue.receive_messages(:max_number_of_messages => sqs_polling_amount, :attribute_names => ['ApproximateReceiveCount'])
           messages = *msg
+          received_timestamp = Time.now
 
           messages.each do |message|
-            unless duplicate_message?(message.message_id, message.queue_url, queue_timeout)
-              block.call(message.message_id, message.receipt_handle, queue_name, queue_timeout, message.body, message.attributes['ApproximateReceiveCount'].to_i - 1)
+            unless duplicate_message?(message.message_id, message.queue_url, queue_timeout, received_timestamp)
+              block.call(message.message_id, message.receipt_handle, queue_name, queue_timeout, message.body, message.attributes['ApproximateReceiveCount'].to_i - 1, received_timestamp)
             end
             Chore.run_hooks_for(:on_fetch, message.receipt_handle, message.body)
           end

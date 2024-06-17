@@ -53,8 +53,7 @@ module Chore
           Chore.logger.info { "#{item.klass} dedupe key nil, skipping memcached lookup." }
           return false
         end
-
-        if item.consumer.duplicate_message?(dedupe_key, item.klass, item.queue_timeout)
+        if item.consumer.duplicate_message?(dedupe_key, item.klass, item.queue_timeout, item.received_timestamp)
           Chore.logger.info { "Found and deleted duplicate job #{item.klass}"}
           item.consumer.complete(item.id, item.receipt_handle)
           return true

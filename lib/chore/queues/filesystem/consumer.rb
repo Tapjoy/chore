@@ -190,10 +190,11 @@ module Chore
 
             job_json = File.read(in_progress_path)
             basename, previous_attempts, * = self.class.file_info(job_file)
+            received_timestamp = Time.now
 
             # job_file is just the name which is the job id. 2nd argument (:receipt_handle) is nil because the
             # filesystem is dealt with directly, as opposed to being an external API
-            block.call(job_file, nil, queue_name, queue_timeout, job_json, previous_attempts)
+            block.call(job_file, nil, queue_name, queue_timeout, job_json, previous_attempts, received_timestamp)
             Chore.run_hooks_for(:on_fetch, job_file, job_json)
           end
         end
