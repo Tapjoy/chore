@@ -33,4 +33,13 @@ describe Chore::Consumer do
   it 'should not have an implemented complete method' do
     expect { consumer.complete(message, nil) }.to raise_error(NotImplementedError)
   end
+
+  it 'should have a dupe detector' do
+    consumer.dupe_detector.should_not be_nil
+  end
+
+  it 'should not provide a handler to the dupe detector' do
+    expect(Chore::DuplicateDetector).to receive(:new).with({:dupe_on_cache_failure => false})
+    consumer.dupe_detector
+  end
 end

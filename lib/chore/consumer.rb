@@ -81,9 +81,11 @@ module Chore
     #
     # @return [DuplicateDetector]
     def dupe_detector
-      @dupes ||= DuplicateDetector.new({:servers => Chore.config.dedupe_servers,
-                                        :handler => Chore.config.dedupe_handler,
-                                        :dupe_on_cache_failure => false})
+      @dupes ||= DuplicateDetector.new({
+        :servers => Chore.config.dedupe_servers,
+        :handler => Chore.config.dedupe_handler,
+        :dupe_on_cache_failure => false
+      }.compact)
     end
 
     private
