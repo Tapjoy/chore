@@ -7,19 +7,19 @@ describe Chore::Consumer do
   let(:message) { "message" }
 
   it 'should have a consume method' do
-    consumer.should respond_to :consume
+    expect(consumer).to respond_to :consume
   end
 
   it 'should have a reject method' do
-    consumer.should respond_to :reject
+    expect(consumer).to respond_to :reject
   end
 
   it 'should have a complete method' do
-    consumer.should respond_to :complete
+    expect(consumer).to respond_to :complete
   end
 
   it 'should have a class level reset_connection method' do
-    Chore::Consumer.should respond_to :reset_connection!
+    expect(Chore::Consumer).to respond_to :reset_connection!
   end
 
   it 'should not have an implemented consume method' do
@@ -35,7 +35,7 @@ describe Chore::Consumer do
   end
 
   it 'should have a dupe detector' do
-    consumer.dupe_detector.should_not be_nil
+    expect(consumer.dupe_detector).not_to be_nil
   end
 
   it 'should not provide a handler to the dupe detector' do

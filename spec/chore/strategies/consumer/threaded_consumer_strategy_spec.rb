@@ -27,8 +27,8 @@ describe Chore::Strategy::ThreadedConsumerStrategy do
   let(:strategy) { Chore::Strategy::ThreadedConsumerStrategy.new(fetcher) }
 
   before(:each) do
-    fetcher.stub(:consumers) { [consumer] }
-    fetcher.stub(:manager) { manager }
+    allow(fetcher).to receive(:consumers) { [consumer] }
+    allow(fetcher).to receive(:manager) { manager }
     Chore.configure do |c|
       c.queues = ['test']
       c.consumer = consumer
@@ -40,18 +40,18 @@ describe Chore::Strategy::ThreadedConsumerStrategy do
     let(:batch_size) { 2 }
 
     it "should queue but not assign the message" do
-      consumer.any_instance.should_receive(:consume).and_yield(1, nil, 'test-queue', 60, "test", 0, Time.now)
+      allow_any_instance_of(consumer).to receive(:consume).and_yield(1, nil, 'test-queue', 60, "test", 0, Time.now)
       strategy.fetch
-      strategy.batcher.batch.size.should == 1
+      expect(strategy.batcher.batch.size).to eq(1)
 
       work = strategy.batcher.batch[0]
-      work.id.should == 1
-      work.queue_name.should == 'test-queue'
-      work.queue_timeout.should == 60
-      work.message.should == "test"
-      work.previous_attempts.should == 0
-      work.current_attempt.should == 1
-      work.created_at.should_not be_nil
+      expect(work.id).to eq(1)
+      expect(work.queue_name).to eq('test-queue')
+      expect(work.queue_timeout).to eq(60)
+      expect(work.message).to eq("test")
+      expect(work.previous_attempts).to eq(0)
+      expect(work.current_attempt).to eq(1)
+      expect(work.created_at).not_to be_nil
     end
   end
 
@@ -59,10 +59,10 @@ describe Chore::Strategy::ThreadedConsumerStrategy do
     let(:batch_size) { 1 }
 
     it "should assign the batch" do
-      manager.should_receive(:assign)
-      consumer.any_instance.should_receive(:consume).and_yield(1, nil, 'test-queue', 60, "test", 0, Time.now)
+      expect(manager).to receive(:assign)
+      allow_any_instance_of(consumer).to receive(:consume).and_yield(1, nil, 'test-queue', 60, "test", 0, Time.now)
       strategy.fetch
-      strategy.batcher.batch.size.should == 0
+      expect(strategy.batcher.batch.size).to eq(0)
     end
   end
 
@@ -72,12 +72,12 @@ describe Chore::Strategy::ThreadedConsumerStrategy do
 
     before do
       Chore.config.threads_per_queue = 2
-      thread.stub(:join)
+      allow(thread).to receive(:join)
     end
 
     it "should spawn two threads" do
       # two for threads per queue and one for batcher#schedule
-      Thread.should_receive(:new).exactly(3).times { thread }
+      expect(Thread).to receive(:new).exactly(3).times { thread }
       strategy.fetch
     end
   end
@@ -89,7 +89,7 @@ describe Chore::Strategy::ThreadedConsumerStrategy do
     let(:batch_size) { 2 }
 
     before do
-      fetcher.stub(:consumers) { [bad_consumer] }
+      allow(fetcher).to receive(:consumers) { [bad_consumer] }
       Chore.configure do |c|
         c.queues = ['test']
         c.consumer = bad_consumer
@@ -99,7 +99,7 @@ describe Chore::Strategy::ThreadedConsumerStrategy do
     end
 
     it "should shut down when a queue doesn't exist" do
-      manager.should_receive(:shutdown!)
+      expect(manager).to receive(:shutdown!)
       strategy.fetch
     end
   end

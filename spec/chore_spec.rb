@@ -13,7 +13,7 @@ describe Chore do
   it 'should call a hook if it exists' do
     blk = proc { raise StandardError }
     Chore.add_hook(:before_perform,&blk)
-    expect { Chore.run_hooks_for(:before_perform) }.to raise_error
+    expect { Chore.run_hooks_for(:before_perform) }.to raise_error(StandardError)
   end
 
   it 'should not call a hook if it doesn\'t exist' do

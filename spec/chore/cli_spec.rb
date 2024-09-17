@@ -13,29 +13,29 @@ describe Chore::CLI do
     it 'should allow configuration options to be registered externally' do
       args = ['some','args']
       Chore::CLI.register_option('option_name',*args)
-      cli.registered_opts['option_name'].should == {:args => args}
+      expect(cli.registered_opts['option_name']).to eq({:args => args})
     end
 
     it 'should allow configuration options to come from a file' do
       file = StringIO.new("--key-name=some_value")
-      File.stub(:read).and_return(file.read)
+      allow(File).to receive(:read).and_return(file.read)
 
       args = ['-k', '--key-name SOME_VALUE', "Some description"]
       Chore::CLI.register_option "key_name", *args
       options = cli.parse_config_file(file)
-      cli.registered_opts['key_name'].should == {:args => args}
-      options[:key_name].should == 'some_value'
+      expect(cli.registered_opts['key_name']).to eq({:args => args})
+      expect(options[:key_name]).to eq('some_value')
     end
 
     it 'should handle ERB tags in a config file' do
       file = StringIO.new("--key-name=<%= 'erb_inserted_value' %>\n--other-key=<%= 'second_val' %>")
-      File.stub(:read).and_return(file.read)
+      allow(File).to receive(:read).and_return(file.read)
 
       Chore::CLI.register_option "key_name", '-k', '--key-name SOME_VALUE', "Some description"
       Chore::CLI.register_option "other_key", '-o', '--other-key SOME_VALUE', "Some description"
       options = cli.parse_config_file(file)
-      options[:key_name].should == 'erb_inserted_value'
-      options[:other_key].should == 'second_val'
+      expect(options[:key_name]).to eq('erb_inserted_value')
+      expect(options[:other_key]).to eq('second_val')
     end
   end
 
@@ -44,8 +44,8 @@ describe Chore::CLI do
       TestJob.queue_options :name => 'test_queue', :publisher => Chore::Publisher
       TestJob2.queue_options :name => 'test2', :publisher => Chore::Publisher
       cli.send(:options).delete(:queues)
-      cli.stub(:validate!)
-      cli.stub(:boot_system)
+      allow(cli).to receive(:validate!)
+      allow(cli).to receive(:boot_system)
     end
 
     after :all do
@@ -55,17 +55,17 @@ describe Chore::CLI do
 
     it 'should detect queues based on included jobs' do
       cli.parse([])
-      Chore.config.queues.should include('test_queue')
+      expect(Chore.config.queues).to include('test_queue')
     end
 
     it 'should honor --except when processing all queues' do
       cli.parse(['--except=test_queue'])
-      Chore.config.queues.should_not include('test_queue')
+      expect(Chore.config.queues).not_to include('test_queue')
     end
 
     it 'should honor --queue-prefix when processing all queues' do
       cli.parse(['--queue-prefix=prefixey_'])
-      Chore.config.queues.should include('prefixey_test2')
+      expect(Chore.config.queues).to include('prefixey_test2')
     end
 
     context 'when provided duplicate queues' do
@@ -75,7 +75,7 @@ describe Chore::CLI do
       end
 
       it 'should not have duplicate queues' do
-        Chore.config.queues.count.should == 1
+        expect(Chore.config.queues.count).to eq(1)
       end
     end
 
@@ -83,7 +83,7 @@ describe Chore::CLI do
       let(:queue_options) {['--queues=test2,test3']}
 
       it 'should raise an error' do
-        expect {cli.parse(queue_options)}.to raise_error
+        expect {cli.parse(queue_options)}.to raise_error(StandardError)
       end
     end
 
@@ -96,23 +96,23 @@ describe Chore::CLI do
       it 'should honor --queue_prefix' do
         total_queues = Chore.config.queues.count
         prefixed_queues = Chore.config.queues.count {|item| item.start_with?("prefixy_")}
-        prefixed_queues.should == total_queues
+        expect(prefixed_queues).to eq(total_queues)
       end
 
       it 'should prefix the names of the specified queues' do
-        Chore.config.queues.should include('prefixy_test2')
+        expect(Chore.config.queues).to include('prefixy_test2')
       end
 
       it 'should not prefix the names of queues that were not specified' do
-        Chore.config.queues.should_not include('prefixy_test_queue')
+        expect(Chore.config.queues).not_to include('prefixy_test_queue')
       end
 
       it 'should not have a queue without the prefix' do
-        Chore.config.queues.should_not include('test2')
+        expect(Chore.config.queues).not_to include('test2')
       end
 
       it 'should not have a queue that was not specified' do
-        Chore.config.queues.should_not include('test_queue')
+        expect(Chore.config.queues).not_to include('test_queue')
       end
     end
 
@@ -122,7 +122,7 @@ describe Chore::CLI do
 
     context "when no queues are found" do
       before :each do
-        Chore::Job.stub(:job_classes).and_return([])
+        allow(Chore::Job).to receive(:job_classes).and_return([])
       end
 
       it 'should raise an exception' do
@@ -135,9 +135,9 @@ describe Chore::CLI do
     let(:cli) do
       Chore::CLI.send(:new).tap do |cli|
         cli.send(:options).clear
-        cli.stub(:validate!)
-        cli.stub(:boot_system)
-        cli.stub(:detect_queues)
+        allow(cli).to receive(:validate!)
+        allow(cli).to receive(:boot_system)
+        allow(cli).to receive(:detect_queues)
       end
     end
 
@@ -147,7 +147,7 @@ describe Chore::CLI do
       let(:command) { ["--consumer-strategy=Chore::Strategy::SingleConsumerStrategy"] }
 
       it "should set the consumer class" do
-        config.consumer_strategy.should == Chore::Strategy::SingleConsumerStrategy
+        expect(config.consumer_strategy).to eq(Chore::Strategy::SingleConsumerStrategy)
       end
     end
 
@@ -155,7 +155,7 @@ describe Chore::CLI do
       let(:command) {["--payload_handler=Chore::Job"]}
 
       it "should set the payload handler class" do
-        config.payload_handler.should == Chore::Job
+        expect(config.payload_handler).to eq(Chore::Job)
       end
     end
 
@@ -167,14 +167,14 @@ describe Chore::CLI do
         let(:amount)  { '10.0' }
 
         it 'is that amount' do
-          subject.should == amount.to_f
+          expect(subject).to eq(amount.to_f)
         end
       end
 
       context 'given no value' do
         let(:command) { [] }
         it 'is the default value, 120 seconds' do
-          subject.should == 120.0
+          expect(subject).to eq(120.0)
         end
       end
     end
@@ -187,7 +187,7 @@ describe Chore::CLI do
         let(:amount)  { '10' }
 
         it 'is that amount' do
-          subject.should == amount.to_i
+          expect(subject).to eq(amount.to_i)
         end
       end
 
@@ -195,14 +195,14 @@ describe Chore::CLI do
         let(:amount)  { '0.5' }
 
         it 'is that amount' do
-          subject.should == amount.to_f
+          expect(subject).to eq(amount.to_f)
         end
       end
 
       context 'given no value' do
         let(:command) { [] }
         it 'is the default value, 1' do
-          subject.should == 1
+          expect(subject).to eq(1)
         end
       end
     end
@@ -215,14 +215,14 @@ describe Chore::CLI do
         let(:amount)  { '10' }
 
         it 'is that amount' do
-          subject.should == amount.to_i
+          expect(subject).to eq(amount.to_i)
         end
       end
 
       context 'given no value' do
         let(:command) { [] }
         it 'is the default value, infinity' do
-          subject.should == 1.0 / 0.0
+          expect(subject).to eq(1.0 / 0.0)
         end
       end
     end

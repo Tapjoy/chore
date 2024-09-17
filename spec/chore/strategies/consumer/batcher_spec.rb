@@ -11,21 +11,21 @@ describe Chore::Strategy::Batcher do
 
   context 'with no items' do
     it 'should not be ready' do
-      subject.should_not be_ready
+      expect(subject).not_to be_ready
     end
 
     it 'should not invoke the callback when executed' do
-      callback.should_not_receive(:call)
+      expect(callback).not_to receive(:call)
       subject.execute
     end
 
     it 'should not invoke the callback when force-executed' do
-      callback.should_not_receive(:call)
+      expect(callback).not_to receive(:call)
       subject.execute(true)
     end
 
     it 'should not invoke callback when adding a new item' do
-      callback.should_not_receive(:call)
+      expect(callback).not_to receive(:call)
       subject.add('test')
     end
   end
@@ -38,22 +38,22 @@ describe Chore::Strategy::Batcher do
     end
 
     it 'should not be ready' do
-      subject.should_not be_ready
+      expect(subject).not_to be_ready
     end
 
     it 'should not invoke callback when executed' do
-      callback.should_not_receive(:call)
+      expect(callback).not_to receive(:call)
       subject.execute
     end
 
     it 'should invoke callback when force-executed' do
-      callback.should_receive(:call).with(batch)
+      expect(callback).to receive(:call).with(batch)
       subject.execute(true)
     end
 
     it 'should invoke callback when add completes the batch' do
       subject.add('test')
-      callback.should_receive(:call).with(['test'] * 5)
+      expect(callback).to receive(:call).with(['test'] * 5)
       subject.add('test')
     end
   end
@@ -66,28 +66,28 @@ describe Chore::Strategy::Batcher do
     end
 
     it 'should be ready' do
-      subject.should be_ready
+      expect(subject).to be_ready
     end
 
     it 'should invoke callback when executed' do
-      callback.should_receive(:call).with(batch)
+      expect(callback).to receive(:call).with(batch)
       subject.execute
     end
 
     it 'should invoke callback when force-executed' do
-      callback.should_receive(:call).with(batch)
+      expect(callback).to receive(:call).with(batch)
       subject.execute(true)
     end
 
     it 'should invoke callback with subset-only when added to' do
-      callback.should_receive(:call).with(['test'] * 5)
+      expect(callback).to receive(:call).with(['test'] * 5)
       subject.add('test')
     end
 
     it 'should leave remaining batch when added to' do
-      callback.stub(:call)
+      allow(callback).to receive(:call)
       subject.add('test')
-      subject.batch.should == ['test']
+      expect(subject.batch).to eq(['test'])
     end
   end
 
@@ -96,9 +96,9 @@ describe Chore::Strategy::Batcher do
     let(:batch) { [] }
 
     before(:each) do
-      Thread.stub(:new) do |&block|
+      allow(Thread).to receive(:new) do |&block|
         # Stop the batcher on the next iteration
-        subject.stub(:sleep) { subject.stop }
+        allow(subject).to receive(:sleep) { subject.stop }
 
         # Run the scheduling thread
         block.call(timeout)
@@ -109,7 +109,7 @@ describe Chore::Strategy::Batcher do
 
     context 'with no items' do
       it 'should not invoke the callback' do
-        callback.should_not_receive(:call)
+        expect(callback).not_to receive(:call)
         subject.schedule(timeout)
       end
     end
@@ -122,7 +122,7 @@ describe Chore::Strategy::Batcher do
       end
 
       it 'should not invoke the callback' do
-        callback.should_not_receive(:call).with(batch)
+        expect(callback).not_to receive(:call).with(batch)
         subject.schedule(timeout)
       end
     end
@@ -135,7 +135,7 @@ describe Chore::Strategy::Batcher do
       end
 
       it 'should invoke the callback' do
-        callback.should_receive(:call).with(batch)
+        expect(callback).to receive(:call).with(batch)
         subject.schedule(timeout)
       end
     end
