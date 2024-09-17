@@ -1,4 +1,4 @@
-require 'json'
+require 'multi_json'
 require 'chore/worker'
 require 'chore/fetcher'
 
