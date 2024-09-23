@@ -5,6 +5,7 @@
 PROJECT_NAME := chore
 PROJECT_DNS_NAME := chore
 RUBY_VERSION := $$(cat .ruby-version)
+RUBYGEMS_VERSION := $$(cat .rubygems-version)
 
 SHELL := /bin/bash
 MAKEFLAGS += --no-print-directory
@@ -61,6 +62,7 @@ baseimage:
 		--target baseimage \
 		--build-arg ROOT_IMAGE=${ROOT_IMAGE} \
 		--build-arg RUBY_VERSION=${RUBY_VERSION} \
+		--build-arg RUBYGEMS_VERSION=${RUBYGEMS_VERSION} \
 		--tag ${IMAGE_NAME}:${IMAGE_TAG} \
 		${CACHE_DIR}
 
