@@ -25,6 +25,9 @@ RUN rvm install ${RUBY_VERSION} &&\
     rvm use ${RUBY_VERSION} --default &&\
     ruby -v
 
+ARG RUBYGEMS_VERSION
+RUN gem update --system ${RUBYGEMS_VERSION}
+
 ################################################################################
 # Base Image
 ################################################################################
