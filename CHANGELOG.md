@@ -11,6 +11,16 @@
 **Cleanups**
 - N/A
 
+## [v4.5.0](https://github.com/Tapjoy/chore/tree/v4.5.0)
+
+**Cleanups**
+
+- Replace `json` with `multi_json` so that the application decides with json implementation to use
+- Remove `thread` dependency as we're not relying on any of its functionality
+- Relax version pinning on dependencies
+- Remove unused development dependencies
+- Update specs to rspec 3 syntax
+
 ## [v4.2.0](https://github.com/Tapjoy/chore/tree/v4.2.0)
 
 **Features**

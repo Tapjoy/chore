@@ -26,12 +26,12 @@ describe Chore::Fetcher do
 
 
   it "should have a start function" do
-    fetcher.should respond_to :start
+    expect(fetcher).to respond_to :start
   end
 
   describe "fetching messages" do
     it "should assign its message" do
-      manager.should_receive(:assign)
+      expect(manager).to receive(:assign)
       fetcher.start
     end
   end

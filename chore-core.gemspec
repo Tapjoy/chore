@@ -14,7 +14,6 @@ Gem::Specification.new do |s|
   s.email = "eng-group-arch@tapjoy.com"
 
   s.executables = Dir["bin/*"].map { |f| f.gsub(/bin\//, '') }
-  s.default_executable = "chore"
 
   s.extra_rdoc_files = [
     "LICENSE.txt",
@@ -36,11 +35,10 @@ Gem::Specification.new do |s|
   s.rubygems_version = "1.8.25"
   s.summary = "Job processing... for the future!"
 
-  s.add_runtime_dependency(%q<json>, [">= 0"])
-  s.add_runtime_dependency(%q<aws-sdk-sqs>, ["~> 1"])
-  s.add_runtime_dependency(%q<thread>, ["~> 0.1.3"])
-  s.add_runtime_dependency('get_process_mem', ["~> 0.2.0"])
-  s.add_development_dependency(%q<rspec>, ["~> 3.3"])
-  s.add_development_dependency(%q<rdoc>, ["~> 3.12"])
-  s.add_development_dependency(%q<bundler>, [">= 0"])
+  s.add_runtime_dependency(%q<multi_json>, [">= 0"])
+  s.add_runtime_dependency(%q<aws-sdk-sqs>, [">= 1"])
+  s.add_runtime_dependency('get_process_mem', [">= 0.2.0"])
+  s.add_development_dependency(%q<rspec>, [">= 3"])
+  s.add_development_dependency(%q<dalli>, [">= 2"])
+  s.add_development_dependency(%q<timecop>, [">= 0"])
 end

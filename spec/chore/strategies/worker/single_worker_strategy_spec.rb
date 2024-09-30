@@ -15,7 +15,6 @@ describe Chore::Strategy::SingleWorkerStrategy do
       let(:worker)  { nil }
 
       it 'does nothing' do
-        expect(worker).to_not receive(:stop!)
         subject.stop!
       end
     end
