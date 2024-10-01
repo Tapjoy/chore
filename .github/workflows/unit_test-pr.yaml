@@ -1,0 +1,19 @@
+name: PR Unit Testing
+
+on:
+  workflow_dispatch: {} # Allows for this workflow to be triggered through the github.com UI or the gh CLI
+  pull_request:
+
+jobs:
+  test:
+    name: Unit Test
+    strategy:
+      matrix:
+        dependency_file:
+          - Gemfile.latest
+          - Gemfile.ruby27
+          - Gemfile.ruby31
+          - Gemfile.ruby32
+    uses: ./.github/workflows/unit_test-run.yaml
+    with:
+      dependency_file: ${{ matrix.dependency_file }}

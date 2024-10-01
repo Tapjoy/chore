@@ -1,0 +1,83 @@
+name: Unit Test Runner
+on:
+  workflow_call:
+    inputs:
+      recipe:
+        description: 'The name of the Makefile recipe to run'
+        default: 'ci-test'
+        required: false
+        type: string
+      dependency_file:
+        description: 'Name of the file containing 3rd-party dependencies'
+        default: 'Gemfile.lock'
+        required: false
+        type: string
+
+jobs:
+  test:
+    name: Runner
+    runs-on: [ubuntu-latest]
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+    # https://github.com/actions/checkout/tree/v3?tab=readme-ov-file#usage
+    - uses: actions/checkout@v3
+
+    - name: Docker - Set up environment
+      # https://github.com/actions/github-script/tree/v7
+      uses: actions/github-script@v7
+      env:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        script: |
+          core.exportVariable('ACTIONS_CACHE_URL', process.env['ACTIONS_CACHE_URL'])
+          core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN'])
+          core.exportVariable('ACTIONS_RUNTIME_URL', process.env['ACTIONS_RUNTIME_URL'])
+
+    # https://github.com/docker/setup-buildx-action/tree/v2?tab=readme-ov-file#usage
+    - uses: docker/setup-buildx-action@v2
+      with:
+        install: true
+
+    - name: Rubygems - Prepare dependency cache
+      id: gems-cache
+      # https://github.com/actions/cache/tree/v3?tab=readme-ov-file#usage
+      uses: actions/cache@v3
+      with:
+        path: vendor/bundle
+        key: gems-cache-bionic-${{ inputs.dependency_file }}-${{ hashFiles(inputs.dependency_file) }}
+        restore-keys: |
+          gems-cache-bionic-${{ inputs.dependency_file }}-
+          gems-cache-bionic-
+
+    - name: App - Build docker image
+      env:
+        BUNDLE_GEMFILE: ${{ inputs.dependency_file }}
+        DOCKER_BUILD_OPTS: --load --cache-from=type=gha --cache-from=type=gha,scope=main --cache-to=type=gha,compression=zstd,mode=max
+      run: |
+        make baseimage
+
+    - name: App - Run CI
+      env:
+        BUNDLE_GEMFILE: ${{ inputs.dependency_file }}
+        RECIPE: ${{ inputs.recipe }}
+      run: |
+        make ci
+
+  # This job is required in order to define a repository-level ruleset that ensures the
+  # unit test workflows complete regardless of the size of the test job matrix
+  test-status:
+    name: Test Status
+    runs-on: ubuntu-latest
+    needs: [test]
+    if: always()
+    steps:
+    - name: Successful test
+      if: ${{ !(contains(needs.*.result, 'failure')) }}
+      run: exit 0
+
+    - name: Failing test
+      if: ${{ contains(needs.*.result, 'failure') }}
+      run: exit 1
