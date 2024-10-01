@@ -38,7 +38,7 @@ module Chore::FilesystemQueue
 
   def config_value(queue_name, config_name)
     config_file = File.join(config_dir(queue_name), config_name)
-    if File.exists?(config_file)
+    if File.exist?(config_file)
       File.read(config_file).strip
     end
   end
@@ -57,7 +57,7 @@ module Chore::FilesystemQueue
 
   # Creates a directory if it does not exist. Returns the directory
   def prepare_dir(dir)
-    unless Dir.exists?(dir)
+    unless Dir.exist?(dir)
       FileUtils.mkdir_p(dir)
     end
     
