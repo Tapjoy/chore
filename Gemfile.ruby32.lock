@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    chore-core (4.5.0)
+    chore-core (4.6.0)
       aws-sdk-sqs (>= 1)
       get_process_mem (>= 0.2.0)
       multi_json
