@@ -11,6 +11,14 @@
 **Cleanups**
 - N/A
 
+## [v4.6.0](https://github.com/Tapjoy/chore/tree/v4.6.0)
+
+**Cleanups**
+
+- Improve compatibility with newer Ruby versions
+- Add multi-gemfile CI workflows
+- Update rspec syntax
+
 ## [v4.5.0](https://github.com/Tapjoy/chore/tree/v4.5.0)
 
 **Cleanups**

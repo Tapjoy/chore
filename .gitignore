@@ -1,8 +1,8 @@
 tmp/*
 *.yardoc
-Gemfile.lock
 *.gem
 doc/*
+.docker-build-cache
 .DS_Store
 vendor/
 .bundle/

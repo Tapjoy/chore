@@ -28,7 +28,7 @@ describe Chore::Queues::SQS::Publisher do
   end
 
   it 'should create send an encoded message to the specified queue' do
-    expect(sqs).to receive(:send_message).with(queue_url: queue_url, message_body: job.to_json)
+    expect(sqs).to receive(:send_message).with({queue_url: queue_url, message_body: job.to_json})
     publisher.publish(queue_name,job)
   end
 
