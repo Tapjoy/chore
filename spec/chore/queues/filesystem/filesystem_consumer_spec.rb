@@ -79,7 +79,7 @@ describe Chore::Queues::Filesystem::Consumer do
     it "should delete expired empty jobs" do
       FileUtils.touch("#{new_dir}/foo.1.job")
 
-      now = Time.now + default_timeout
+      now = Time.now + default_timeout + 60
       Timecop.freeze(now) do
         described_class.make_in_progress("foo.1.job", new_dir, in_progress_dir, default_timeout)
         expect(File.exist?("#{new_dir}/foo.1.job")).to eq(false)
