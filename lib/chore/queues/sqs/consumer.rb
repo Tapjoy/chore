@@ -14,6 +14,11 @@ module Chore
         Chore::CLI.register_option 'aws_secret_key', '--aws-secret-key KEY', 'Valid AWS Secret Key'
         Chore::CLI.register_option 'dedupe_servers', '--dedupe-servers SERVERS', 'List of mememcache compatible server(s) to use for storing SQS Message Dedupe cache'
 
+        # Resets the API client connection and provides @@reset_at so we know when the last time that was done
+        def self.reset_connection!
+          @@reset_at = Time.now
+        end
+
         # @param [String] queue_name Name of SQS queue
         # @param [Hash] opts Options
         def initialize(queue_name, opts={})
@@ -21,9 +26,9 @@ module Chore
           raise Chore::TerribleMistake, "Cannot specify a queue polling size greater than 10" if sqs_polling_amount > 10
         end
 
-        # Resets the API client connection and provides @@reset_at so we know when the last time that was done
-        def self.reset_connection!
-          @@reset_at = Time.now
+        # Ensure that that consumer is capable of running
+        def verify_connection!
+          queue.data
         end
 
         # Begins requesting messages from SQS, which will invoke the +&handler+ over each message
@@ -36,9 +41,6 @@ module Chore
             begin
               messages = handle_messages(&handler)
               sleep (Chore.config.consumer_sleep_interval) if messages.empty?
-            rescue Aws::SQS::Errors::NonExistentQueue => e
-              Chore.logger.error "You specified a queue '#{queue_name}' that does not exist. You must create the queue before starting Chore. Shutting down..."
-              raise Chore::TerribleMistake
             rescue => e
               Chore.logger.error { "SQSConsumer#Consume: #{e.inspect} #{e.backtrace * "\n"}" }
             end
@@ -86,6 +88,18 @@ module Chore
         #
         # @return [Array<Aws::SQS::Message>]
         def handle_messages(&block)
+          begin
+            verify_connection!
+          rescue => e
+            # We shut down on connection failures for a few reasons:
+            # * The AWS SQS client has already been configured to retry on temporal issues like authentication failures
+            # * We rely on the operating system to re-run chore if it shuts down
+            # * We don't want chore to keep spinning if there's an unrecoverable exception with the client;
+            #   it's safest to restart chore in these situations
+            Chore.logger.error "There was a problem verifying the connection to the queue: #{e.message}. Shutting down..."
+            raise Chore::TerribleMistake
+          end
+
           msg = queue.receive_messages(:max_number_of_messages => sqs_polling_amount, :attribute_names => ['ApproximateReceiveCount'])
           messages = *msg
           received_timestamp = Time.now

@@ -31,6 +31,7 @@ describe Chore::Queues::SQS::Consumer do
   before do
     allow(Aws::SQS::Client).to receive(:new).and_return(sqs)
     allow(Aws::SQS::Queue).to receive(:new).and_return(queue)
+    allow(queue).to receive(:data).and_return(nil)
     allow(queue).to receive(:receive_messages).and_return(receive_message_result)
     allow(message).to receive(:attributes).and_return({ 'ApproximateReceiveCount' => rand(10) })
   end
@@ -133,6 +134,36 @@ describe Chore::Queues::SQS::Consumer do
         it 'should not yield for a dupe message' do
           expect {|b| consume(&b) }.not_to yield_control
         end
+      end
+    end
+
+    context 'on queue lookup failure' do
+      before(:each) do
+        allow(consumer).to receive(:verify_connection!).and_raise(Aws::SQS::Errors::NonExistentQueue)
+      end
+
+      it 'should raise exception' do
+        expect { consume }.to raise_error(Chore::TerribleMistake)
+      end
+    end
+
+    context 'on aws credential failure' do
+      before(:each) do
+        allow(consumer).to receive(:verify_connection!).and_raise(Aws::Errors::MissingCredentialsError)
+      end
+
+      it 'should raise exception' do
+        expect { consume }.to raise_error(Chore::TerribleMistake)
+      end
+    end
+
+    context 'on unexpected failure' do
+      before(:each) do
+        allow(consumer).to receive(:verify_connection!).and_raise(Seahorse::Client::NetworkingError)
+      end
+
+      it 'should raise exception' do
+        expect { consume }.to raise_error(Chore::TerribleMistake)
       end
     end
   end
