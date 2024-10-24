@@ -18,7 +18,12 @@ module Chore
         # @param [Hash] opts Options
         def initialize(queue_name, opts={})
           super(queue_name, opts)
+          verify_connection
           raise Chore::TerribleMistake, "Cannot specify a queue polling size greater than 10" if sqs_polling_amount > 10
+        end
+
+        def verify_connection
+          queue
         end
 
         # Resets the API client connection and provides @@reset_at so we know when the last time that was done
