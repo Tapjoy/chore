@@ -2,7 +2,12 @@ module Chore
   module Queues
     module SQS
       def self.sqs_client
-        Aws::SQS::Client.new(logger: Chore.logger, log_level: Chore.log_level_to_sym)
+        Aws::SQS::Client.new(
+          logger: Chore.logger,
+          log_level: Chore.log_level_to_sym,
+          instance_profile_credentials_timeout: 5, # default: 1
+          instance_profile_credentials_retries: 5, # default: 0
+        )
       end
 
       # Helper method to create queues based on the currently known list as provided by your configured Chore::Jobs
