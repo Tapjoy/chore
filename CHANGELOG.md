@@ -11,6 +11,18 @@
 **Cleanups**
 - N/A
 
+## [v4.7.0](https://github.com/Tapjoy/chore/tree/v4.7.0)
+
+**Features**
+- N/A
+
+**Fixed bugs**
+- Fix AWS instance credential fetching never retrying on failure
+- Fix SQS consumer never recovering from certain AWS client errors such as authentication failures
+
+**Cleanups**
+- N/A
+
 ## [v4.6.0](https://github.com/Tapjoy/chore/tree/v4.6.0)
 
 **Cleanups**
