@@ -12,6 +12,18 @@ on:
         default: 'Gemfile.lock'
         required: false
         type: string
+      dependency_cache_dirs:
+        description: "Names of the directories containing 3rd-party dependencies"
+        default: |
+          /tmp/.docker-cache
+          vendor/bundle
+        required: false
+        type: string
+      debug:
+        description: "Run the build with tmate debugging enabled"
+        default: false
+        required: false
+        type: boolean
 
 jobs:
   test:
@@ -22,40 +34,87 @@ jobs:
       contents: read
 
     steps:
-    # https://github.com/actions/checkout/tree/v3?tab=readme-ov-file#usage
-    - uses: actions/checkout@v3
-
-    - name: Docker - Set up environment
-      # https://github.com/actions/github-script/tree/v7
-      uses: actions/github-script@v7
-      env:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+    # https://github.com/actions/checkout/tree/v4?tab=readme-ov-file#usage
+    - name: Setup - git checkout
+      uses: actions/checkout@v4
       with:
-        script: |
-          core.exportVariable('ACTIONS_CACHE_URL', process.env['ACTIONS_CACHE_URL'])
-          core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN'])
-          core.exportVariable('ACTIONS_RUNTIME_URL', process.env['ACTIONS_RUNTIME_URL'])
+        fetch-depth: 2
 
-    # https://github.com/docker/setup-buildx-action/tree/v2?tab=readme-ov-file#usage
-    - uses: docker/setup-buildx-action@v2
+    - name: Setup - Determine root image
+      id: root_image
+      shell: bash
+      run: |
+        make print-ROOT_IMAGE
+        echo value=$(make print-ROOT_IMAGE) >> ${GITHUB_OUTPUT}
+
+    # https://github.com/docker/setup-buildx-action/tree/v3?tab=readme-ov-file#usage
+    - name: Setup - Docker builder
+      uses: docker/setup-buildx-action@v3
       with:
         install: true
 
-    - name: Rubygems - Prepare dependency cache
-      id: gems-cache
-      # https://github.com/actions/cache/tree/v3?tab=readme-ov-file#usage
-      uses: actions/cache@v3
+    # https://github.com/actions/checkout/tree/v4?tab=readme-ov-file#usage
+    - name: Setup - Prepare dependency cache
+      id: dependency-cache
+      uses: actions/cache@v4
       with:
-        path: vendor/bundle
-        key: gems-cache-bionic-${{ inputs.dependency_file }}-${{ hashFiles(inputs.dependency_file) }}
+        path: ${{ inputs.dependency_cache_dirs }}
+        key: dependency-cache-${{ steps.root_image.outputs.value }}-${{ hashFiles(inputs.dependency_file) }}
         restore-keys: |
-          gems-cache-bionic-${{ inputs.dependency_file }}-
-          gems-cache-bionic-
+          dependency-cache-${{ steps.root_image.outputs.value }}-
 
-    - name: App - Build docker image
+    # Note we can't use cache-hit to determine whether to skip this because of partial restores
+    - name: Setup - Set dependency permissions
       env:
+        DIRS: ${{ inputs.dependency_cache_dirs }}
+      run: |
+        IFS=$'\n'
+        for dir in ${DIRS}; do
+          if [ "${dir}" == "/tmp/.docker-cache" ]; then
+            sudo mkdir -p ${dir}
+            sudo chown -R $(id -u):$(id -g) ${dir}
+          elif [ -d "${dir}" ]; then
+            sudo chown -R root:root ${dir}
+          fi
+        done
+
+    # Fixes actions/cache failing to save the vendor/bundle cache due to file ownership differing between
+    # the host and the container (https://github.com/actions/toolkit/issues/946)
+    - name: Setup - Fix tar permissions
+      run: |
+        sudo chown root /bin/tar && sudo chmod u+s /bin/tar
+
+    # The version of tmate that comes with the mxschmitt/action-tmate hangs for 20s every 5min
+    # https://github.com/tmate-io/tmate/issues/267
+    - name: Debug - Install tmate
+      if: ${{ steps.is_debug.outputs.value == 'true' }}
+      id: install_tmate
+      shell: bash
+      run: |
+        set -eu
+
+        if which tmate; then
+          echo "tmate already installed"
+        else
+          sudo apt-get update -qq
+          sudo apt-get install -yq --no-install-recommends tmate
+        fi
+
+    # https://github.com/mxschmitt/action-tmate/tree/v3
+    - name: Debug - Setup tmate session if requested
+      if: ${{ steps.is_debug.outputs.value == 'true' }}
+      # https://github.com/mxschmitt/action-tmate/tree/v3
+      uses: mxschmitt/action-tmate@v3
+      env:
+        DOCKER_BUILD_OPTS: --load --cache-from=type=local,src=/tmp/.docker-cache --cache-to=type=local,dest=/tmp/.docker-cache,compression=zstd,mode=max
+        RECIPE: ${{ inputs.recipe }}
+      with:
+        install-dependencies: false
+
+    - name: App - Build base container image
+      env:
+        DOCKER_BUILD_OPTS: --load --cache-from=type=local,src=/tmp/.docker-cache --cache-to=type=local,dest=/tmp/.docker-cache,compression=zstd,mode=max
         BUNDLE_GEMFILE: ${{ inputs.dependency_file }}
-        DOCKER_BUILD_OPTS: --load --cache-from=type=gha --cache-from=type=gha,scope=main --cache-to=type=gha,compression=zstd,mode=max
       run: |
         make baseimage
 
