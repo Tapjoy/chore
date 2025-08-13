@@ -15,7 +15,7 @@ on:
       dependency_cache_dirs:
         description: "Names of the directories containing 3rd-party dependencies"
         default: |
-          .unit_test-cache
+          /tmp/.docker-cache
           vendor/bundle
         required: false
         type: string
