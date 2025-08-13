@@ -108,12 +108,6 @@ jobs:
       env:
         DOCKER_BUILD_OPTS: --load --cache-from=type=local,src=/tmp/.docker-cache --cache-to=type=local,dest=/tmp/.docker-cache,compression=zstd,mode=max
         RECIPE: ${{ inputs.recipe }}
-        TST_FIREBASE_ADMIN_CLIENT_EMAIL: ${{ secrets.TST_FIREBASE_ADMIN_CLIENT_EMAIL }}
-        TST_FIREBASE_ADMIN_CLIENT_ID: ${{ secrets.TST_FIREBASE_ADMIN_CLIENT_ID }}
-        TST_FIREBASE_ADMIN_CLIENT_X509_CERT_URL: ${{ secrets.TST_FIREBASE_ADMIN_CLIENT_X509_CERT_URL }}
-        TST_FIREBASE_ADMIN_PRIVATE_KEY: ${{ secrets.TST_FIREBASE_ADMIN_PRIVATE_KEY }}
-        TST_FIREBASE_ADMIN_PRIVATE_KEY_ID: ${{ secrets.TST_FIREBASE_ADMIN_PRIVATE_KEY_ID }}
-        TST_FIREBASE_ADMIN_PROJECT_ID: ${{ secrets.TST_FIREBASE_ADMIN_PROJECT_ID }}
       with:
         install-dependencies: false
 
