@@ -26,9 +26,9 @@ Chore can be integrated with any Ruby-based project by following these instructi
     gem 'aws-sdk-sqs'
     ```
 
-    For **Google Cloud Pub/Sub**:
+    For **Google Cloud Pub/Sub** (requires Ruby 3.1+ and google-cloud-pubsub 3.0+):
     ```ruby
-    gem 'google-cloud-pubsub', '~> 2.23'
+    gem 'google-cloud-pubsub', '>= 3.0', '< 4.0'
     ```
 
     For **Filesystem queues**: No additional gems required.
@@ -100,7 +100,7 @@ Chore can authenticate with AWS.
 
    **Note**: Publisher configuration (project_id, credentials) is set globally via environment variables or the `Chore::Queues::PubSub.configure` block. Individual jobs cannot override these settings.
 
-   **Note**: PubSub requires gRPC which can have threading issues in some environments. If using PubSub in a threaded environment (such as with threaded consumer strategies), ensure you use gRPC version 1.74.1 or higher to avoid potential deadlocks and connection issues.
+   **Note**: PubSub requires gRPC which can have threading issues in some environments. google-cloud-pubsub 3.0+ includes improved gRPC handling, but if using PubSub in a threaded environment (such as with threaded consumer strategies), ensure you use gRPC version 1.74.1 or higher to avoid potential deadlocks and connection issues.
 
    **Warning**: Using different queue types for consumer and publisher (e.g., PubSub consumer with SQS publisher) can be confusing and is generally not recommended. Mixed configurations should only be used carefully for specific scenarios like migrations, validations, or no-op queues.
 

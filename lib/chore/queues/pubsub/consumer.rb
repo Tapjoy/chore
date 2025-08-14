@@ -136,14 +136,14 @@ module Chore
             @subscription = nil
           end
 
-          @subscription ||= pubsub.subscription(@subscription_name)
+          @subscription ||= pubsub.subscriber(@subscription_name)
         end
 
         # The ack deadline (in seconds) of the subscription
         #
         # @return [Integer]
         def queue_timeout
-          @queue_timeout ||= subscription.ack_deadline_seconds || 600 # Default to 10 minutes
+          @queue_timeout ||= subscription.deadline || 600 # Default to 10 minutes
         end
 
         # GCP Pub/Sub client object

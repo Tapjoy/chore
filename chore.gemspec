@@ -40,7 +40,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency(%q<ostruct>, [">= 0"])
   s.add_development_dependency(%q<rspec>, [">= 3"])
   s.add_development_dependency(%q<aws-sdk-sqs>, [">= 1"])
-  s.add_development_dependency(%q<google-cloud-pubsub>, ["~> 2.23"])
+  s.add_development_dependency(%q<google-cloud-pubsub>, [">= 3.0", "< 4.0"])
   s.add_development_dependency(%q<dalli>, [">= 2"])
   s.add_development_dependency(%q<timecop>, [">= 0"])
 end

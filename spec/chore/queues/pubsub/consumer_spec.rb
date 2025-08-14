@@ -38,7 +38,7 @@ describe Chore::Queues::PubSub::Consumer do
       end
 
       it 'should look up the subscription based on the queue name' do
-        expect(pubsub_client).to receive(:subscription).with(subscription_name)
+        expect(pubsub_client).to receive(:subscriber).with(subscription_name)
         consume
       end
 
@@ -98,7 +98,7 @@ describe Chore::Queues::PubSub::Consumer do
                 received_message.message_id,
                 received_message.ack_id,
                 queue_name,
-                subscription.ack_deadline_seconds,
+                subscription.deadline,
                 received_message.data,
                 0, # delivery_attempt - 1 (1 - 1 = 0)
                 received_timestamp
@@ -131,7 +131,7 @@ describe Chore::Queues::PubSub::Consumer do
                   received_message.message_id,
                   received_message.ack_id,
                   queue_name,
-                  subscription.ack_deadline_seconds,
+                  subscription.deadline,
                   received_message.data,
                   2, # delivery_attempt - 1 (3 - 1 = 2)
                   received_timestamp
@@ -150,7 +150,7 @@ describe Chore::Queues::PubSub::Consumer do
                   received_message.message_id,
                   received_message.ack_id,
                   queue_name,
-                  subscription.ack_deadline_seconds,
+                  subscription.deadline,
                   received_message.data,
                   0, # (nil || 1) - 1 = 0
                   received_timestamp
@@ -290,8 +290,8 @@ describe Chore::Queues::PubSub::Consumer do
       expect(consumer.send(:queue_timeout)).to eq(600)
     end
 
-    it 'should default to 600 seconds if ack_deadline_seconds is nil' do
-      allow(subscription).to receive(:ack_deadline_seconds).and_return(nil)
+    it 'should default to 600 seconds if deadline is nil' do
+      allow(subscription).to receive(:deadline).and_return(nil)
       expect(consumer.send(:queue_timeout)).to eq(600)
     end
   end

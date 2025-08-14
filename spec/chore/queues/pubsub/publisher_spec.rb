@@ -23,7 +23,7 @@ describe Chore::Queues::PubSub::Publisher do
   end
 
   it 'should lookup the topic when publishing' do
-    expect(pubsub_client).to receive(:topic).with(queue_name).and_return(topic)
+    expect(pubsub_client).to receive(:publisher).with(queue_name).and_return(topic)
     publisher.publish(queue_name, job)
   end
 
@@ -36,8 +36,8 @@ describe Chore::Queues::PubSub::Publisher do
     second_queue_name = queue_name + '2'
     second_topic = double('Google::Cloud::PubSub::Topic')
     
-    expect(pubsub_client).to receive(:topic).with(queue_name).and_return(topic)
-    expect(pubsub_client).to receive(:topic).with(second_queue_name).and_return(second_topic)
+    expect(pubsub_client).to receive(:publisher).with(queue_name).and_return(topic)
+    expect(pubsub_client).to receive(:publisher).with(second_queue_name).and_return(second_topic)
     expect(topic).to receive(:publish)
     expect(second_topic).to receive(:publish)
 
@@ -46,7 +46,7 @@ describe Chore::Queues::PubSub::Publisher do
   end
 
   it 'should only lookup a named topic once' do
-    expect(pubsub_client).to receive(:topic).with(queue_name).once.and_return(topic)
+    expect(pubsub_client).to receive(:publisher).with(queue_name).once.and_return(topic)
     expect(topic).to receive(:publish).exactly(4).times
     4.times { publisher.publish(queue_name, job) }
   end
@@ -71,7 +71,7 @@ describe Chore::Queues::PubSub::Publisher do
       Chore::Queues::PubSub::Publisher.reset_connection!
       
       # Should lookup topic again
-      expect(pubsub_client).to receive(:topic).with(queue_name).and_return(topic)
+      expect(pubsub_client).to receive(:publisher).with(queue_name).and_return(topic)
       publisher.send(:get_topic, queue_name)
     end
 

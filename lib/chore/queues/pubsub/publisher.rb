@@ -54,7 +54,7 @@ module Chore
             @pubsub_topics = {}
           end
 
-          @pubsub_topics[name] ||= pubsub.topic(name)
+          @pubsub_topics[name] ||= pubsub.publisher(name)
         end
       end
     end
