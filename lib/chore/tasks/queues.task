@@ -1,18 +1,46 @@
 namespace :chore do
-  desc <<-DESC.gsub(/^\s+/, '')
-  Create all defined queues. If the halt_on_existing argument is set (defaults to off) the task will abort if a single
-  queue already exists without attempting to create any.
+  namespace :queues do
+    desc <<-DESC.gsub(/^\s+/, '')
+    Create all defined SQS queues. 
+    If the halt_on_existing argument is set (defaults to off) the task will abort if a single
+    queue already exists without attempting to create any.
 
-  This flag is specifically provided for our integration testing platform to ensure we don't deploy to an incorrect environment.
-  DESC
-  task :create, :halt_on_existing do |t, args|
-    halt_on_existing = %w(1 true yes t y).include?(args[:halt_on_existing])
+    This flag is specifically provided for our integration testing platform to ensure we don't deploy to an incorrect environment.
+    DESC
+    task :create_sqs, :halt_on_existing do |t, args|
+      halt_on_existing = %w(1 true yes t y).include?(args[:halt_on_existing])
+      created_queues = Chore::Queues::SQS.create_queues!(halt_on_existing)
+      Chore.logger.info "Successfully created #{created_queues.length} SQS queues: #{created_queues.join(', ')}"
+    end
 
-    Chore::Queues::SQS.create_queues!(halt_on_existing)
+    desc "Create all defined Pub/Sub topics and subscriptions"
+    task :create_pubsub, :halt_on_existing do |t, args|
+      halt_on_existing = %w(1 true yes t y).include?(args[:halt_on_existing])
+      created_queues = Chore::Queues::PubSub.create_queues!(halt_on_existing)
+      Chore.logger.info "Successfully created #{created_queues.length} Pub/Sub topics: #{created_queues.join(', ')}"
+    end
+
+    desc "Remove all defined SQS queues"
+    task :remove_sqs do
+      deleted_queues = Chore::Queues::SQS.delete_queues!
+      Chore.logger.info "Successfully deleted #{deleted_queues.length} SQS queues: #{deleted_queues.join(', ')}"
+    end
+
+    desc "Remove all defined Pub/Sub topics and subscriptions"
+    task :remove_pubsub do
+      deleted_queues = Chore::Queues::PubSub.delete_queues!
+      Chore.logger.info "Successfully deleted #{deleted_queues.length} Pub/Sub topics: #{deleted_queues.join(', ')}"
+    end
   end
 
-  desc "Remove all defined queues"
+  # Legacy tasks for backward compatibility
+  desc "Create all defined SQS queues (legacy - use chore:queues:create_sqs instead)"
+  task :create, :halt_on_existing do |t, args|
+    Rake::Task['chore:queues:create_sqs'].invoke(args[:halt_on_existing])
+  end
+
+  desc "Remove all defined SQS queues (legacy - use chore:queues:remove_sqs instead)"
   task :remove do
-    Chore::Queues::SQS.delete_queues!
+    Rake::Task['chore:queues:remove_sqs'].invoke
   end
 end

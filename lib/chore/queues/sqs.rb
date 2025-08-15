@@ -19,7 +19,7 @@ module Chore
       #
       # @return [Array<String>]
       def self.create_queues!(halt_on_existing=false)
-        raise 'You must have atleast one Chore Job configured and loaded before attempting to create queues' unless Chore.prefixed_queue_names.length > 0
+        raise RuntimeError.new('You must have at least one Chore Job before attempting to create SQS queues') unless Chore.prefixed_queue_names.length > 0
 
         if halt_on_existing
           existing = self.existing_queues
@@ -34,7 +34,7 @@ module Chore
         end
 
         Chore.prefixed_queue_names.each do |queue_name|
-          Chore.logger.info "Chore Creating Queue: #{queue_name}"
+          Chore.logger.info "Chore Creating SQS Queue: #{queue_name}"
           begin
             sqs_client.create_queue(queue_name: queue_name)
           rescue Aws::SQS::Errors::QueueAlreadyExists
@@ -51,11 +51,11 @@ module Chore
       # @return [Array<String>]
 
       def self.delete_queues!
-        raise 'You must have atleast one Chore Job configured and loaded before attempting to create queues' unless Chore.prefixed_queue_names.length > 0
+        raise RuntimeError.new('You must have at least one Chore Job before attempting to delete SQS queues') unless Chore.prefixed_queue_names.length > 0
 
         Chore.prefixed_queue_names.each do |queue_name|
           begin
-            Chore.logger.info "Chore Deleting Queue: #{queue_name}"
+            Chore.logger.info "Chore Deleting SQS Queue: #{queue_name}"
             url = sqs_client.get_queue_url(queue_name: queue_name).queue_url
             sqs_client.delete_queue(queue_url: url)
           rescue => e

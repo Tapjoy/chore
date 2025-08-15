@@ -36,9 +36,10 @@ Gem::Specification.new do |s|
   s.summary = "Job processing... for the future!"
 
   s.add_runtime_dependency(%q<multi_json>, [">= 0"])
-  s.add_runtime_dependency(%q<aws-sdk-sqs>, [">= 1"])
   s.add_runtime_dependency('get_process_mem', [">= 0.2.0"])
   s.add_development_dependency(%q<rspec>, [">= 3"])
+  s.add_development_dependency(%q<aws-sdk-sqs>, [">= 1"])
+  s.add_development_dependency(%q<google-cloud-pubsub>, [">= 3.0", "< 4.0"])
   s.add_development_dependency(%q<dalli>, [">= 2"])
   s.add_development_dependency(%q<timecop>, [">= 0"])
 end
