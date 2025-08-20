@@ -13,9 +13,7 @@ describe Chore::Queues::PubSub do
         message_id: message_id,
         ack_id: ack_id,
         data: message_data,
-        delivery_attempt: 1,
-        acknowledge!: true,
-        modify_ack_deadline!: true
+        delivery_attempt: 1
       )
     end
 

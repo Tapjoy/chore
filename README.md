@@ -355,9 +355,9 @@ Read more details about SQS and Delays [here](docs/Delayed%20Jobs.md)
 GCP Pub/Sub uses a topic and subscription model. When using Chore with Pub/Sub:
 
 * Each queue corresponds to a Pub/Sub topic
-* Subscriptions are automatically created with the naming pattern `{topic-name}-sub`
-* Message delays are handled using `modify_ack_deadline!` instead of SQS visibility timeouts
-* Messages are acknowledged using `acknowledge!` instead of being deleted
+* Subscriptions are automatically created with the naming pattern `{topic-name}`
+* Message delays are handled using subscription-level ack deadline modification instead of SQS visibility timeouts
+* Messages are acknowledged using subscription-level acknowledgment instead of being deleted
 * Pull-based consumption is used with configurable batch sizes (up to 1000 messages)
 
 ## Hooks

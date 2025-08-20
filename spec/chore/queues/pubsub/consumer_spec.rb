@@ -188,16 +188,13 @@ describe Chore::Queues::PubSub::Consumer do
         expect { consume }.to raise_error(Chore::TerribleMistake)
       end
     end
+
+
   end
 
   describe "completing work" do
-    before do
-      # Set up current messages for the complete method to work
-      consumer.instance_variable_set(:@current_messages, [received_message])
-    end
-
     it 'acknowledges the message in the subscription' do
-      expect(received_message).to receive(:acknowledge!)
+      expect(subscription).to receive(:acknowledge).with(received_message.ack_id)
       consumer.complete(received_message.message_id, received_message.ack_id)
     end
 
@@ -209,14 +206,9 @@ describe Chore::Queues::PubSub::Consumer do
   describe '#delay' do
     let(:item) { Chore::UnitOfWork.new(received_message.message_id, received_message.ack_id, queue_name, 600, received_message.data, 0, consumer) }
 
-    before do
-      # Set up current messages for the delay method to work
-      consumer.instance_variable_set(:@current_messages, [received_message])
-    end
-
     it 'modifies the ack deadline of the message' do
       delay_seconds = backoff_func.call(item)
-      expect(received_message).to receive(:modify_ack_deadline!).with(delay_seconds)
+      expect(subscription).to receive(:modify_ack_deadline).with(delay_seconds, received_message.ack_id)
       consumer.delay(item, backoff_func)
     end
 

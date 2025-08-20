@@ -59,11 +59,9 @@ module Chore
         # @param [String] message_id Unique ID of the Pub/Sub message  
         # @param [String] ack_id Acknowledgment ID of the Pub/Sub message
         def complete(message_id, ack_id)
-          Chore.logger.debug "Completing (acknowledging): #{message_id}"
+          Chore.logger.debug "Completing (acknowledging): #{message_id} ack_id: #{ack_id}"
           # Find the message by ack_id and acknowledge it
-          if msg = @current_messages&.find { |m| m.ack_id == ack_id }
-            msg.acknowledge!
-          end
+          @subscription.acknowledge(ack_id)
         end
 
         # Delays retry of a job by +backoff_calc+ seconds.
@@ -76,9 +74,7 @@ module Chore
           Chore.logger.debug "Delaying #{item.id} by #{delay} seconds"
 
           # Find the message and modify its ack deadline
-          if msg = @current_messages&.find { |m| m.ack_id == item.receipt_handle }
-            msg.modify_ack_deadline!(delay)
-          end
+          @subscription.modify_ack_deadline(delay, item.receipt_handle)
 
           return delay
         end
@@ -100,16 +96,17 @@ module Chore
           end
 
           messages = subscription.pull(max: pubsub_polling_amount)
-          @current_messages = messages
           received_timestamp = Time.now
 
           messages.each do |message|
-            unless duplicate_message?(message.message_id, @subscription_name, queue_timeout, received_timestamp)
-              # delivery_attempt is available but may be nil for older messages
-              attempt_count = (message.delivery_attempt || 1) - 1
-              block.call(message.message_id, message.ack_id, queue_name, queue_timeout, message.data, attempt_count, received_timestamp)
+            begin
+              unless duplicate_message?(message.message_id, @subscription_name, queue_timeout, received_timestamp)
+                # delivery_attempt is available but may be nil for older messages
+                attempt_count = (message.delivery_attempt || 1) - 1
+                block.call(message.message_id, message.ack_id, queue_name, queue_timeout, message.data, attempt_count, received_timestamp)
+              end
+              Chore.run_hooks_for(:on_fetch, message.ack_id, message.data)
             end
-            Chore.run_hooks_for(:on_fetch, message.ack_id, message.data)
           end
 
           messages
