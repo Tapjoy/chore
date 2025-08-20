@@ -1,15 +1,6 @@
 module Chore
   module Queues
     module PubSub
-      class << self
-        attr_accessor :project_id, :credentials
-        
-        # Configure PubSub settings with a block
-        def configure
-          yield self if block_given?
-        end
-      end
-      
       REQUIRED_LIBRARY = "google/cloud/pubsub".freeze
       MIN_VERSION = Gem::Version.new('3.0.0')
 
@@ -29,14 +20,7 @@ module Chore
           exit
         end
         
-        if self.project_id && self.credentials
-          Google::Cloud::PubSub.new(
-            project_id: self.project_id,
-            credentials: self.credentials
-          )
-        else
-          Google::Cloud::PubSub.new
-        end
+        Google::Cloud::PubSub.new
       end
       # Helper method to create topics and subscriptions based on the currently known list as provided by your configured Chore::Jobs
       # This is meant to be invoked from a rake task, and not directly.
@@ -132,9 +116,9 @@ module Chore
       #
       # @return [Array<String>]
       def self.existing_queues
+        client = pubsub_client
         Chore.prefixed_queue_names.select do |queue_name|
           begin
-            client = pubsub_client
             client.publisher(queue_name)
             client.subscriber("#{queue_name}-sub")
             # if both publisher/subscriber successfully load, then assume exists

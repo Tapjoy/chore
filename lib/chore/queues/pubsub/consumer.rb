@@ -10,14 +10,6 @@ module Chore
         # Initialize the reset at on class load
         @@reset_at = Time.now
 
-        Chore::CLI.register_option 'gcp_project_id', '--gcp-project-id PROJECT_ID', 'GCP Project ID for Pub/Sub' do |project_id|
-          Chore::Queues::PubSub.project_id = project_id
-        end
-        
-        Chore::CLI.register_option 'gcp_credentials', '--gcp-credentials PATH', 'Path to GCP service account credentials JSON file' do |credentials|
-          Chore::Queues::PubSub.credentials = credentials
-        end
-
         # Resets the API client connection and provides @@reset_at so we know when the last time that was done
         def self.reset_connection!
           @@reset_at = Time.now
