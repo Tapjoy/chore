@@ -99,7 +99,7 @@ module Chore
             raise Chore::TerribleMistake
           end
 
-          messages = subscription.pull(max: max_messages)
+          messages = subscription.pull(max: pubsub_polling_amount)
           @current_messages = messages
           received_timestamp = Time.now
 
@@ -143,13 +143,6 @@ module Chore
         # @return [Google::Cloud::PubSub::Project]
         def pubsub
           @pubsub ||= Chore::Queues::PubSub.pubsub_client
-        end
-
-        # Maximum number of messages to retrieve on each request
-        #
-        # @return [Integer]
-        def max_messages
-          [pubsub_polling_amount, 1000].min  # Pub/Sub max is 1000
         end
 
         # Maximum number of messages to retrieve on each request from config
