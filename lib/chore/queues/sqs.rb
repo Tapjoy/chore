@@ -1,7 +1,23 @@
 module Chore
   module Queues
     module SQS
+      REQUIRED_LIBRARY = "aws-sdk-sqs".freeze
+      MIN_VERSION = Gem::Version.new("1")
+
       def self.sqs_client
+        require REQUIRED_LIBRARY
+
+        # Verify compatible version
+        begin
+          gem_version = Gem::Version.new(Aws::SQS::GEM_VERSION)
+          if gem_version < MIN_VERSION
+            raise "#{REQUIRED_LIBRARY} version #{gem_version} is not supported. Please use version >= #{MIN_VERSION}"
+          end
+        rescue => e
+          Chore.logger.error "Could not verify #{REQUIRED_LIBRARY} version: #{e.message}" if defined?(Chore.logger)
+          exit
+        end
+
         Aws::SQS::Client.new(
           logger: Chore.logger,
           log_level: Chore.log_level_to_sym,

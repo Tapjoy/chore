@@ -10,19 +10,23 @@ module Chore
         end
       end
       
+      REQUIRED_LIBRARY = "google/cloud/pubsub".freeze
+      MIN_VERSION = Gem::Version.new('3.0.0')
+
       # Creates a configured PubSub client with the given options
       # Creates a GCP Pub/Sub client using global configuration
       def self.pubsub_client
-        require 'google/cloud/pubsub'
+        require REQUIRED_LIBRARY
         
         # Verify compatible version
         begin
-          gem_version = Gem.loaded_specs['google-cloud-pubsub']&.version
-          if gem_version && gem_version < Gem::Version.new('3.0.0')
-            raise "google-cloud-pubsub version #{gem_version} is not supported. Please use version >= 3.0"
+          gem_version = Gem::Version.new(Google::Cloud::PubSub::VERSION)
+          if gem_version && gem_version < MIN_VERSION
+            raise "#{REQUIRED_LIBRARY} version #{gem_version} is not supported. Please use version >= #{MIN_VERSION}"
           end
         rescue => e
-          Chore.logger.warn "Could not verify google-cloud-pubsub version: #{e.message}" if defined?(Chore.logger)
+          Chore.logger.error "Could not verify #{REQUIRED_LIBRARY} version: #{e.message}" if defined?(Chore.logger)
+          exit
         end
         
         if self.project_id && self.credentials
