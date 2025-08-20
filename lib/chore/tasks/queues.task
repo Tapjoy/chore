@@ -32,15 +32,4 @@ namespace :chore do
       Chore.logger.info "Successfully deleted #{deleted_queues.length} Pub/Sub topics: #{deleted_queues.join(', ')}"
     end
   end
-
-  # Legacy tasks for backward compatibility
-  desc "Create all defined SQS queues (legacy - use chore:queues:create_sqs instead)"
-  task :create, :halt_on_existing do |t, args|
-    Rake::Task['chore:queues:create_sqs'].invoke(args[:halt_on_existing])
-  end
-
-  desc "Remove all defined SQS queues (legacy - use chore:queues:remove_sqs instead)"
-  task :remove do
-    Rake::Task['chore:queues:remove_sqs'].invoke
-  end
 end
