@@ -33,7 +33,9 @@ describe Chore::Queues::PubSub do
         exists?: true,
         deadline: 600,
         pull: [received_message],
-        delete: true
+        delete: true,
+        acknowledge: true,
+        modify_ack_deadline: true
       )
     end
 

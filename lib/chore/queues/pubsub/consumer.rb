@@ -61,7 +61,7 @@ module Chore
         def complete(message_id, ack_id)
           Chore.logger.debug "Completing (acknowledging): #{message_id} ack_id: #{ack_id}"
           # Find the message by ack_id and acknowledge it
-          @subscription.acknowledge(ack_id)
+          subscription.acknowledge(ack_id)
         end
 
         # Delays retry of a job by +backoff_calc+ seconds.
@@ -74,7 +74,7 @@ module Chore
           Chore.logger.debug "Delaying #{item.id} by #{delay} seconds"
 
           # Find the message and modify its ack deadline
-          @subscription.modify_ack_deadline(delay, item.receipt_handle)
+          subscription.modify_ack_deadline(delay, item.receipt_handle)
 
           return delay
         end
@@ -143,10 +143,11 @@ module Chore
         end
 
         # Maximum number of messages to retrieve on each request from config
+        # Capped at 1000 messages which is the Pub/Sub limit
         #
         # @return [Integer]
         def pubsub_polling_amount
-          Chore.config.queue_polling_size
+          [Chore.config.queue_polling_size, 1000].min
         end
       end
     end
