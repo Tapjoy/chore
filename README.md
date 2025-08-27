@@ -215,7 +215,7 @@ This section assumes `foreman` is being used to execute (or export the run comma
     require 'google/cloud/pubsub'
     pubsub = Google::Cloud::PubSub.new
     topic = pubsub.create_topic "test_queue"
-    topic.create_subscription "test_queue-sub"
+    topic.create_subscription "test_queue"
     ```
 
     Alternatively, you can use Chore's built-in queue management:

@@ -19,7 +19,7 @@ module Chore
         # @param [Hash] opts Options
         def initialize(queue_name, opts={})
           super(queue_name, opts)
-          @subscription_name = "#{queue_name}-sub"
+          @subscription_name = queue_name
         end
 
         # Ensure that the consumer is capable of running

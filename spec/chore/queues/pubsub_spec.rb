@@ -149,7 +149,7 @@ describe Chore::Queues::PubSub do
   describe '.existing_queues' do
     it 'returns queues that exist when both publisher and subscriber calls succeed' do
       allow(pubsub_client).to receive(:publisher).with(queue_name).and_return(topic)
-      allow(pubsub_client).to receive(:subscriber).with("#{queue_name}-sub").and_return(subscription)
+      allow(pubsub_client).to receive(:subscriber).with(queue_name).and_return(subscription)
       expect(described_class.existing_queues).to eq([queue_name])
     end
 
@@ -160,7 +160,7 @@ describe Chore::Queues::PubSub do
 
     it 'filters out queues when subscriber call raises NotFoundError' do
       allow(pubsub_client).to receive(:publisher).with(queue_name).and_return(topic)
-      allow(pubsub_client).to receive(:subscriber).with("#{queue_name}-sub").and_raise(Google::Cloud::NotFoundError.new('Subscription not found'))
+      allow(pubsub_client).to receive(:subscriber).with(queue_name).and_raise(Google::Cloud::NotFoundError.new('Subscription not found'))
       expect(described_class.existing_queues).to eq([])
     end
 

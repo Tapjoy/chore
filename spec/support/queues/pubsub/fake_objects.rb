@@ -1,7 +1,7 @@
 describe Chore::Queues::PubSub do
   RSpec.shared_context 'fake pubsub objects' do
     let(:queue_name) { 'test_queue' }
-    let(:subscription_name) { "#{queue_name}-sub" }
+    let(:subscription_name) { queue_name }
     let(:project_id) { 'test-project' }
 
     let(:message_data) { {'class' => 'TestJob', 'args' => [1, 2, '3']}.to_json }
@@ -56,7 +56,7 @@ describe Chore::Queues::PubSub do
         topic_admin: topic_admin,
         subscription_admin: subscription_admin,
         topic_path: "projects/#{project_id}/topics/#{queue_name}",
-        subscription_path: "projects/#{project_id}/subscriptions/#{queue_name}-sub"
+        subscription_path: "projects/#{project_id}/subscriptions/#{queue_name}"
       )
     end
   end

@@ -49,8 +49,7 @@ module Chore
         Chore.prefixed_queue_names.each do |queue_name|
           Chore.logger.info "Chore Creating Pub/Sub Topic and Subscription: #{queue_name}"
           topic_path = client.topic_path(queue_name)
-          subscription_name = "#{queue_name}-sub"
-          subscription_path = client.subscription_path(subscription_name)
+          subscription_path = client.subscription_path(queue_name)
           
           # We rescue in separate blocks because in cases where topic was created
           # but the subscription was not, we still want to remove the subscription. 
@@ -87,14 +86,13 @@ module Chore
         client = pubsub_client
         Chore.prefixed_queue_names.each do |queue_name|
           Chore.logger.info "Chore Deleting Pub/Sub Topic and Subscription: #{queue_name}"
-          subscription_name = "#{queue_name}-sub"
 
           # We rescue in separate blocks because in cases where subscription was removed 
           # but the topic was not, we still want to remove the topic. 
           #
           # Delete subscription first
           begin
-            path = client.subscription_path(subscription_name)
+            path = client.subscription_path(queue_name)
             client.subscription_admin.delete_subscription(subscription: path)
           rescue Google::Cloud::NotFoundError => e
             Chore.logger.error "Deleting Subscription: #{queue_name} failed because #{e}"
@@ -120,7 +118,7 @@ module Chore
         Chore.prefixed_queue_names.select do |queue_name|
           begin
             client.publisher(queue_name)
-            client.subscriber("#{queue_name}-sub")
+            client.subscriber(queue_name)
             # if both publisher/subscriber successfully load, then assume exists
             true
           rescue 
