@@ -143,11 +143,16 @@ module Chore
         end
 
         # Maximum number of messages to retrieve on each request from config
-        # Capped at 1000 messages which is the Pub/Sub limit
+        # Validates that the value doesn't exceed Pub/Sub's limit of 1000 messages
         #
         # @return [Integer]
+        # @raise [ArgumentError] if queue_polling_size exceeds 1000
         def pubsub_polling_amount
-          [Chore.config.queue_polling_size, 1000].min
+          polling_size = Chore.config.queue_polling_size
+          if polling_size > 1000
+            raise ArgumentError, "queue_polling_size (#{polling_size}) exceeds Google Cloud Pub/Sub maximum limit of 1000 messages"
+          end
+          polling_size
         end
       end
     end

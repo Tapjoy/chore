@@ -60,10 +60,15 @@ describe Chore::Queues::PubSub::Consumer do
         consume
       end
 
-      it 'should respect Pub/Sub max limit of 1000 messages' do
-        allow(Chore.config).to receive(:queue_polling_size).and_return(2000)
+      it 'should allow exactly 1000 messages (Pub/Sub maximum)' do
+        allow(Chore.config).to receive(:queue_polling_size).and_return(1000)
         expect(subscription).to receive(:pull).with(max: 1000)
         consume
+      end
+
+      it 'should raise error when queue_polling_size exceeds Pub/Sub max limit of 1000 messages' do
+        allow(Chore.config).to receive(:queue_polling_size).and_return(2000)
+        expect { consumer.send(:pubsub_polling_amount) }.to raise_error(ArgumentError, /queue_polling_size \(2000\) exceeds Google Cloud Pub\/Sub maximum limit of 1000 messages/)
       end
     end
 
