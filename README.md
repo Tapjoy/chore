@@ -53,57 +53,11 @@ dependencies and required code.
 `AWS_SECRET_ACCESS_KEY` environment variables) and an AWS region is set (e.g. `AWS_REGION` environment variable) so that
 Chore can authenticate with AWS.
 
-   To use GCP Pub/Sub with Chore, you have several configuration options:
-
-   **Option 1: Basic Setup**
-   Configure Chore to use the PubSub consumer and publisher:
-
-   ```ruby
-   Chore.configure do |c|
-     c.consumer = Chore::Queues::PubSub::Consumer
-     c.publisher = Chore::Queues::PubSub::Publisher
-   end
-   ```
-
-   **Note**: Setting the consumer does not automatically set the publisher. You must configure both separately.
-
-   **Note**: This configuration will use Google Cloud's automatic credential discovery (environment variables, service account, etc.). See the [Google Cloud PubSub Authentication documentation](https://cloud.google.com/ruby/docs/reference/google-cloud-pubsub/latest/AUTHENTICATION) for details.
-
-   **Option 2: Global Configuration**
-   Set project and credentials that apply to all PubSub operations:
-
-   ```ruby
-   Chore::Queues::PubSub.configure do |config|
-     config.project_id = 'your-project-id'
-     config.credentials = '/path/to/key.json'
-   end
-   ```
-
-   **Note**: This is equivalent to using the command line options `--gcp-project-id` and `--gcp-credentials`. See [Command Line Options](#command-line-options) for details.
-
-   **Option 3: Per-Job Publisher Override**
-   Override the global publisher for specific jobs using `queue_options`:
-
-   ```ruby
-   class MyJob
-     include Chore::Job
-     queue_options(
-       name: 'my_queue',
-       publisher: Chore::Queues::PubSub::Publisher
-     )
-
-     def perform(args={})
-       # Job logic here
-     end
-   end
-   ```
-
-   **Note**: Publisher configuration (project_id, credentials) is set globally via environment variables or the `Chore::Queues::PubSub.configure` block. Individual jobs cannot override these settings.
-
+1. When using Google Pubsub: Chore will use Google Cloud's automatic credential discovery (environment variables, service account, etc.). See the [Google Cloud PubSub Authentication documentation](https://cloud.google.com/ruby/docs/reference/google-cloud-pubsub/latest/AUTHENTICATION) for details. Otherwise, you can configure Google::Pubsub directly.
    **Note**: PubSub requires gRPC which can have threading issues in some environments. google-cloud-pubsub 3.0+ includes improved gRPC handling, but if using PubSub in a threaded environment (such as with threaded consumer strategies), ensure you use gRPC version 1.74.1 or higher to avoid potential deadlocks and connection issues.
 
-   **Warning**: Using different queue types for consumer and publisher (e.g., PubSub consumer with SQS publisher) can be confusing and is generally not recommended. Mixed configurations should only be used carefully for specific scenarios like migrations, validations, or no-op queues.
 
+1. Queue configuration
    **Configuration Priority**: Global configuration → Environment variables
 
     By default, Chore will run over all queues it detects among the required files. If different behavior is desired,
@@ -117,25 +71,6 @@ Chore can authenticate with AWS.
     ```
 
 1. Chore has many more options, which can be viewed by executing `bundle exec chore --help`
-
-### Command Line Options
-
-In addition to configuration blocks, Chore supports command line options for queue-specific settings:
-
-**AWS SQS Options:**
-```
---aws-access-key KEY         Valid AWS Access Key
---aws-secret-key KEY         Valid AWS Secret Key
---dedupe-servers SERVERS     List of memcache compatible server(s) for SQS message deduplication
-```
-
-**GCP Pub/Sub Options:**
-```
---gcp-project-id PROJECT_ID  GCP Project ID for Pub/Sub
---gcp-credentials PATH       Path to GCP service account credentials JSON file
-```
-
-These command line options set global defaults and are equivalent to setting the corresponding configuration in your code.
 
 ### Tips For Configuring Chore
 
@@ -286,8 +221,6 @@ Chore provides the following built-in publishers:
 * `Chore::Queues::PubSub::Publisher` - For Google Cloud Pub/Sub  
 * `Chore::Queues::Filesystem::Publisher` - For filesystem-based queues
 
-**Note**: When using the `Chore::Queues::PubSub::Publisher`, you can configure it per-job, set defaults, or rely on Google Cloud's automatic credential discovery as described in the [GCP Pub/Sub Configuration Example](#gcp-pubsub-configuration-example) section.
-
 It is worth noting that any option that can be set via config file or command-line args can also be set in a configure
 block.
 
@@ -303,6 +236,10 @@ class MyJob
   end
 end
 ```
+
+**Note**: Setting the publisher does not automatically set the consumer. You must configure both separately if not using defaults and planning to run publisher and consumer concurrently.
+
+**Warning**: Using different queue types for consumer and publisher (e.g., PubSub consumer with SQS publisher) can be confusing and is generally not recommended. Mixed configurations should only be used carefully for specific scenarios like migrations, validations, or no-op queues.
 
 ### Consumer Configuration
 
@@ -359,6 +296,7 @@ GCP Pub/Sub uses a topic and subscription model. When using Chore with Pub/Sub:
 * Message delays are handled using subscription-level ack deadline modification instead of SQS visibility timeouts
 * Messages are acknowledged using subscription-level acknowledgment instead of being deleted
 * Pull-based consumption is used with configurable batch sizes (up to 1000 messages)
+* Delivery attempt is not guaranteed. Generally, this is not an issue and will default to queue configurations for redrive policy, backoff, etc.
 
 ## Hooks
 
