@@ -28,7 +28,7 @@ Chore can be integrated with any Ruby-based project by following these instructi
 
     For **Google Cloud Pub/Sub** (requires Ruby 3.1+ and google-cloud-pubsub 3.0+):
     ```ruby
-    gem 'google-cloud-pubsub', '>= 3.0', '< 4.0'
+    gem 'google-cloud-pubsub', '>= 3.0'
     ```
 
     For **Filesystem queues**: No additional gems required.
