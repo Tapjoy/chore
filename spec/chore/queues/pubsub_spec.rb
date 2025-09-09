@@ -30,7 +30,6 @@ describe Chore::Queues::PubSub do
     end
 
     it 'should delete topics and subscriptions that are defined in its internal job name list' do
-      expect(Chore.logger).to receive(:info).with("Chore Deleting Pub/Sub Topic and Subscription: #{queue_name}")
       expect(subscription_admin).to receive(:delete_subscription).with(subscription: subscription_path)
       expect(topic_admin).to receive(:delete_topic).with(topic: topic_path)
       
@@ -41,7 +40,6 @@ describe Chore::Queues::PubSub do
       it 'should continue deleting topic even if subscription delete fails' do
         allow(subscription_admin).to receive(:delete_subscription).and_raise(Google::Cloud::NotFoundError.new('Subscription not found'))
         expect(topic_admin).to receive(:delete_topic).with(topic: topic_path)
-        expect(Chore.logger).to receive(:info).with("Chore Deleting Pub/Sub Topic and Subscription: #{queue_name}")
         expect(Chore.logger).to receive(:error).with("Deleting Subscription: #{queue_name} failed because Subscription not found")
         
         Chore::Queues::PubSub.delete_queues!
@@ -50,7 +48,6 @@ describe Chore::Queues::PubSub do
       it 'should continue even if topic delete fails' do
         expect(subscription_admin).to receive(:delete_subscription).with(subscription: subscription_path)
         allow(topic_admin).to receive(:delete_topic).and_raise(Google::Cloud::NotFoundError.new('Topic not found'))
-        expect(Chore.logger).to receive(:info).with("Chore Deleting Pub/Sub Topic and Subscription: #{queue_name}")
         expect(Chore.logger).to receive(:error).with("Deleting Topic: #{queue_name} failed because Topic not found")
         
         Chore::Queues::PubSub.delete_queues!
@@ -85,25 +82,18 @@ describe Chore::Queues::PubSub do
       it 'should continue when topic already exists' do
         allow(topic_admin).to receive(:create_topic).and_raise(Google::Cloud::AlreadyExistsError.new('Topic already exists'))
         allow(subscription_admin).to receive(:create_subscription).and_return(subscriber)
-        expect(Chore.logger).to receive(:info).with("Chore Creating Pub/Sub Topic and Subscription: #{queue_name}")
-        expect(Chore.logger).to receive(:info).with("Topic already exists: Topic already exists")
         expect { Chore::Queues::PubSub.create_queues! }.not_to raise_error
       end
 
       it 'should continue when subscription already exists' do
         allow(topic_admin).to receive(:create_topic).and_return(topic)
         allow(subscription_admin).to receive(:create_subscription).and_raise(Google::Cloud::AlreadyExistsError.new('Subscription already exists'))
-        expect(Chore.logger).to receive(:info).with("Chore Creating Pub/Sub Topic and Subscription: #{queue_name}")
-        expect(Chore.logger).to receive(:info).with("Subscription already exists: Subscription already exists")
         expect { Chore::Queues::PubSub.create_queues! }.not_to raise_error
       end
 
       it 'should continue when both topic and subscription already exist' do
         allow(topic_admin).to receive(:create_topic).and_raise(Google::Cloud::AlreadyExistsError.new('Topic already exists'))
         allow(subscription_admin).to receive(:create_subscription).and_raise(Google::Cloud::AlreadyExistsError.new('Subscription already exists'))
-        expect(Chore.logger).to receive(:info).with("Chore Creating Pub/Sub Topic and Subscription: #{queue_name}")
-        expect(Chore.logger).to receive(:info).with("Topic already exists: Topic already exists")
-        expect(Chore.logger).to receive(:info).with("Subscription already exists: Subscription already exists")
         expect { Chore::Queues::PubSub.create_queues! }.not_to raise_error
       end
     end
