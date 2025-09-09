@@ -115,86 +115,58 @@ describe Chore::Queues::PubSub::Consumer do
         consume
       end
 
-      context 'with duplicates' do
-        before do
-          allow(consumer).to receive(:duplicate_message?).and_return(true)
-        end
-
-        it 'should not yield for a dupe message' do
-          expect {|b| consume(&b) }.not_to yield_control
-        end
+      it 'should not yield for a dupe message' do
+        allow(consumer).to receive(:duplicate_message?).and_return(true)
+        expect {|b| consume(&b) }.not_to yield_control
       end
 
       context 'with delivery attempt count' do
-        before do
-          allow(received_message).to receive(:delivery_attempt).and_return(3)
-        end
-
         it 'should calculate attempt count as delivery_attempt - 1' do
+          allow(received_message).to receive(:delivery_attempt).and_return(3)
           expect { |b| consume(&b) }
             .to yield_with_args(
-                  received_message.message_id,
-                  received_message.ack_id,
-                  queue_name,
-                  subscriber.deadline,
-                  received_message.data,
-                  2, # delivery_attempt - 1 (3 - 1 = 2)
-                  received_timestamp
-                )
-        end
-      end
-
-      context 'with nil delivery attempt (older messages)' do
-        before do
-          allow(received_message).to receive(:delivery_attempt).and_return(nil)
+              received_message.message_id,
+              received_message.ack_id,
+              queue_name,
+              subscriber.deadline,
+              received_message.data,
+              2, # delivery_attempt - 1 (3 - 1 = 2)
+              received_timestamp
+            )
         end
 
         it 'should default to attempt count of 0' do
+          allow(received_message).to receive(:delivery_attempt).and_return(nil)
           expect { |b| consume(&b) }
             .to yield_with_args(
-                  received_message.message_id,
-                  received_message.ack_id,
-                  queue_name,
-                  subscriber.deadline,
-                  received_message.data,
-                  0, # (nil || 1) - 1 = 0
-                  received_timestamp
-                )
+              received_message.message_id,
+              received_message.ack_id,
+              queue_name,
+              subscriber.deadline,
+              received_message.data,
+              0, # (nil || 1) - 1 = 0
+              received_timestamp
+            )
         end
       end
     end
 
-    context 'on subscriber lookup failure' do
-      before(:each) do
+    context "failure scenarios" do
+      it 'should raise exception on subscriber lookup failure' do
         allow(consumer).to receive(:verify_connection!).and_raise(Google::Cloud::NotFoundError.new('Subscription not found'))
-      end
-
-      it 'should raise exception' do
         expect { consume }.to raise_error(Chore::TerribleMistake)
       end
-    end
 
-    context 'on gcp credential failure' do
-      before(:each) do
+      it 'should raise exception for gcp credential failure' do
         allow(consumer).to receive(:verify_connection!).and_raise(Google::Cloud::PermissionDeniedError.new('Permission denied'))
-      end
-
-      it 'should raise exception' do
         expect { consume }.to raise_error(Chore::TerribleMistake)
       end
-    end
 
-    context 'on unexpected failure' do
-      before(:each) do
+      it 'should raise exception during unexpected failure' do
         allow(consumer).to receive(:verify_connection!).and_raise(StandardError.new('Connection error'))
-      end
-
-      it 'should raise exception' do
         expect { consume }.to raise_error(Chore::TerribleMistake)
       end
     end
-
-
   end
 
   describe "completing work" do
