@@ -8,13 +8,9 @@ module Chore
         require REQUIRED_LIBRARY
 
         # Verify compatible version
-        begin
-          gem_version = Gem::Version.new(Aws::SQS::GEM_VERSION)
-          if gem_version < MIN_VERSION
-            raise "#{REQUIRED_LIBRARY} version #{gem_version} is not supported. Please use version >= #{MIN_VERSION}"
-          end
-        rescue => e
-          Chore.logger.error "Could not verify #{REQUIRED_LIBRARY} version: #{e.message}" if defined?(Chore.logger)
+        gem_version = Gem::Version.new(Aws::SQS::GEM_VERSION)
+        if gem_version < MIN_VERSION
+          Chore.logger.error "#{REQUIRED_LIBRARY} version #{gem_version} is not supported. Please use version >= #{MIN_VERSION}" if defined?(Chore.logger)
           exit
         end
 
