@@ -5,8 +5,6 @@ module Chore
     module PubSub
       # GCP Pub/Sub Publisher, for writing messages to GCP Pub/Sub from Chore
       class Publisher < Chore::Publisher
-        @@reset_next = true
-
         # @param [Hash] opts Publisher options
         def initialize(opts={})
           super
@@ -25,10 +23,6 @@ module Chore
           publisher.publish(encoded_job)
         end
 
-        # Sets a flag that instructs the publisher to reset the connection the next time it's used
-        def self.reset_connection!
-          @@reset_next = true
-        end
 
         private
 
@@ -41,19 +35,10 @@ module Chore
 
         # Retrieves the GCP Pub/Sub publisher object. The method will cache the results to prevent round trips on subsequent calls
         #
-        # If <tt>reset_connection!</tt> has been called, this will result in the connection being re-initialized,
-        # as well as clear any cached results from prior calls
-        #
         # @param [String] name Name of GCP Pub/Sub topic 
         #
         # @return [Google::Cloud::PubSub::Publisher]
         def get_publisher(name) 
-          if @@reset_next
-            @pubsub = nil
-            @@reset_next = false
-            @pubsub_publisher = {}
-          end
-
           @pubsub_publisher[name] ||= pubsub.publisher(name)
         end
       end

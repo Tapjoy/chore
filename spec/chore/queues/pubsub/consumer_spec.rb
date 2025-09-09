@@ -235,40 +235,6 @@ describe Chore::Queues::PubSub::Consumer do
     end
   end
 
-  describe '#reset_connection!' do
-    it 'should reset the connection after a call to reset_connection!' do
-      # First call establishes the connection
-      consumer.send(:subscription)
-      
-      # Reset connection
-      Chore::Queues::PubSub::Consumer.reset_connection!
-      
-      # Should recreate client
-      expect(Chore::Queues::PubSub).to receive(:pubsub_client).and_return(pubsub_client)
-      consumer.send(:subscription)
-    end
-
-    it 'should not reset the connection between calls' do
-      expect(Chore::Queues::PubSub).to receive(:pubsub_client).once.and_return(pubsub_client)
-      s = consumer.send(:subscription)
-      expect(consumer.send(:subscription)).to be(s)
-    end
-
-    it 'should reconfigure pubsub client' do
-      allow(consumer).to receive(:running?).and_return(true, false)
-      allow_any_instance_of(Chore::DuplicateDetector).to receive(:found_duplicate?).and_return(false)
-
-      allow(subscription).to receive(:pull).and_return([received_message])
-
-      consume
-
-      Chore::Queues::PubSub::Consumer.reset_connection!
-      allow(Chore::Queues::PubSub).to receive(:pubsub_client).and_return(pubsub_client)
-
-      expect(consumer).to receive(:running?).and_return(true, false)
-      consume
-    end
-  end
 
   describe '#verify_connection!' do
     it 'should verify subscriber exists' do

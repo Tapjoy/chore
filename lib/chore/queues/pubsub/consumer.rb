@@ -9,13 +9,6 @@ module Chore
       class Consumer < Chore::Consumer
         MAX_PUBSUB_POLLING_SIZE = 1000.freeze
         DEFAULT_DEADLINE_SECONDS = 600.freeze
-        # Initialize the reset at on class load
-        @@reset_at = Time.now
-
-        # Resets the API client connection and provides @@reset_at so we know when the last time that was done
-        def self.reset_connection!
-          @@reset_at = Time.now
-        end
 
         # @param [String] queue_name Name of GCP Pub/Sub topic
         # @param [Hash] opts Options
@@ -114,17 +107,8 @@ module Chore
 
         # Retrieves the GCP Pub/Sub subscriber object. The method will cache the results to prevent round trips on subsequent calls
         #
-        # If <tt>reset_connection!</tt> has been called, this will result in the connection being re-initialized,
-        # as well as clear any cached results from prior calls
-        #
         # @return [Google::Cloud::PubSub::Subscriber]
         def subscriber
-          if !@pubsub_last_connected || (@@reset_at && @@reset_at >= @pubsub_last_connected)
-            @pubsub = nil
-            @pubsub_last_connected = Time.now
-            @subscriber = nil
-          end
-
           @subscriber ||= pubsub.subscriber(@subscription_name)
         end
 

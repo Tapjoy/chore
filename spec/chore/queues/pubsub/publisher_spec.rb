@@ -46,37 +46,6 @@ describe Chore::Queues::PubSub::Publisher do
   end
 
   it 'should only lookup a named topic once' do
-  end
-
-  describe '#reset_connection!' do
-    it 'should reset client connection after a call to reset_connection!' do
-      # First call establishes the client
-      publisher.send(:get_topic, queue_name)
-      
-      # Reset and verify client is reset
-      Chore::Queues::PubSub::Publisher.reset_connection!
-      
-      expect(Chore::Queues::PubSub).to receive(:pubsub_client).and_return(pubsub_client)
-      publisher.send(:get_topic, queue_name)
-    end
-
-    it 'should clear topic cache after reset_connection!' do
-      # Establish topic cache
-      publisher.send(:get_topic, queue_name)
-      
-      # Reset connection
-      Chore::Queues::PubSub::Publisher.reset_connection!
-      
-      # Should lookup topic again
-      expect(pubsub_client).to receive(:publisher).with(queue_name).and_return(topic)
-      publisher.send(:get_topic, queue_name)
-    end
-
-    it 'should not reset the connection between calls' do
-      expect(Chore::Queues::PubSub).to receive(:pubsub_client).once.and_return(pubsub_client)
-      Chore::Queues::PubSub::Publisher.reset_connection!
-      4.times { publisher.send(:get_topic, queue_name) }
-    end
     expect(pubsub_client).to receive(:publisher).with(queue_name).once.and_return(publisher)
     expect(publisher).to receive(:publish).exactly(4).times
     4.times { spec_publisher.publish(queue_name, job) }
