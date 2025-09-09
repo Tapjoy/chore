@@ -34,8 +34,6 @@ module Chore
         # Begins requesting messages from SQS, which will invoke the +&handler+ over each message
         #
         # @param [Block] &handler Message handler, used by the calling context (worker) to create & assigns a UnitOfWork
-        #
-        # @return [Array<Aws::SQS::Message>]
         def consume(&handler)
           while running?
             begin

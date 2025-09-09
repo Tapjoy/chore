@@ -84,7 +84,7 @@ describe Chore::Queues::PubSub do
     context 'when handling already exists errors' do
       it 'should continue when topic already exists' do
         allow(topic_admin).to receive(:create_topic).and_raise(Google::Cloud::AlreadyExistsError.new('Topic already exists'))
-        allow(subscription_admin).to receive(:create_subscription).and_return(subscription)
+        allow(subscription_admin).to receive(:create_subscription).and_return(subscriber)
         expect(Chore.logger).to receive(:info).with("Chore Creating Pub/Sub Topic and Subscription: #{queue_name}")
         expect(Chore.logger).to receive(:info).with("Topic already exists: Topic already exists")
         expect { Chore::Queues::PubSub.create_queues! }.not_to raise_error
@@ -112,7 +112,7 @@ describe Chore::Queues::PubSub do
   describe '.existing_queues' do
     it 'returns queues that exist when both publisher and subscriber calls succeed' do
       allow(pubsub_client).to receive(:publisher).with(queue_name).and_return(topic)
-      allow(pubsub_client).to receive(:subscriber).with(queue_name).and_return(subscription)
+      allow(pubsub_client).to receive(:subscriber).with(queue_name).and_return(subscriber)
       expect(described_class.existing_queues).to eq([queue_name])
     end
 

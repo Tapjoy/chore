@@ -22,13 +22,23 @@ describe Chore::Queues::PubSub do
         name: queue_name,
         exists?: true,
         publish: received_message,
-        create_subscription: subscription,
+        create_subscription: subscriber,
         delete: true
       )
     end
 
-    let(:subscription) do
-      double('Google::Cloud::PubSub::Subscription',
+    let(:publisher) do
+      double('Google::Cloud::PubSub::Publisher',
+        name: queue_name,
+        exists?: true,
+        publish: received_message,
+        create_subscription: subscriber,
+        delete: true
+      )
+    end
+
+    let(:subscriber) do
+      double('Google::Cloud::PubSub::Subscriber',
         name: subscription_name,
         exists?: true,
         deadline: 600,
@@ -45,14 +55,14 @@ describe Chore::Queues::PubSub do
         delete_topic: true
       )
       subscription_admin = double('subscription_admin', 
-        create_subscription: subscription,
+        create_subscription: subscriber,
         delete_subscription: true
       )
       
       double('Google::Cloud::PubSub::Project',
         project_id: project_id,
-        publisher: topic,
-        subscriber: subscription,
+        publisher: publisher,
+        subscriber: subscriber,
         topic_admin: topic_admin,
         subscription_admin: subscription_admin,
         topic_path: "projects/#{project_id}/topics/#{queue_name}",

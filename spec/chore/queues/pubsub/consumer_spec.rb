@@ -17,7 +17,7 @@ describe Chore::Queues::PubSub::Consumer do
 
   before do
     allow(Chore::Queues::PubSub).to receive(:pubsub_client).and_return(pubsub_client)
-    allow(subscription).to receive(:pull).and_return([received_message])
+    allow(subscriber).to receive(:pull).and_return([received_message])
   end
 
   describe "consuming messages" do
@@ -27,7 +27,7 @@ describe Chore::Queues::PubSub::Consumer do
 
     context "should create objects for interacting with the Pub/Sub API" do
       it 'should create a pubsub client' do
-        expect(subscription).to receive(:pull)
+        expect(subscriber).to receive(:pull)
         consume
       end
 
@@ -37,38 +37,38 @@ describe Chore::Queues::PubSub::Consumer do
         consume
       end
 
-      it 'should look up the subscription based on the queue name' do
+      it 'should look up the subscriber based on the queue name' do
         expect(pubsub_client).to receive(:subscriber).with(subscription_name)
         consume
       end
 
-      it 'should create a subscription object' do
-        expect(consumer.send(:subscription)).to_not be_nil
+      it 'should create a subscriber object' do
+        expect(consumer.send(:subscriber)).to_not be_nil
         consume
       end
     end
 
-    context "should receive a message from the subscription" do
+    context "should receive a message from the subscriber" do
       it 'should use the default size of 10 when no queue_polling_size is specified' do
-        expect(subscription).to receive(:pull).with(max: 10).and_return([received_message])
+        expect(subscriber).to receive(:pull).with(max: 10).and_return([received_message])
         consume
       end
 
       it 'should respect the queue_polling_size when specified' do
         allow(Chore.config).to receive(:queue_polling_size).and_return(5)
-        expect(subscription).to receive(:pull).with(max: 5)
+        expect(subscriber).to receive(:pull).with(max: 5)
         consume
       end
 
       it 'should allow exactly 1000 messages (Pub/Sub maximum)' do
         allow(Chore.config).to receive(:queue_polling_size).and_return(1000)
-        expect(subscription).to receive(:pull).with(max: 1000)
+        expect(subscriber).to receive(:pull).with(max: 1000)
         consume
       end
 
       it 'should raise error when queue_polling_size exceeds Pub/Sub max limit of 1000 messages' do
         allow(Chore.config).to receive(:queue_polling_size).and_return(2000)
-        expect { consumer.send(:pubsub_polling_amount) }.to raise_error(ArgumentError, /queue_polling_size \(2000\) exceeds Google Cloud Pub\/Sub maximum limit of 1000 messages/)
+        expect { consumer.send(:pubsub_polling_amount) }.to raise_error(Chore::TerribleMistake, /queue_polling_size \(2000\) exceeds Google Cloud Pub\/Sub maximum limit of 1000 messages/)
       end
     end
 
@@ -86,7 +86,7 @@ describe Chore::Queues::PubSub::Consumer do
     context 'with messages' do
       before do
         allow(consumer).to receive(:duplicate_message?).and_return(false)
-        allow(subscription).to receive(:pull).and_return([received_message])
+        allow(subscriber).to receive(:pull).and_return([received_message])
         allow(Time).to receive(:now).and_return(Time.utc(2024, 5, 10, 12, 0, 0))
       end
 
@@ -103,7 +103,7 @@ describe Chore::Queues::PubSub::Consumer do
                 received_message.message_id,
                 received_message.ack_id,
                 queue_name,
-                subscription.deadline,
+                subscriber.deadline,
                 received_message.data,
                 0, # delivery_attempt - 1 (1 - 1 = 0)
                 received_timestamp
@@ -136,7 +136,7 @@ describe Chore::Queues::PubSub::Consumer do
                   received_message.message_id,
                   received_message.ack_id,
                   queue_name,
-                  subscription.deadline,
+                  subscriber.deadline,
                   received_message.data,
                   2, # delivery_attempt - 1 (3 - 1 = 2)
                   received_timestamp
@@ -155,7 +155,7 @@ describe Chore::Queues::PubSub::Consumer do
                   received_message.message_id,
                   received_message.ack_id,
                   queue_name,
-                  subscription.deadline,
+                  subscriber.deadline,
                   received_message.data,
                   0, # (nil || 1) - 1 = 0
                   received_timestamp
@@ -164,7 +164,7 @@ describe Chore::Queues::PubSub::Consumer do
       end
     end
 
-    context 'on subscription lookup failure' do
+    context 'on subscriber lookup failure' do
       before(:each) do
         allow(consumer).to receive(:verify_connection!).and_raise(Google::Cloud::NotFoundError.new('Subscription not found'))
       end
@@ -198,8 +198,8 @@ describe Chore::Queues::PubSub::Consumer do
   end
 
   describe "completing work" do
-    it 'acknowledges the message in the subscription' do
-      expect(subscription).to receive(:acknowledge).with(received_message.ack_id)
+    it 'acknowledges the message in the subscriber' do
+      expect(subscriber).to receive(:acknowledge).with(received_message.ack_id)
       consumer.complete(received_message.message_id, received_message.ack_id)
     end
 
@@ -213,7 +213,7 @@ describe Chore::Queues::PubSub::Consumer do
 
     it 'modifies the ack deadline of the message' do
       delay_seconds = backoff_func.call(item)
-      expect(subscription).to receive(:modify_ack_deadline).with(delay_seconds, received_message.ack_id)
+      expect(subscriber).to receive(:modify_ack_deadline).with(delay_seconds, received_message.ack_id)
       consumer.delay(item, backoff_func)
     end
 
@@ -271,24 +271,24 @@ describe Chore::Queues::PubSub::Consumer do
   end
 
   describe '#verify_connection!' do
-    it 'should verify subscription exists' do
-      expect(subscription).to receive(:exists?).and_return(true)
+    it 'should verify subscriber exists' do
+      expect(subscriber).to receive(:exists?).and_return(true)
       expect { consumer.verify_connection! }.not_to raise_error
     end
 
-    it 'should raise error if subscription does not exist' do
-      allow(subscription).to receive(:exists?).and_return(false)
+    it 'should raise error if subscriber does not exist' do
+      allow(subscriber).to receive(:exists?).and_return(false)
       expect { consumer.verify_connection! }.to raise_error
     end
   end
 
   describe 'queue timeout' do
-    it 'should return subscription ack deadline' do
+    it 'should return subscriber ack deadline' do
       expect(consumer.send(:queue_timeout)).to eq(600)
     end
 
     it 'should default to 600 seconds if deadline is nil' do
-      allow(subscription).to receive(:deadline).and_return(nil)
+      allow(subscriber).to receive(:deadline).and_return(nil)
       expect(consumer.send(:queue_timeout)).to eq(600)
     end
   end
