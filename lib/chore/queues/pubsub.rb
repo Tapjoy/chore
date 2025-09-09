@@ -121,7 +121,7 @@ module Chore
             client.subscriber(queue_name)
             # if both publisher/subscriber successfully load, then assume exists
             true
-          rescue 
+          rescue Google::Cloud::NotFoundError
             # google api throws Google::Cloud::NotFoundError if topic/subscription does not exist
             false
           end

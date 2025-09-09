@@ -133,7 +133,7 @@ describe Chore::Queues::PubSub do
     end
 
     it 'handles other errors gracefully' do
-      allow(pubsub_client).to receive(:publisher).with(queue_name).and_raise(StandardError.new('Connection error'))
+      allow(pubsub_client).to receive(:publisher).with(queue_name).and_raise(Google::Cloud::NotFoundError.new('Connection error'))
       expect(described_class.existing_queues).to eq([])
     end
   end
