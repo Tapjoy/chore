@@ -16,7 +16,7 @@ describe Chore::Strategy::ForkedWorkerStrategy do
       nil,
       'test',
       job_timeout,
-      Chore::Encoder::JsonEncoder.encode(TestJob.job_hash([1,2,"3"])),
+      Chore::Encoder::JsonEncoder.encode(Chore::PayloadHandler.job_hash(TestJob, [1,2,"3"])),
       0,
       consumer
     )

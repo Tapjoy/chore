@@ -7,7 +7,6 @@ module Chore
   # <tt>Chore::Job</tt> is the module which gives your job classes the methods they need to be published
   # and run within Chore. You cannot have a Job in Chore that does not include this module
   module Job
-    extend Util
 
     # An exception to represent a job choosing to forcibly reject a given instance of itself.
     # The reasoning behind rejecting the job and the message that spawned it are left to
@@ -26,18 +25,6 @@ module Chore
       @classes << base.name
       base.extend(ClassMethods)
       base.extend(Hooks)
-    end
-
-    def self.payload_class(message)
-      constantize(message['class'])
-    end
-
-    def self.decode(data)
-      Encoder::JsonEncoder.decode(data)
-    end
-
-    def self.payload(message)
-      message['args']
     end
 
     module ClassMethods
@@ -99,11 +86,6 @@ module Chore
         job.perform_async(*args)
       end
 
-      # Resque/Sidekiq compatible serialization. No reason to change what works
-      def job_hash(job_params)
-        {:class => self.to_s, :args => job_params}
-      end
-
       # The name of the configured queue, combined with an optional prefix
       #
       # @return [String]
@@ -142,15 +124,16 @@ module Chore
 
     # Use the current configured publisher to send this job into a queue.
     def perform_async(*args)
-      self.class.run_hooks_for(:before_publish,*args)
-      @chore_publisher ||= self.class.options[:publisher]
+      klass = self.class
+      klass.run_hooks_for(:before_publish,*args)
+      @chore_publisher ||= klass.options[:publisher]
 
-      publish_job_hash = self.class.job_hash(args)
-      Chore.run_hooks_for(:around_publish, self.class.prefixed_queue_name, publish_job_hash) do
-        @chore_publisher.publish(self.class.prefixed_queue_name,publish_job_hash)
+      publish_job_hash = Chore.config.payload_handler.job_hash(klass.to_s, args)
+      Chore.run_hooks_for(:around_publish, klass.prefixed_queue_name, publish_job_hash) do
+        @chore_publisher.publish(klass.prefixed_queue_name,publish_job_hash)
       end
 
-      self.class.run_hooks_for(:after_publish,*args)
+      klass.run_hooks_for(:after_publish,*args)
     end
 
   end #Job
