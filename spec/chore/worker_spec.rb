@@ -43,11 +43,11 @@ describe Chore::Worker do
 
   let(:consumer) { double('consumer', :complete => nil, :reject => nil) }
   let(:job_args) { [1,2,'3'] }
-  let(:job) { SimpleJob.job_hash(job_args) }
+  let(:job) { Chore::PayloadHandler.job_hash(SimpleJob, job_args) }
 
   it 'should use a default payload handler' do
     worker = Chore::Worker.new
-    expect(worker.options[:payload_handler]).to eq(Chore::Job)
+    expect(worker.options[:payload_handler]).to eq(Chore::PayloadHandler)
   end
 
   shared_examples_for "a worker" do
@@ -82,11 +82,11 @@ describe Chore::Worker do
       context 'when the value being deduped on is unique' do
         let(:job_args) { [rand,2,'3'] }
         let(:encoded_job) { Chore::Encoder::JsonEncoder.encode(job) }
-        let(:job) { SimpleDedupeJob.job_hash(job_args) }
+        let(:job) { Chore::PayloadHandler.job_hash(SimpleDedupeJob, job_args) }
         it 'should call complete for each unique value' do
           allow(consumer).to receive(:duplicate_message?).and_return(false)
           work = []
-          work << Chore::UnitOfWork.new(1, nil, 'dedupe_test', 60, Chore::Encoder::JsonEncoder.encode(SimpleDedupeJob.job_hash([rand,2,'3'])), 0, consumer)
+          work << Chore::UnitOfWork.new(1, nil, 'dedupe_test', 60, Chore::Encoder::JsonEncoder.encode(Chore::PayloadHandler.job_hash(SimpleDedupeJob, [rand,2,'3'])), 0, consumer)
           expect(SimpleDedupeJob).to receive(:perform).exactly(1).times
           expect(consumer).to receive(:complete).exactly(1).times
           Chore::Worker.start(work, {:payload_handler => payload_handler})
@@ -96,9 +96,9 @@ describe Chore::Worker do
       context 'when the dedupe lambda does not take the same number of arguments as perform' do
         it 'should raise an error and not complete the job' do
           work = []
-          work << Chore::UnitOfWork.new(1, nil, 'invalid_dedupe_test', 60, Chore::Encoder::JsonEncoder.encode(InvalidDedupeJob.job_hash([rand,2,'3'])), 0, consumer)
-          work << Chore::UnitOfWork.new(2, nil, 'invalid_dedupe_test', 60, Chore::Encoder::JsonEncoder.encode(InvalidDedupeJob.job_hash([rand,2,'3'])), 0, consumer)
-          work << Chore::UnitOfWork.new(1, nil, 'invalid_dedupe_test', 60, Chore::Encoder::JsonEncoder.encode(InvalidDedupeJob.job_hash([rand,2,'3'])), 0, consumer)
+          work << Chore::UnitOfWork.new(1, nil, 'invalid_dedupe_test', 60, Chore::Encoder::JsonEncoder.encode(Chore::PayloadHandler.job_hash(InvalidDedupeJob, [rand,2,'3'])), 0, consumer)
+          work << Chore::UnitOfWork.new(2, nil, 'invalid_dedupe_test', 60, Chore::Encoder::JsonEncoder.encode(Chore::PayloadHandler.job_hash(InvalidDedupeJob, [rand,2,'3'])), 0, consumer)
+          work << Chore::UnitOfWork.new(1, nil, 'invalid_dedupe_test', 60, Chore::Encoder::JsonEncoder.encode(Chore::PayloadHandler.job_hash(InvalidDedupeJob, [rand,2,'3'])), 0, consumer)
           expect(consumer).not_to receive(:complete)
           Chore::Worker.start(work, {:payload_handler => payload_handler})
         end
@@ -108,7 +108,7 @@ describe Chore::Worker do
 
   describe "with default payload handler" do
     let(:encoded_job) { Chore::Encoder::JsonEncoder.encode(job) }
-    let(:payload_handler) { Chore::Job }
+    let(:payload_handler) { Chore::PayloadHandler }
     let(:payload) {job_args}
     it_behaves_like "a worker"
   end

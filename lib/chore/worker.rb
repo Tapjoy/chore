@@ -77,7 +77,7 @@ module Chore
       @work.each do |item|
         return if @stopping
         begin
-          item.decoded_message = options[:payload_handler].decode(item.message)
+          item.decoded_message = options[:payload_handler].decode(item)
           item.klass = options[:payload_handler].payload_class(item.decoded_message)
 
           next if duplicate_work?(item)
