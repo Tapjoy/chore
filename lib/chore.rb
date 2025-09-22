@@ -14,6 +14,7 @@ require 'chore/publisher'
 require 'chore/util'
 require 'chore/worker'
 require 'chore/publisher'
+require 'chore/payload_handler'
 
 # We have a number of things that can live here. I don't want to track
 ['queues/**','strategies/**'].each do |p|
@@ -42,7 +43,7 @@ module Chore #:nodoc:
     :max_attempts          => 1.0 / 0.0, # Infinity
     :dupe_on_cache_failure => false,
     :queue_polling_size    => 10,
-    :payload_handler       => Chore::Job,
+    :payload_handler       => Chore::PayloadHandler,
     :master_procline       => "chore-master-#{Chore::VERSION}",
     :worker_procline       => "chore-worker-#{Chore::VERSION}",
     :consumer_sleep_interval => 1

@@ -16,11 +16,24 @@ Chore can be integrated with any Ruby-based project by following these instructi
 1. Add `chore-core` to the Gemfile
 
     ```ruby
-    gem 'chore-core', '~> 4.0.0'
+    gem 'chore-core', '~> 5.0.0'
     ```
 
-    When using SQS, also add `dalli` to use for `memcached`-based deduplication:
+    **Queue Provider Dependencies**: Add the appropriate gem for your queue provider:
 
+    For **Amazon SQS**:
+    ```ruby
+    gem 'aws-sdk-sqs'
+    ```
+
+    For **Google Cloud Pub/Sub** (requires Ruby 3.1+ and google-cloud-pubsub 3.0+):
+    ```ruby
+    gem 'google-cloud-pubsub', '>= 3.0'
+    ```
+
+    For **Filesystem queues**: No additional gems required.
+
+    **Optional: Message Deduplication**: If you want to use memcached-based message deduplication:
     ```ruby
     gem 'dalli'
     ```
@@ -39,6 +52,13 @@ dependencies and required code.
 1. When using SQS, ensure that AWS credentials exist in the environment (e.g. but not limited to `AWS_ACCESS_KEY_ID` &
 `AWS_SECRET_ACCESS_KEY` environment variables) and an AWS region is set (e.g. `AWS_REGION` environment variable) so that
 Chore can authenticate with AWS.
+
+1. When using Google Pubsub: Chore will use Google Cloud's automatic credential discovery (environment variables, service account, etc.). See the [Google Cloud PubSub Authentication documentation](https://cloud.google.com/ruby/docs/reference/google-cloud-pubsub/latest/AUTHENTICATION) for details. Otherwise, you can configure Google::Pubsub directly.
+   **Note**: PubSub requires gRPC which can have threading issues in some environments. google-cloud-pubsub 3.0+ includes improved gRPC handling, but if using PubSub in a threaded environment (such as with threaded consumer strategies), ensure you use gRPC version 1.74.1 or higher to avoid potential deadlocks and connection issues.
+
+
+1. Queue configuration
+   **Configuration Priority**: Global configuration → Environment variables
 
     By default, Chore will run over all queues it detects among the required files. If different behavior is desired,
     use one of the following flags:
@@ -97,6 +117,7 @@ Chore.configure do |c|
 end
 ```
 
+
 Because it is like that the same application serves as the basis for both producing and consuming messages, and there
 will already be a considerable amount of configuration in the Producer, it makes sense to use Chorefile to simply
 provide the `require` option and stick to the initializer for the rest of the configuration to keep things DRY.
@@ -117,10 +138,25 @@ This section assumes `foreman` is being used to execute (or export the run comma
 
 1. If the queues do not exist, they must be created before the application can produce/consume Chore jobs:
 
+    For SQS:
     ```ruby
     require 'aws-sdk-sqs'
     sqs = Aws::SQS::Client.new
     sqs.create_queue(queue_name: "test_queue")
+    ```
+
+    For GCP Pub/Sub:
+    ```ruby
+    require 'google/cloud/pubsub'
+    pubsub = Google::Cloud::PubSub.new
+    topic = pubsub.create_topic "test_queue"
+    topic.create_subscription "test_queue"
+    ```
+
+    Alternatively, you can use Chore's built-in queue management:
+    ```ruby
+    # This will create both topics and subscriptions for Pub/Sub
+    Chore::Queues::PubSub.create_queues!(['test_queue'])
     ```
 
 1. Finally, start the application as usual
@@ -179,15 +215,59 @@ Chore.configure do |c|
 end
 ```
 
+Chore provides the following built-in publishers:
+
+* `Chore::Queues::SQS::Publisher` - For Amazon SQS
+* `Chore::Queues::PubSub::Publisher` - For Google Cloud Pub/Sub  
+* `Chore::Queues::Filesystem::Publisher` - For filesystem-based queues
+
 It is worth noting that any option that can be set via config file or command-line args can also be set in a configure
 block.
 
-If a global publisher is set, it can be overridden on a per-job basis by specifying the publisher in `queue_options`.
+If a global publisher is set, it can be overridden on a per-job basis by specifying the publisher in `queue_options`:
+
+```ruby
+class MyJob
+  include Chore::Job
+  queue_options :name => 'my_queue', :publisher => Some::Other::Publisher
+
+  def perform(args={})
+    # Job logic here
+  end
+end
+```
+
+**Note**: Setting the publisher does not automatically set the consumer. You must configure both separately if not using defaults and planning to run publisher and consumer concurrently.
+
+**Warning**: Using different queue types for consumer and publisher (e.g., PubSub consumer with SQS publisher) can be confusing and is generally not recommended. Mixed configurations should only be used carefully for specific scenarios like migrations, validations, or no-op queues.
+
+### Consumer Configuration
+
+Unlike publishers, **consumers are configured globally and cannot be set per-job**. Consumers operate at the process level, polling queues and dispatching work to workers. They handle all queues in the system.
+
+Consumers can be configured in three ways:
+
+1. **Command line**: `--consumer CLASS_NAME`
+2. **Global configuration**: 
+   ```ruby
+   Chore.configure do |c|
+     c.consumer = Your::Custom::Consumer
+   end
+   ```
+3. **Default**: `Chore::Queues::SQS::Consumer` if not specified
+
+Chore provides the following built-in consumers:
+
+* `Chore::Queues::SQS::Consumer` - For Amazon SQS (default)
+* `Chore::Queues::PubSub::Consumer` - For Google Cloud Pub/Sub
+* `Chore::Queues::Filesystem::Consumer` - For filesystem-based queues
+
+**Note**: Consumers cannot be specified in `queue_options` like publishers can. The consumer configuration applies to all queues processed by the Chore instance. This means each Chore instance can only use one consumer at a time. To use multiple consumers (e.g., both SQS and Pub/Sub), you would need to run separate Chore instances, each configured with its intended consumer.
 
 ## Retry Backoff Strategy
 
-Chore has basic support for delaying retries of a failed job using a step function. Currently the only queue that
-supports this functionality is SQS; all others will simply ignore the delay setting.
+Chore has basic support for delaying retries of a failed job using a step function. Currently SQS and Pub/Sub
+support this functionality; other queue types will simply ignore the delay setting.
 
 ### Setup
 
@@ -206,6 +286,17 @@ If there is a `:backoff` option supplied, any failures will delay the next attem
 ### Notes On SQS & Delays
 
 Read more details about SQS and Delays [here](docs/Delayed%20Jobs.md)
+
+### Notes On GCP Pub/Sub
+
+GCP Pub/Sub uses a topic and subscription model. When using Chore with Pub/Sub:
+
+* Each queue corresponds to a Pub/Sub topic
+* Subscriptions are automatically created with the naming pattern `{topic-name}`
+* Message delays are handled using subscription-level ack deadline modification instead of SQS visibility timeouts
+* Messages are acknowledged using subscription-level acknowledgment instead of being deleted
+* Pull-based consumption is used with configurable batch sizes (up to 1000 messages)
+* Delivery attempt is not guaranteed. Generally, this is not an issue and will default to queue configurations for redrive policy, backoff, etc.
 
 ## Hooks
 
@@ -231,6 +322,10 @@ A number of hooks, both global and per-job, exist in Chore for flexibility and c
 #### SQS Consumer Hooks
 
 * `on_fetch(handle, body)`
+
+#### GCP Pub/Sub Consumer Hooks
+
+* `on_fetch(received_message, body)`
 
 ### Per Job
 

@@ -11,7 +11,6 @@ jobs:
       matrix:
         dependency_file:
           - Gemfile.latest
-          - Gemfile.ruby27
           - Gemfile.ruby31
           - Gemfile.ruby32
     uses: ./.github/workflows/unit_test-run.yaml

@@ -3,6 +3,17 @@
 ## [master](https://github.com/Tapjoy/chore/tree/master)
 
 **Features**
+- Google Pubsub support
+
+**Fixed bugs**
+- N/A
+
+**Cleanups**
+- Drops Ruby 2.7 support
+
+## [v4.7.5](https://github.com/Tapjoy/chore/tree/v4.7.5)
+
+**Features**
 - N/A
 
 **Fixed bugs**

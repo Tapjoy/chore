@@ -66,15 +66,15 @@ describe Chore::Job do
     it 'should call an instance of the queue_options publisher' do
       args = [1,2,{:h => 'ash'}]
       TestJob.queue_options(:publisher => Chore::Publisher)
-      expect_any_instance_of(Chore::Publisher).to receive(:publish).with('test_queue',{:class => 'TestJob',:args => args}).and_return(true)
+      expect_any_instance_of(Chore::Publisher).to receive(:publish).with('test_queue',{"class" => 'TestJob',"args" => args}).and_return(true)
       TestJob.perform_async(*args)
     end
 
     it 'calls the around_publish hook with the correct parameters' do
       args = [1,2,{:h => 'ash'}]
-      expect(Chore).to receive(:run_hooks_for).with(:around_publish, 'test_queue', {:class => 'TestJob',:args => args}).and_call_original
+      expect(Chore).to receive(:run_hooks_for).with(:around_publish, 'test_queue', {"class" => 'TestJob',"args" => args}).and_call_original
       TestJob.queue_options(:publisher => Chore::Publisher)
-      expect_any_instance_of(Chore::Publisher).to receive(:publish).with('test_queue',{:class => 'TestJob',:args => args}).and_return(true)
+      expect_any_instance_of(Chore::Publisher).to receive(:publish).with('test_queue',{"class" => 'TestJob',"args" => args}).and_return(true)
       TestJob.perform_async(*args)
     end
   end

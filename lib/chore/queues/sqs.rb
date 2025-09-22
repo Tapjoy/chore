@@ -1,7 +1,19 @@
 module Chore
   module Queues
     module SQS
+      REQUIRED_LIBRARY = "aws-sdk-sqs".freeze
+      MIN_VERSION = Gem::Version.new("1")
+
       def self.sqs_client
+        require REQUIRED_LIBRARY
+
+        # Verify compatible version
+        gem_version = Gem::Version.new(Aws::SQS::GEM_VERSION)
+        if gem_version < MIN_VERSION
+          Chore.logger.error "#{REQUIRED_LIBRARY} version #{gem_version} is not supported. Please use version >= #{MIN_VERSION}" if defined?(Chore.logger)
+          exit
+        end
+
         Aws::SQS::Client.new(
           logger: Chore.logger,
           log_level: Chore.log_level_to_sym,
@@ -19,7 +31,7 @@ module Chore
       #
       # @return [Array<String>]
       def self.create_queues!(halt_on_existing=false)
-        raise 'You must have atleast one Chore Job configured and loaded before attempting to create queues' unless Chore.prefixed_queue_names.length > 0
+        raise RuntimeError.new('You must have at least one Chore Job before attempting to create SQS queues') unless Chore.prefixed_queue_names.length > 0
 
         if halt_on_existing
           existing = self.existing_queues
@@ -34,7 +46,7 @@ module Chore
         end
 
         Chore.prefixed_queue_names.each do |queue_name|
-          Chore.logger.info "Chore Creating Queue: #{queue_name}"
+          Chore.logger.info "Chore Creating SQS Queue: #{queue_name}"
           begin
             sqs_client.create_queue(queue_name: queue_name)
           rescue Aws::SQS::Errors::QueueAlreadyExists
@@ -51,11 +63,11 @@ module Chore
       # @return [Array<String>]
 
       def self.delete_queues!
-        raise 'You must have atleast one Chore Job configured and loaded before attempting to create queues' unless Chore.prefixed_queue_names.length > 0
+        raise RuntimeError.new('You must have at least one Chore Job before attempting to delete SQS queues') unless Chore.prefixed_queue_names.length > 0
 
         Chore.prefixed_queue_names.each do |queue_name|
           begin
-            Chore.logger.info "Chore Deleting Queue: #{queue_name}"
+            Chore.logger.info "Chore Deleting SQS Queue: #{queue_name}"
             url = sqs_client.get_queue_url(queue_name: queue_name).queue_url
             sqs_client.delete_queue(queue_url: url)
           rescue => e

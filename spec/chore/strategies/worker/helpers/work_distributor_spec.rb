@@ -11,7 +11,7 @@ describe Chore::Strategy::WorkDistributor do
       SecureRandom.uuid,
       'test',
       60,
-      Chore::Encoder::JsonEncoder.encode(TestJob.job_hash([1,2,"3"])),
+      Chore::Encoder::JsonEncoder.encode(Chore::PayloadHandler.job_hash(TestJob, [1,2,"3"])),
       0
     )
   end
@@ -89,7 +89,7 @@ describe Chore::Strategy::WorkDistributor do
         SecureRandom.uuid,
         'test',
         60,
-        Chore::Encoder::JsonEncoder.encode(TestJob.job_hash([1,2,"3"])),
+        Chore::Encoder::JsonEncoder.encode(Chore::PayloadHandler.job_hash(TestJob, [1,2,"3"])),
         0
       )
       worker2 = Chore::Strategy::WorkerInfo.new(2)

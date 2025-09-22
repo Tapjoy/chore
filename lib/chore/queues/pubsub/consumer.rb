@@ -1,0 +1,144 @@
+require 'google/cloud/pubsub'
+require 'chore/duplicate_detector'
+
+module Chore
+  module Queues
+    module PubSub
+      # GCP Pub/Sub Consumer for Chore. Requests messages from GCP Pub/Sub and passes them to be worked on.
+      # Also controls acknowledging completed messages within GCP Pub/Sub.
+      class Consumer < Chore::Consumer
+        MAX_PUBSUB_POLLING_SIZE = 1000.freeze
+        DEFAULT_DEADLINE_SECONDS = 600.freeze
+
+        # @param [String] queue_name Name of GCP Pub/Sub topic
+        # @param [Hash] opts Options
+        def initialize(queue_name, opts={})
+          super(queue_name, opts)
+          @subscription_name = queue_name
+        end
+
+        # Ensure that the consumer is capable of running
+        def verify_connection!
+          unless subscriber.exists?
+            raise "Subscription #{@subscription_name} does not exist"
+          end
+        end
+
+        # Begins requesting messages from GCP Pub/Sub, which will invoke the +&handler+ over each message
+        #
+        # @param [Block] &handler Message handler, used by the calling context (worker) to create & assigns a UnitOfWork
+        def consume(&handler)
+          while running?
+            begin
+              messages = handle_messages(&handler)
+              sleep(Chore.config.consumer_sleep_interval) if messages.empty?
+            rescue => e
+              Chore.logger.error { "PubSubConsumer#consume: #{e.inspect} #{e.backtrace * "\n"}" }
+            end
+          end
+        end
+
+        # Unimplemented. Rejects the given message from GCP Pub/Sub.
+        #
+        # @param [String] message_id Unique ID of the Pub/Sub message
+        #
+        # @return nil
+        def reject(message_id)
+          # In Pub/Sub, we can simply not acknowledge the message and it will be redelivered
+        end
+
+        # Acknowledges the given message from the GCP Pub/Sub subscriber
+        #
+        # @param [String] message_id Unique ID of the Pub/Sub message  
+        # @param [String] ack_id Acknowledgment ID of the Pub/Sub message
+        def complete(message_id, ack_id)
+          Chore.logger.debug "Completing (acknowledging): #{message_id} ack_id: #{ack_id}"
+          # Find the message by ack_id and acknowledge it
+          subscriber.acknowledge(ack_id)
+        end
+
+        # Delays retry of a job by +backoff_calc+ seconds.
+        # In Pub/Sub, we modify the ack deadline to delay the message
+        #
+        # @param [UnitOfWork] item Item to be delayed
+        # @param [Block] backoff_calc Code that determines the backoff.
+        def delay(item, backoff_calc)
+          delay = backoff_calc.call(item)
+          Chore.logger.debug "Delaying #{item.id} by #{delay} seconds"
+
+          # Find the message and modify its ack deadline
+          subscriber.modify_ack_deadline(delay, item.receipt_handle)
+
+          return delay
+        end
+
+        private
+
+        # Requests messages from GCP Pub/Sub, and invokes the provided +&block+ over each one. Afterwards, the :on_fetch
+        # hook will be invoked, per message
+        #
+        # @param [Block] &handler Message handler, passed along by #consume
+        #
+        # @return [Array<Google::Cloud::PubSub::ReceivedMessage>]
+        def handle_messages(&block)
+          begin
+            verify_connection!
+          rescue => e
+            Chore.logger.error "There was a problem verifying the connection to the subscription: #{e.message}. Shutting down..."
+            raise Chore::TerribleMistake
+          end
+
+          messages = subscriber.pull(max: pubsub_polling_amount)
+          received_timestamp = Time.now
+
+          messages.each do |message|
+            begin
+              unless duplicate_message?(message.message_id, @subscription_name, queue_timeout, received_timestamp)
+                # delivery_attempt is available but may be nil for older messages
+                attempt_count = (message.delivery_attempt || 1) - 1
+                block.call(message.message_id, message.ack_id, queue_name, queue_timeout, message.data, attempt_count, received_timestamp)
+              end
+              Chore.run_hooks_for(:on_fetch, message.ack_id, message.data)
+            end
+          end
+
+          messages
+        end
+
+        # Retrieves the GCP Pub/Sub subscriber object. The method will cache the results to prevent round trips on subsequent calls
+        #
+        # @return [Google::Cloud::PubSub::Subscriber]
+        def subscriber
+          @subscriber ||= pubsub.subscriber(@subscription_name)
+        end
+
+        # The ack deadline (in seconds) of the subscriber
+        #
+        # @return [Integer]
+        def queue_timeout
+          @queue_timeout ||= subscriber.deadline || DEFAULT_DEADLINE_SECONDS # Default to 10 minutes
+        end
+
+        # GCP Pub/Sub client object
+        #
+        # @return [Google::Cloud::PubSub::Project]
+        def pubsub
+          @pubsub ||= Chore::Queues::PubSub.pubsub_client
+        end
+
+        # Maximum number of messages to retrieve on each request from config
+        # Validates that the value doesn't exceed Pub/Sub's limit of MAX_PUBSUB_POLLING_SIZE messages
+        #
+        # @return [Integer]
+        # @raise [Chore::TerribleMistake] if queue_polling_size exceeds MAX_PUBSUB_POLLING_SIZE
+        def pubsub_polling_amount
+          polling_size = Chore.config.queue_polling_size
+          if polling_size > MAX_PUBSUB_POLLING_SIZE
+            raise Chore::TerribleMistake, "queue_polling_size (#{polling_size}) exceeds Google Cloud Pub/Sub maximum limit of #{MAX_PUBSUB_POLLING_SIZE} messages"
+          end
+          polling_size
+        end
+      end
+    end
+  end
+end 
