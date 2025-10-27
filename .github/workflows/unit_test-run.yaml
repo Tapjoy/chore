@@ -52,6 +52,9 @@ jobs:
       uses: docker/setup-buildx-action@v3
       with:
         install: true
+          buildkitd-config-inline: |
+            [registry."docker.io"]
+              mirrors = ["mirror.gcr.io"]
 
     # https://github.com/actions/checkout/tree/v4?tab=readme-ov-file#usage
     - name: Setup - Prepare dependency cache
