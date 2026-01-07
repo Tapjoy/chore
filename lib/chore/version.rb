@@ -1,6 +1,6 @@
 module Chore
   module Version #:nodoc:
-    MAJOR = 5
+    MAJOR = 6
     MINOR = 0
     PATCH = 0
 
