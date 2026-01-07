@@ -1,9 +1,11 @@
 PATH
   remote: .
   specs:
-    chore-core (5.0.0)
+    chore-core (6.0.0)
       get_process_mem (>= 0.2.0)
+      logger
       multi_json
+      ostruct
 
 GEM
   remote: https://rubygems.org/
@@ -109,6 +111,7 @@ GEM
     net-http (0.9.1)
       uri (>= 0.11.1)
     os (1.1.4)
+    ostruct (0.6.3)
     public_suffix (7.0.2)
     rake (13.3.1)
     retriable (3.1.2)
@@ -143,7 +146,7 @@ DEPENDENCIES
   aws-sdk-sqs (>= 1)
   chore-core!
   dalli (>= 2)
-  google-cloud-pubsub (>= 3.0, < 4.0)
+  google-cloud-pubsub (>= 3.0)
   rspec (>= 3)
   timecop
 
@@ -156,7 +159,7 @@ CHECKSUMS
   aws-sigv4 (1.12.1) sha256=6973ff95cb0fd0dc58ba26e90e9510a2219525d07620c8babeb70ef831826c00
   base64 (0.3.0) sha256=27337aeabad6ffae05c265c450490628ef3ebd4b67be58257393227588f5a97b
   bigdecimal (4.0.1) sha256=8b07d3d065a9f921c80ceaea7c9d4ae596697295b584c296fe599dd0ad01c4a7
-  chore-core (5.0.0)
+  chore-core (6.0.0)
   concurrent-ruby (1.3.6) sha256=6b56837e1e7e5292f9864f34b69c5a2cbc75c0cf5338f1ce9903d10fa762d5ab
   dalli (3.2.8) sha256=2e63595084d91fae2655514a02c5d4fc0f16c0799893794abe23bf628bebaaa5
   diff-lcs (1.6.2) sha256=9ae0d2cba7d4df3075fe8cd8602a8604993efc0dfa934cff568969efb1909962
@@ -189,6 +192,7 @@ CHECKSUMS
   multi_json (1.19.1) sha256=7aefeff8f2c854bf739931a238e4aea64592845e0c0395c8a7d2eea7fdd631b7
   net-http (0.9.1) sha256=25ba0b67c63e89df626ed8fac771d0ad24ad151a858af2cc8e6a716ca4336996
   os (1.1.4) sha256=57816d6a334e7bd6aed048f4b0308226c5fb027433b67d90a9ab435f35108d3f
+  ostruct (0.6.3) sha256=95a2ed4a4bd1d190784e666b47b2d3f078e4a9efda2fccf18f84ddc6538ed912
   public_suffix (7.0.2) sha256=9114090c8e4e7135c1fd0e7acfea33afaab38101884320c65aaa0ffb8e26a857
   rake (13.3.1) sha256=8c9e89d09f66a26a01264e7e3480ec0607f0c497a861ef16063604b1b08eb19c
   retriable (3.1.2) sha256=0a5a5d0ca4ba61a76fb31a17ab8f7f80281beb040c329d34dfc137a1398688e0

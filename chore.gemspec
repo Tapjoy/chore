@@ -36,6 +36,7 @@ Gem::Specification.new do |s|
   s.summary = "Job processing... for the future!"
 
   s.add_runtime_dependency(%q<multi_json>, [">= 0"])
+  s.add_runtime_dependency(%q<get_process_mem>, [">= 0.2.0"])
   s.add_runtime_dependency(%q<logger>, [">= 0"])
   s.add_runtime_dependency(%q<ostruct>, [">= 0"])
   s.add_development_dependency(%q<rspec>, [">= 3"])
