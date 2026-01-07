@@ -13,6 +13,7 @@ jobs:
           - Gemfile.latest
           - Gemfile.ruby31
           - Gemfile.ruby32
+          - Gemfile.ruby40
     uses: ./.github/workflows/unit_test-run.yaml
     with:
       dependency_file: ${{ matrix.dependency_file }}

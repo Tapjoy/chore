@@ -1,0 +1,208 @@
+PATH
+  remote: .
+  specs:
+    chore-core (5.0.0)
+      get_process_mem (>= 0.2.0)
+      multi_json
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    addressable (2.8.8)
+      public_suffix (>= 2.0.2, < 8.0)
+    aws-eventstream (1.4.0)
+    aws-partitions (1.1200.0)
+    aws-sdk-core (3.241.1)
+      aws-eventstream (~> 1, >= 1.3.0)
+      aws-partitions (~> 1, >= 1.992.0)
+      aws-sigv4 (~> 1.9)
+      base64
+      bigdecimal
+      jmespath (~> 1, >= 1.6.1)
+      logger
+    aws-sdk-sqs (1.108.0)
+      aws-sdk-core (~> 3, >= 3.241.0)
+      aws-sigv4 (~> 1.5)
+    aws-sigv4 (1.12.1)
+      aws-eventstream (~> 1, >= 1.0.2)
+    base64 (0.3.0)
+    bigdecimal (4.0.1)
+    concurrent-ruby (1.3.6)
+    dalli (3.2.8)
+    diff-lcs (1.6.2)
+    faraday (2.14.0)
+      faraday-net_http (>= 2.0, < 3.5)
+      json
+      logger
+    faraday-net_http (3.4.2)
+      net-http (~> 0.5)
+    faraday-retry (2.4.0)
+      faraday (~> 2.0)
+    ffi (1.17.3)
+    ffi (1.17.3-arm-linux-gnu)
+    ffi (1.17.3-arm-linux-musl)
+    ffi (1.17.3-x86_64-linux-gnu)
+    gapic-common (1.2.0)
+      faraday (>= 1.9, < 3.a)
+      faraday-retry (>= 1.0, < 3.a)
+      google-cloud-env (~> 2.2)
+      google-logging-utils (~> 0.1)
+      google-protobuf (~> 4.26)
+      googleapis-common-protos (~> 1.6)
+      googleapis-common-protos-types (~> 1.15)
+      googleauth (~> 1.12)
+      grpc (~> 1.66)
+    get_process_mem (1.0.0)
+      bigdecimal (>= 2.0)
+      ffi (~> 1.0)
+    google-cloud-core (1.8.0)
+      google-cloud-env (>= 1.0, < 3.a)
+      google-cloud-errors (~> 1.0)
+    google-cloud-env (2.3.1)
+      base64 (~> 0.2)
+      faraday (>= 1.0, < 3.a)
+    google-cloud-errors (1.5.0)
+    google-cloud-pubsub (3.1.1)
+      concurrent-ruby (~> 1.3)
+      google-cloud-core (~> 1.8)
+      google-cloud-pubsub-v1 (~> 1.11)
+      retriable (~> 3.1)
+    google-cloud-pubsub-v1 (1.14.2)
+      gapic-common (~> 1.2)
+      google-cloud-errors (~> 1.0)
+      google-iam-v1 (~> 1.3)
+    google-iam-v1 (1.5.1)
+      gapic-common (~> 1.2)
+      google-cloud-errors (~> 1.0)
+      grpc-google-iam-v1 (~> 1.11)
+    google-logging-utils (0.2.0)
+    google-protobuf (4.33.2)
+      bigdecimal
+      rake (>= 13)
+    googleapis-common-protos (1.7.0)
+      google-protobuf (>= 3.18, < 5.a)
+      googleapis-common-protos-types (~> 1.7)
+      grpc (~> 1.41)
+    googleapis-common-protos-types (1.22.0)
+      google-protobuf (~> 4.26)
+    googleauth (1.16.0)
+      faraday (>= 1.0, < 3.a)
+      google-cloud-env (~> 2.2)
+      google-logging-utils (~> 0.1)
+      jwt (>= 1.4, < 4.0)
+      multi_json (~> 1.11)
+      os (>= 0.9, < 2.0)
+      signet (>= 0.16, < 2.a)
+    grpc (1.76.0)
+      google-protobuf (>= 3.25, < 5.0)
+      googleapis-common-protos-types (~> 1.0)
+    grpc-google-iam-v1 (1.11.0)
+      google-protobuf (>= 3.18, < 5.a)
+      googleapis-common-protos (~> 1.7.0)
+      grpc (~> 1.41)
+    jmespath (1.6.2)
+    json (2.18.0)
+    jwt (3.1.2)
+      base64
+    logger (1.7.0)
+    multi_json (1.19.1)
+    net-http (0.9.1)
+      uri (>= 0.11.1)
+    os (1.1.4)
+    public_suffix (7.0.2)
+    rake (13.3.1)
+    retriable (3.1.2)
+    rspec (3.13.2)
+      rspec-core (~> 3.13.0)
+      rspec-expectations (~> 3.13.0)
+      rspec-mocks (~> 3.13.0)
+    rspec-core (3.13.6)
+      rspec-support (~> 3.13.0)
+    rspec-expectations (3.13.5)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.13.0)
+    rspec-mocks (3.13.7)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.13.0)
+    rspec-support (3.13.6)
+    signet (0.21.0)
+      addressable (~> 2.8)
+      faraday (>= 0.17.5, < 3.a)
+      jwt (>= 1.5, < 4.0)
+      multi_json (~> 1.10)
+    timecop (0.9.10)
+    uri (1.1.1)
+
+PLATFORMS
+  arm-linux-gnu
+  arm-linux-musl
+  ruby
+  x86_64-linux
+
+DEPENDENCIES
+  aws-sdk-sqs (>= 1)
+  chore-core!
+  dalli (>= 2)
+  google-cloud-pubsub (>= 3.0, < 4.0)
+  rspec (>= 3)
+  timecop
+
+CHECKSUMS
+  addressable (2.8.8) sha256=7c13b8f9536cf6364c03b9d417c19986019e28f7c00ac8132da4eb0fe393b057
+  aws-eventstream (1.4.0) sha256=116bf85c436200d1060811e6f5d2d40c88f65448f2125bc77ffce5121e6e183b
+  aws-partitions (1.1200.0) sha256=8f356d9a4c05377b8ae5f6c8a7b0bd7b1b3562fd12f700eb9c4a0cb2115a049a
+  aws-sdk-core (3.241.1) sha256=1c43ec9c83117e23596cd9df6b034cd8db3b0cc3ce1e8098d93d9852c77f5f20
+  aws-sdk-sqs (1.108.0) sha256=76a0f0cc2ef297efe73bcd60a90f7f3825942c92003dbe1f5371eb0c7793a02d
+  aws-sigv4 (1.12.1) sha256=6973ff95cb0fd0dc58ba26e90e9510a2219525d07620c8babeb70ef831826c00
+  base64 (0.3.0) sha256=27337aeabad6ffae05c265c450490628ef3ebd4b67be58257393227588f5a97b
+  bigdecimal (4.0.1) sha256=8b07d3d065a9f921c80ceaea7c9d4ae596697295b584c296fe599dd0ad01c4a7
+  chore-core (5.0.0)
+  concurrent-ruby (1.3.6) sha256=6b56837e1e7e5292f9864f34b69c5a2cbc75c0cf5338f1ce9903d10fa762d5ab
+  dalli (3.2.8) sha256=2e63595084d91fae2655514a02c5d4fc0f16c0799893794abe23bf628bebaaa5
+  diff-lcs (1.6.2) sha256=9ae0d2cba7d4df3075fe8cd8602a8604993efc0dfa934cff568969efb1909962
+  faraday (2.14.0) sha256=8699cfe5d97e55268f2596f9a9d5a43736808a943714e3d9a53e6110593941cd
+  faraday-net_http (3.4.2) sha256=f147758260d3526939bf57ecf911682f94926a3666502e24c69992765875906c
+  faraday-retry (2.4.0) sha256=7b79c48fb7e56526faf247b12d94a680071ff40c9fda7cf1ec1549439ad11ebe
+  ffi (1.17.3) sha256=0e9f39f7bb3934f77ad6feab49662be77e87eedcdeb2a3f5c0234c2938563d4c
+  ffi (1.17.3-arm-linux-gnu) sha256=5bd4cea83b68b5ec0037f99c57d5ce2dd5aa438f35decc5ef68a7d085c785668
+  ffi (1.17.3-arm-linux-musl) sha256=0d7626bb96265f9af78afa33e267d71cfef9d9a8eb8f5525344f8da6c7d76053
+  ffi (1.17.3-x86_64-linux-gnu) sha256=3746b01f677aae7b16dc1acb7cb3cc17b3e35bdae7676a3f568153fb0e2c887f
+  gapic-common (1.2.0) sha256=b477ec1eebbed7eed80efc04267369ce623e18b14e573c806e8920f76dc60dde
+  get_process_mem (1.0.0) sha256=d54024f3bcbf776a4d6e0155ec2b21bc3ba44e2fd158c4c00c80aa8a36e0b4aa
+  google-cloud-core (1.8.0) sha256=e572edcbf189cfcab16590628a516cec3f4f63454b730e59f0b36575120281cf
+  google-cloud-env (2.3.1) sha256=0faac01eb27be78c2591d64433663b1a114f8f7af55a4f819755426cac9178e7
+  google-cloud-errors (1.5.0) sha256=b56be28b8c10628125214dde571b925cfcebdbc58619e598250c37a2114f7b4b
+  google-cloud-pubsub (3.1.1) sha256=bf42066034d74afdbc0a49908c3c06c27b955724a4e130574a0a1347897c32ce
+  google-cloud-pubsub-v1 (1.14.2) sha256=7d56f2f623e5adc76e395a8bdc1cb20e9bb586a0e98fc56f13ae4910b92dbfd0
+  google-iam-v1 (1.5.1) sha256=5b9e6a9d86b6b7b9e7269eb73390c3803c135db32a754fe4a44634292b6effa4
+  google-logging-utils (0.2.0) sha256=675462b4ea5affa825a3442694ca2d75d0069455a1d0956127207498fca3df7b
+  google-protobuf (4.33.2) sha256=748150d6c642fd655ef39efa23ecf2abe6d616020039a6d1c1764be1da530315
+  googleapis-common-protos (1.7.0) sha256=b684c0b9e1800c6bb89ad64e0dcabb377a01a31ff7aec1bfebd26c183b2c9241
+  googleapis-common-protos-types (1.22.0) sha256=f97492b77bd6da0018c860d5004f512fe7cd165554d7019a8f4df6a56fbfc4c7
+  googleauth (1.16.0) sha256=1e7b5c2ee7edc6a0f5a4a4312c579b3822dc0be2679d6d09ca19d8c7ca5bd5f1
+  grpc (1.76.0) sha256=112416fa42153aee440fd1b975de4b2bf746656df071bace97c197a6b5575598
+  grpc-google-iam-v1 (1.11.0) sha256=8f0aa8a8503b3e001cb1561f31e43aa0445752fb675334afa1afac7f023f368c
+  jmespath (1.6.2) sha256=238d774a58723d6c090494c8879b5e9918c19485f7e840f2c1c7532cf84ebcb1
+  json (2.18.0) sha256=b10506aee4183f5cf49e0efc48073d7b75843ce3782c68dbeb763351c08fd505
+  jwt (3.1.2) sha256=af6991f19a6bb4060d618d9add7a66f0eeb005ac0bc017cd01f63b42e122d535
+  logger (1.7.0) sha256=196edec7cc44b66cfb40f9755ce11b392f21f7967696af15d274dde7edff0203
+  multi_json (1.19.1) sha256=7aefeff8f2c854bf739931a238e4aea64592845e0c0395c8a7d2eea7fdd631b7
+  net-http (0.9.1) sha256=25ba0b67c63e89df626ed8fac771d0ad24ad151a858af2cc8e6a716ca4336996
+  os (1.1.4) sha256=57816d6a334e7bd6aed048f4b0308226c5fb027433b67d90a9ab435f35108d3f
+  public_suffix (7.0.2) sha256=9114090c8e4e7135c1fd0e7acfea33afaab38101884320c65aaa0ffb8e26a857
+  rake (13.3.1) sha256=8c9e89d09f66a26a01264e7e3480ec0607f0c497a861ef16063604b1b08eb19c
+  retriable (3.1.2) sha256=0a5a5d0ca4ba61a76fb31a17ab8f7f80281beb040c329d34dfc137a1398688e0
+  rspec (3.13.2) sha256=206284a08ad798e61f86d7ca3e376718d52c0bc944626b2349266f239f820587
+  rspec-core (3.13.6) sha256=a8823c6411667b60a8bca135364351dda34cd55e44ff94c4be4633b37d828b2d
+  rspec-expectations (3.13.5) sha256=33a4d3a1d95060aea4c94e9f237030a8f9eae5615e9bd85718fe3a09e4b58836
+  rspec-mocks (3.13.7) sha256=0979034e64b1d7a838aaaddf12bf065ea4dc40ef3d4c39f01f93ae2c66c62b1c
+  rspec-support (3.13.6) sha256=2e8de3702427eab064c9352fe74488cc12a1bfae887ad8b91cba480ec9f8afb2
+  signet (0.21.0) sha256=d617e9fbf24928280d39dcfefba9a0372d1c38187ffffd0a9283957a10a8cd5b
+  timecop (0.9.10) sha256=12ba45ce57cdcf6b1043cb6cdffa6381fd89ce10d369c28a7f6f04dc1b0cd8eb
+  uri (1.1.1) sha256=379fa58d27ffb1387eaada68c749d1426738bd0f654d812fcc07e7568f5c57c6
+
+RUBY VERSION
+  ruby 4.0.0
+
+BUNDLED WITH
+  4.0.3
