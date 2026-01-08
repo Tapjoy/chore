@@ -26,8 +26,8 @@ SHELL [ "/bin/bash", "-l", "-c" ]
 ADD ["Gemfile.lock", "/tmp/"]
 RUN test "$(grep -A 1 'RUBY VERSION' /tmp/Gemfile.lock)" &&\
     ruby_version="$(grep -A 1 'RUBY VERSION' /tmp/Gemfile.lock | tail -n 1 | sed 's/ruby//' | awk '{$1=$1};1' | grep -oE '^[0-9\.]+')" &&\
-    rvm install "${ruby_version}" &&\
-    rvm use "${ruby_version}" --default &&\
+    rvm install "ruby-${ruby_version}" &&\
+    rvm use "ruby-${ruby_version}" --default &&\
     ruby -v
 
 ################################################################################
